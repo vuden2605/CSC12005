@@ -4,7 +4,7 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-## ✅ 1. Yêu cầu chức năng
+##  1. Yêu cầu chức năng
 
 ### 1.1. Quản lý hồ sơ nhân viên (Profile)
 - Quản lý thông tin cơ bản: họ tên, căn cước/CMND, mã số thuế
@@ -26,16 +26,16 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-## ✅ 2. Yêu cầu công nghệ
+##  2. Yêu cầu công nghệ
 
 | Layer     | Công nghệ đề xuất     |
 |-----------|------------------------|
-| Backend   | Java Spring MVC **hoặc** .NET Core (Web API) |
+| Backend   | Java Spring Boot |
 | Frontend  | ReactJS                |
 
 ---
 
-## ✅ 3. Các mốc phát triển (Milestones)
+##  3. Các mốc phát triển (Milestones)
 
 ### 🔹 Lần 1: Phát biểu & phân tích yêu cầu
 - Trình bày lại đề tài
@@ -53,19 +53,19 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 - Thiết kế giao diện UI
 - Thiết kế service (API)
 - Thiết kế database chi tiết
-- (Tùy chọn) Mockup giao diện
+- Mockup giao diện
 
 ### 🔹 Lần 4: Xây dựng & tích hợp
 - Lập trình frontend + backend + API
 - Tích hợp toàn hệ thống
 - Dữ liệu giả (dummy data) để demo
 - Viết test case & kiểm thử
-- Triển khai chạy thử (internal/external)
+- Triển khai chạy thử 
 - Hoàn thiện báo cáo & chỉnh sửa cuối
 
 ---
 
-## 🎯 Mục tiêu dự án
+##  Mục tiêu dự án
 - Quản lý nhân sự hiệu quả và minh bạch
 - Tối ưu quy trình yêu cầu & phê duyệt
 - Theo dõi hiệu suất làm việc dễ dàng
@@ -73,14 +73,13 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-## 📌 Thành viên nhóm
-> (Điền tên các thành viên tại đây)
-
+##  Thành viên nhóm
+> Nông Quốc Việt, Nguyễn Quang Vũ, Nguyễn Văn Vũ, Bàn Hữu Bằng
 ---
 
 ## 📞 Liên hệ
-> (Thông tin liên hệ, email, github, …)
+> 22120442@student.hcmus.edu.vn
 
 ---
-
-_👉 Nếu cần mình bổ sung phần Installation, Hướng dẫn chạy project, API docs hoặc Database Diagram, hãy nói nhé!_
+--- Chạy mysql local
+docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=CSC12005_HR -p 3306:3306 mysql
