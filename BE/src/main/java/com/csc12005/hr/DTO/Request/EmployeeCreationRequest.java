@@ -4,16 +4,17 @@ import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeCreationRequest {
+	@NotBlank(message = "REQUIRED_FULL_NAME")
 	private String fullName;
 	private String email;
 	private String phone;

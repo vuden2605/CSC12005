@@ -5,6 +5,8 @@ import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
+import com.csc12005.hr.Exception.AppException;
+import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.EmployeeMapper;
 import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
@@ -34,9 +36,9 @@ public class EmployeeService {
 			throw new RuntimeException("Email already exists");
 		}
 		Department department = departmentRepository.findById(employeeCreationRequest.getDepartmentId())
-				.orElseThrow(() -> new RuntimeException("Department not found"));
+				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
 		Position position = positionRepository.findById(employeeCreationRequest.getPositionId())
-				.orElseThrow(() -> new RuntimeException("Position not found"));
+				.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
 		Employee employee = employeeMapper.toEmployee(employeeCreationRequest);
 		employee.setDepartment(department);
 		employee.setPosition(position);

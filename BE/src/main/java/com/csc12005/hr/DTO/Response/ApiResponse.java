@@ -1,5 +1,7 @@
 package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Getter
@@ -7,8 +9,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-	private Integer code;
+	@Builder.Default
+	private Integer code = ErrorCode.SUCCESS.getCode();
 	private String message;
 	private T data;
 }
