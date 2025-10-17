@@ -7,9 +7,9 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EmployeeResponse {
 	private Long employeeId;
 	private String employeeCode;
@@ -23,7 +23,7 @@ public class EmployeeResponse {
 	private String bankName;
 	private String bankAccount;
 	private Long baseSalary;
-	private String departmentName;
-	private String positionName;
+	private DepartmentResponse department;
+	private PositionResponse position;
 	private String managerName;
 }

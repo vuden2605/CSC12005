@@ -30,7 +30,7 @@ public class EmployeeService {
 		return year + "-" + department.getDepartmentCode() + "-" + position.getPositionCode() + "-" + sequenceFormatted;
 	}
 	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
-		if(!employeeRepository.existsByEmail(employeeCreationRequest.getEmail())) {
+		if(employeeRepository.existsByEmail(employeeCreationRequest.getEmail())) {
 			throw new RuntimeException("Email already exists");
 		}
 		Department department = departmentRepository.findById(employeeCreationRequest.getDepartmentId())
