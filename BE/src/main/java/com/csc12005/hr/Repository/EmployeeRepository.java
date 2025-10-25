@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	boolean existsByEmail(String email);
@@ -18,4 +20,5 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	long countByYearAndDepartmentAndPosition(@Param("year")int year,
 	                                         @Param("department") Long department,
 	                                         @Param("position") Long position);
+	Optional<Employee> findByEmployeeCode(String employeeCode);
 }

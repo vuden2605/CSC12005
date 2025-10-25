@@ -19,7 +19,12 @@ public enum ErrorCode {
 	POSITION_NOT_FOUND(3001, "Position not found", HttpStatus.NOT_FOUND),
 	//Validation
 	VALIDATION_FAILED(4001, "Validation failed", HttpStatus.BAD_REQUEST),
-	REQUIRED_FULL_NAME(4002, "Full name is required", HttpStatus.BAD_REQUEST);
+	REQUIRED_FULL_NAME(4002, "Full name is required", HttpStatus.BAD_REQUEST),
+	//Authentication
+	AUTHENTICATION_FAILED(5001, "Authentication failed", HttpStatus.UNAUTHORIZED),
+	USERNAME_NOT_FOUND(5002, "Username not found", HttpStatus.NOT_FOUND),
+	INVALID_PASSWORD(5003, "Invalid password", HttpStatus.UNAUTHORIZED),
+	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED);
 	private final Integer code;
 	private final String message;
 	private final HttpStatus httpStatus;

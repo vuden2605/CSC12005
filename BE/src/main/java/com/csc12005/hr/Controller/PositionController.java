@@ -4,6 +4,7 @@ import com.csc12005.hr.DTO.Request.PositionCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
 import com.csc12005.hr.Service.PositionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PositionController {
 	private final PositionService positionService;
 	@PostMapping("/positions")
-	public ApiResponse<PositionResponse> createPosition(@RequestBody PositionCreationRequest positionCreationRequest) {
+	public ApiResponse<PositionResponse> createPosition(@RequestBody @Valid PositionCreationRequest positionCreationRequest) {
 		return ApiResponse.<PositionResponse>builder()
-				.code(201)
 				.message("Position created successfully")
 				.data(positionService.createPosition(positionCreationRequest))
 				.build();

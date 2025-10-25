@@ -12,6 +12,7 @@ import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class EmployeeService {
 	private final EmployeeMapper employeeMapper;
 	private final DepartmentRepository departmentRepository;
 	private final PositionRepository positionRepository;
+	private final PasswordEncoder passwordEncoder;
 	private String generateEmployeeCode(Department department, Position position) {
 		// Generate employee code logic
 		int year = LocalDate.now().getYear();
@@ -43,6 +45,7 @@ public class EmployeeService {
 		employee.setDepartment(department);
 		employee.setPosition(position);
 		employee.setEmployeeCode(generateEmployeeCode(employee.getDepartment(), employee.getPosition()));
+		employee.setPassword(passwordEncoder.encode(employeeCreationRequest.getPassword()));
 		return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
 	}
 

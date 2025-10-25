@@ -17,7 +17,6 @@ public class DepartmentController {
 	public ApiResponse<DepartmentResponse> createDepartment(@RequestBody DepartmentCreationRequest departmentCreationRequest) {
 		return ApiResponse.<DepartmentResponse>builder()
 				.message("Department created successfully")
-				.code(201)
 				.data(departmentService.createDepartment(departmentCreationRequest))
 				.build();
 	}
