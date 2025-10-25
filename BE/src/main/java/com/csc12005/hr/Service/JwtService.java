@@ -24,8 +24,8 @@ public class JwtService {
 	}
 	public String generateAccessToken(Employee employee) {
 		return Jwts.builder()
-				.setSubject(employee.getEmployeeId().toString())
-				.claim("scope:", employee.getPosition().getPositionName())
+				.setSubject(employee.getEmployeeCode())
+				.claim("scope", employee.getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())
 				.claim("type", "access_token")
@@ -36,8 +36,8 @@ public class JwtService {
 	}
 	public String generateRefreshToken(Employee employee) {
 		return Jwts.builder()
-				.setSubject(employee.getEmployeeId().toString())
-				.claim("scope:", employee.getPosition().getPositionName())
+				.setSubject(employee.getEmployeeCode())
+				.claim("scope", employee.getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())
 				.claim("type", "access_token")

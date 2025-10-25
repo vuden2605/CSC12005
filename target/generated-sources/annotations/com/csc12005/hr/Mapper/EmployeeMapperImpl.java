@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-17T19:02:56+0700",
+    date = "2025-10-25T21:36:16+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -36,7 +36,6 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         employee.bankName( employeeCreationRequest.getBankName() );
         employee.bankAccount( employeeCreationRequest.getBankAccount() );
         employee.baseSalary( employeeCreationRequest.getBaseSalary() );
-        employee.password( employeeCreationRequest.getPassword() );
 
         return employee.build();
     }
@@ -61,6 +60,7 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         employeeResponse.bankName( employee.getBankName() );
         employeeResponse.bankAccount( employee.getBankAccount() );
         employeeResponse.baseSalary( employee.getBaseSalary() );
+        employeeResponse.hireDate( employee.getHireDate() );
         employeeResponse.department( departmentToDepartmentResponse( employee.getDepartment() ) );
         employeeResponse.position( positionToPositionResponse( employee.getPosition() ) );
 

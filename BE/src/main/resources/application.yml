@@ -14,6 +14,6 @@ spring:
         show-sql: true
         database-platform: org.hibernate.dialect.MySQL8Dialect
 jwt:
-    secret: your_jwt_secret_key
+    secret: your_jwt_secret_key_12333333333333333333333
     access-time: 3600000 # 1 hour in milliseconds
     refresh-time: 604800000

@@ -14,10 +14,12 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class CustomJwtDecoder implements JwtDecoder {
 	private final JwtService jwtService;
-
 	@Override
 	public Jwt decode(String token) throws JwtException {
 		Claims claims = jwtService.verifyToken(token);
+		if(claims.get("type") == null || !claims.get("type").equals("access_token")) {
+			throw new JwtException("Invalid token");
+		}
 		return new Jwt(
 				token,
 				claims.getIssuedAt().toInstant(),

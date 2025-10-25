@@ -25,7 +25,6 @@ public class EmployeeCreationRequest {
 	private String bankName;
 	private String bankAccount;
 	private Long baseSalary;
-	private String password;
 	private Long departmentId;
 	private Long positionId;
 	private Long managerId;

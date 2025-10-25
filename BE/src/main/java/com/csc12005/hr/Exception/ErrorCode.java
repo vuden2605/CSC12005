@@ -24,7 +24,9 @@ public enum ErrorCode {
 	AUTHENTICATION_FAILED(5001, "Authentication failed", HttpStatus.UNAUTHORIZED),
 	USERNAME_NOT_FOUND(5002, "Username not found", HttpStatus.NOT_FOUND),
 	INVALID_PASSWORD(5003, "Invalid password", HttpStatus.UNAUTHORIZED),
-	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED);
+	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+	FORBIDDEN(5005, "Unauthorized", HttpStatus.FORBIDDEN);
+
 	private final Integer code;
 	private final String message;
 	private final HttpStatus httpStatus;

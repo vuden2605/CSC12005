@@ -23,6 +23,7 @@ public class EmployeeResponse {
 	private String bankName;
 	private String bankAccount;
 	private Long baseSalary;
+	private LocalDate hireDate;
 	private DepartmentResponse department;
 	private PositionResponse position;
 	private String managerName;

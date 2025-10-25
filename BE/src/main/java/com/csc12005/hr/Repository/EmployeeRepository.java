@@ -20,5 +20,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	long countByYearAndDepartmentAndPosition(@Param("year")int year,
 	                                         @Param("department") Long department,
 	                                         @Param("position") Long position);
+	boolean existsByEmployeeCode(String employeeCode);
 	Optional<Employee> findByEmployeeCode(String employeeCode);
 }

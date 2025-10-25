@@ -2,6 +2,7 @@ package com.csc12005.hr.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class Employee {
 	private String taxCode;
 	private String bankName;
 	private String bankAccount;
+	@CreationTimestamp
 	private LocalDate hireDate;
 	@Builder.Default
 	private Boolean status = true;
@@ -43,4 +45,5 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "manager_id")
 	private Employee manager;
+	private String role;
 }

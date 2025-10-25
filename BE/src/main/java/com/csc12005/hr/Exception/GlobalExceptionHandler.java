@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import org.springframework.security.access.AccessDeniedException;
 import java.util.Objects;
 
 @ControllerAdvice
@@ -24,6 +24,15 @@ public class GlobalExceptionHandler  {
 	public ResponseEntity<ApiResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
 		String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
 		ErrorCode errorCode = ErrorCode.valueOf(errorMessage);
+		ApiResponse<?> response = ApiResponse.builder()
+				.code(errorCode.getCode())
+				.message(errorCode.getMessage())
+				.build();
+		return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
+	}
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException e) {
+		ErrorCode errorCode = ErrorCode.FORBIDDEN;
 		ApiResponse<?> response = ApiResponse.builder()
 				.code(errorCode.getCode())
 				.message(errorCode.getMessage())

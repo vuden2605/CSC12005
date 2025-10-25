@@ -4,6 +4,7 @@ import com.csc12005.hr.Service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,11 +22,17 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 	private final CustomJwtDecoder customJwtDecoder;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private String[] publicEndpoints = {
+			"/v3/api-docs/**",
+			"/swagger-ui/**",
+			"/swagger-ui.html"
+	};
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity.authorizeHttpRequests(request -> request
-				.requestMatchers("/auth/**").permitAll()
+				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
 				.anyRequest().authenticated()
 		);
 		httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
