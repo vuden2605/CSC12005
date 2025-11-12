@@ -22,12 +22,10 @@ public class Employee {
 	private String fullName;
 	private String email;
 	private String phone;
-	private String address;
 	private LocalDate birthDate;
 	private String nationalCode;
 	private String taxCode;
 	private String bankName;
-	private String bankAccount;
 	@CreationTimestamp
 	private LocalDate hireDate;
 	@Builder.Default
@@ -36,7 +34,9 @@ public class Employee {
 	@Builder.Default
 	private Long totalPoints = 0L;
 	private String password;
-	@ManyToOne
+    private String bankAccount;
+    private String address;
+    @ManyToOne
 	@JoinColumn(name = "department_id")
 	private Department department;
 	@ManyToOne
@@ -46,4 +46,5 @@ public class Employee {
 	@JoinColumn(name = "manager_id")
 	private Employee manager;
 	private String role;
+//    private Long allocatePoints;
 }
