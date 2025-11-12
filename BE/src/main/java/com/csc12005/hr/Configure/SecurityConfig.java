@@ -33,7 +33,7 @@ public class SecurityConfig {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity.authorizeHttpRequests(request -> request
 				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-				.anyRequest().authenticated()
+                .anyRequest().authenticated()
 		);
 		httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
 				.jwt(jwt -> jwt
