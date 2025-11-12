@@ -3,7 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.PositionCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
-import com.csc12005.hr.Service.PositionService;
+import com.csc12005.hr.Service.PositionService.Impl.PositionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

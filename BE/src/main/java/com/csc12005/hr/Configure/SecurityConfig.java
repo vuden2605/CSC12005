@@ -1,6 +1,5 @@
 package com.csc12005.hr.Configure;
 
-import com.csc12005.hr.Service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

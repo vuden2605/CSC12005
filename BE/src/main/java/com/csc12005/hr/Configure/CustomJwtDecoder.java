@@ -1,6 +1,6 @@
 package com.csc12005.hr.Configure;
 
-import com.csc12005.hr.Service.JwtService;
+import com.csc12005.hr.Service.JwtService.impl.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;

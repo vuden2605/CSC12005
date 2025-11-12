@@ -1,4 +1,4 @@
-package com.csc12005.hr.Service;
+package com.csc12005.hr.Service.DepartmentService.Impl;
 
 import com.csc12005.hr.DTO.Request.DepartmentCreationRequest;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;

@@ -3,7 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.DepartmentCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
-import com.csc12005.hr.Service.DepartmentService;
+import com.csc12005.hr.Service.DepartmentService.Impl.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
