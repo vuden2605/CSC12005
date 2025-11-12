@@ -1,4 +1,4 @@
-package com.csc12005.hr.Service;
+package com.csc12005.hr.Service.AuthenticationService.impl;
 
 import com.csc12005.hr.DTO.Request.LoginRequest;
 import com.csc12005.hr.DTO.Response.AuthenticationResponse;
@@ -6,13 +6,15 @@ import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Repository.EmployeeRepository;
+import com.csc12005.hr.Service.AuthenticationService.IAuthenticationService;
+import com.csc12005.hr.Service.JwtService.impl.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
 	private final EmployeeRepository employeeRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;

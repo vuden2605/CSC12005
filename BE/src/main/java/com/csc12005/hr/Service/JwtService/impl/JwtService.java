@@ -1,6 +1,7 @@
-package com.csc12005.hr.Service;
+package com.csc12005.hr.Service.JwtService.impl;
 
 import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Service.JwtService.IJwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,7 +13,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
-public class JwtService {
+public class JwtService implements IJwtService {
 	@Value("${jwt.secret}")
 	private String secretKey;
 	@Value("${jwt.access-time}")

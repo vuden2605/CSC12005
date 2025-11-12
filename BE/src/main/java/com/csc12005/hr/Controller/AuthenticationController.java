@@ -3,7 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.LoginRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.AuthenticationResponse;
-import com.csc12005.hr.Service.AuthenticationService;
+import com.csc12005.hr.Service.AuthenticationService.impl.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

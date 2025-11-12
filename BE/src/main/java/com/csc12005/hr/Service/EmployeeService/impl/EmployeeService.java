@@ -1,4 +1,4 @@
-package com.csc12005.hr.Service.impl;
+package com.csc12005.hr.Service.EmployeeService.impl;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
@@ -12,7 +12,7 @@ import com.csc12005.hr.Mapper.EmployeeMapper;
 import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
-import com.csc12005.hr.Service.IEmployeeService;
+import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
