@@ -50,6 +50,7 @@ export const Information = () => {
     
     return (
         <div className="information-page">
+            
             {/* Tabs Section */}
             <h3 className="section-title">
                 {pathToTitleMap[location.pathname] || "Thông tin cá nhân"}
