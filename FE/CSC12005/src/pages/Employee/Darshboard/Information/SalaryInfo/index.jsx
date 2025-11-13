@@ -1,7 +1,6 @@
 import React from "react";
 import "./style.scss";
-import { EditButton } from "../../../../../components/EditButton/EditButton";
-import mbLogo from "../../../../../assets/images/mbbank-logo.png"; // 🧩 bạn đổi đường dẫn tùy thư mục ảnh của bạn
+import mbLogo from "../../../../../assets/images/mbbank-logo.png"; 
 
 export const SalaryInfo = () => {
   const bankInfo = {
@@ -43,9 +42,7 @@ export const SalaryInfo = () => {
               </div>
             )}
           </div>
-        </div>
-
-          <EditButton label="Sửa thông tin" onClick={handleEdit} />
+        </div>          
       </div>
     </div>
   );
