@@ -4,18 +4,13 @@ import "./style.scss";
 
 export const Information = () => {
     const location = useLocation();
-
+    
     const actionButtons = [
         {
             id: "info",
             label: "Thông tin cá nhân",
             color: "yellow",
             path: "/employee/dashboard/info/personal-info",
-            subPaths: [
-                "/employee/dashboard/info/personal-info",
-                "/employee/dashboard/info/info-details",
-                "/employee/dashboard/info/salary-info",
-            ],
         },
         {
             id: "info-details",
@@ -30,24 +25,36 @@ export const Information = () => {
             path: "/employee/dashboard/info/salary-info",
         },
     ];
-
+    
     const pathToTitleMap = {
         "/employee/dashboard/info/personal-info": "Thông tin cá nhân",
         "/employee/dashboard/info/info-details": "Thông tin cá nhân -> Thông tin chi tiết",
         "/employee/dashboard/info/salary-info": "Thông tin cá nhân -> Thông tin tài chính",
     };
-
-    // Hàm check active dựa trên path (bao gồm subPaths nếu muốn highlight parent tab)
-    const isActive = (btn) => location.pathname === btn.path;
-
-
+    
+    // Hàm check active với logic: nếu không match path nào thì mặc định tab đầu tiên active
+    const isActive = (btn) => {
+        const currentPath = location.pathname;
+        
+        // Kiểm tra xem path hiện tại có match với button nào không
+        const hasExactMatch = actionButtons.some(b => currentPath === b.path);
+        
+        // Nếu không match path nào và đây là button đầu tiên (Thông tin cá nhân)
+        if (!hasExactMatch && btn.id === "info") {
+            return true;
+        }
+        
+        // Ngược lại, check exact match
+        return currentPath === btn.path;
+    };
+    
     return (
         <div className="information-page">
             {/* Tabs Section */}
             <h3 className="section-title">
                 {pathToTitleMap[location.pathname] || "Thông tin cá nhân"}
             </h3>
-
+            
             {/* Content Section */}
             <div className="content-section">
                 {/* Sidebar */}
@@ -66,8 +73,7 @@ export const Information = () => {
                         );
                     })}
                 </div>
-
-
+                
                 {/* Main Content */}
                 <div className="main-content">
                     <div className="content-placeholder">

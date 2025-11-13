@@ -1,0 +1,22 @@
+.edit-btn {
+    margin-top: 2rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  
+    &:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+  
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  

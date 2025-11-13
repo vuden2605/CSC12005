@@ -1,39 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
+import { EditButton } from "../../../../../components/EditButton/EditButton"; 
+import { EditInfoModal } from "../../../../../components/EditInfoModal/EditInfoModal";
 import "./style.scss";
 
 export const InfoDetails = () => {
-  const employee = {
-    name: "Nguyễn Quang Vũ",
-    department: "Phòng kỹ thuật",
-    position: "Lập trình web",
-    workType: "Full time",
-    avatar: "👨‍💼",
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [info, setInfo] = useState({
+    phone: "0123456789",
+    email: "vu.nguyen@example.com",
+    address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+  });
+
+  const handleSave = (updated) => {
+    setInfo(updated); // Cập nhật thông tin từ modal
+    setIsModalOpen(false); // Đóng modal sau khi lưu
   };
 
   return (
-    <div className="personal-info">
-      <div className="employee-card">
-        <div className="profile-avatar-medium">
-          <span className="avatar-emoji">{employee.avatar}</span>
-        </div>
-        <h2>{employee.name}</h2>
+    <div className="info-details">
+      <div className="details-card">
+        <h2>Thông tin cá nhân</h2>
 
-        <div className="info-grid">
-          <div className="info-item">
-            <span className="info-label">Phòng ban</span>
-            <span className="info-value">{employee.department}</span>
+        <div className="details-grid">
+          <div className="details-item">
+            <span className="details-label">Số điện thoại</span>
+            <input
+              className="details-input"
+              value={info.phone}
+              readOnly
+            />
           </div>
-          <div className="info-divider"></div>
-          <div className="info-item">
-            <span className="info-label">Tên công việc</span>
-            <span className="info-value">{employee.position}</span>
+          <div className="details-item">
+            <span className="details-label">Email</span>
+            <input
+              className="details-input"
+              value={info.email}
+              readOnly
+            />
           </div>
-          <div className="info-item">
-            <span className="info-label">Loại công việc</span>
-            <span className="info-value">{employee.workType}</span>
+          <div className="details-item">
+            <span className="details-label">Địa chỉ</span>
+            <input
+              className="details-input"
+              value={info.address}
+              readOnly
+            />
           </div>
         </div>
+
+        <EditButton label="Sửa thông tin" onClick={() => setIsModalOpen(true)} />
       </div>
+
+      {/* Modal chỉnh sửa */}
+      <EditInfoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        currentData={info} // Truyền dữ liệu hiện tại để modal hiển thị
+      />
     </div>
   );
 };
