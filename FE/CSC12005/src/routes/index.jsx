@@ -43,7 +43,7 @@ export const routes = [
           },
         ]
        },
-      { path: "hr-admin", element: <HRAdmin /> },
+      { path: "hr", element: <HRAdmin /> },
     ],
   },
 ];

@@ -4,70 +4,7 @@
     padding: 2rem;
   
     // Header Section
-    .profile-header {
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-      border-radius: 12px;
-      padding: 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  
-      .header-content {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-      }
-  
-      .profile-avatar-large {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background-color: #fbbf24;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-  
-        .avatar-emoji {
-          font-size: 40px;
-        }
-      }
-  
-      .profile-info {
-        h1 {
-          color: white;
-          font-size: 24px;
-          font-weight: 700;
-          margin: 0 0 0.25rem 0;
-        }
-  
-        .role {
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 14px;
-          margin: 0;
-        }
-      }
-  
-      .send-button {
-        background-color: rgba(255, 255, 255, 0.2);
-        border: 1px dashed rgba(255, 255, 255, 0.5);
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-  
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.3);
-        }
-      }
-    }
-  
+ 
     // Dashboard Content
     .dashboard-content {
       background-color: white;
