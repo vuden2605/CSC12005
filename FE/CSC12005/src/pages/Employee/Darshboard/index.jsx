@@ -2,6 +2,7 @@ import React,{ useState } from "react";
 import { Send } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import "./style.scss";
+import InfoCard from "../../../components/InfoCard";
 
 export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("info");
@@ -22,20 +23,8 @@ const tabs = [
   return (
     <div className="dashboard-page">
       {/* Header Section */}
-      <div className="profile-header">
-        <div className="header-content">
-          <div className="profile-avatar-large">
-            <span className="avatar-emoji">{employee.avatar}</span>
-          </div>
-          <div className="profile-info">
-            <h1>{employee.name}</h1>
-            <p className="role">{employee.role}</p>
-          </div>
-        </div>
-        <button className="send-button">
-          <Send size={18} />
-        </button>
-      </div>
+      
+      <InfoCard employee={employee}/>
 <div className="tabs-section">
         <h3 className="section-title">Thao tác nhanh</h3>
         <div className="tabs">

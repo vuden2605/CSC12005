@@ -24,7 +24,8 @@ export const routes = [
           { path: "dashboard", 
               element: <Dashboard/>,
               children: [
-                { path: "info", element: <Information />,
+                { 
+                  path: "info", element: <Information />,
                   children: [
                     { path: "personal-info", element: <PersonalInfo /> },
                     { path: "info-details", element: <InfoDetails /> },
@@ -38,7 +39,7 @@ export const routes = [
           },
         ]
        },
-      { path: "hr-admin", element: <HRAdmin /> },
+      { path: "hr", element: <HRAdmin /> },
     ],
   },
 ];
