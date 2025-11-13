@@ -12,7 +12,7 @@ export const Header = () => {
   if (path.startsWith("/admin")) role = "ADMIN";
   else if (path.startsWith("/manager")) role = "MANAGER";
   else if (path.startsWith("/employee")) role = "EMPLOYEE";
-
+  
   // Menu tương ứng với role
   const menuItems = {
     ADMIN: [
@@ -41,11 +41,21 @@ export const Header = () => {
     ],
   };
 
+  // Hàm kiểm tra active: so sánh pathname hiện tại có bắt đầu bằng path của menu item không
+  const isActiveMenu = (menuPath) => {
+    // Trường hợp đặc biệt cho trang chủ (GUEST)
+    if (menuPath === "/" && location.pathname === "/") {
+      return true;
+    }
+    // Đối với các path khác, kiểm tra pathname có bắt đầu bằng menuPath không
+    return location.pathname.startsWith(menuPath);
+  };
+
   return (
     <header className="header">
       <nav className="header-nav">
         {menuItems[role].map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = isActiveMenu(item.path);
           return (
             <Link
               key={item.path}
@@ -57,7 +67,6 @@ export const Header = () => {
           );
         })}
       </nav>
-
       <div className="header-right">
         {/* <button className="icon-button language-button">
           <span className="flag">🇻🇳</span>
@@ -68,7 +77,6 @@ export const Header = () => {
           <Bell size={20} />
           <span className="notification-badge">5</span>
         </button>
-
         <button className="icon-button profile-button">
           <div className="avatar">
             <User size={20} />
