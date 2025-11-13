@@ -1,38 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
+import { EditButton } from "../../../../../components/EditButton/EditButton"; // đường dẫn tùy theo project của bạn
 import "./style.scss";
 
 export const InfoDetails = () => {
-  const employee = {
-    name: "Nguyễn Quang Vũ",
-    department: "Phòng kỹ thuật",
-    position: "Lập trình web",
-    workType: "Full time",
-    avatar: "👨‍💼",
-  };
+  const [employee, setEmployee] = useState({
+    phone: "0912 345 678",
+    email: "vu.nguyen@company.com",
+    address: "123 Nguyễn Trãi, TP. Hồ Chí Minh",
+  });
 
   return (
-    <div className="personal-info">
-      <div className="employee-card">
-        <div className="profile-avatar-medium">
-          <span className="avatar-emoji">{employee.avatar}</span>
-        </div>
-        <h2>{employee.name}</h2>
+    <div className="info-details">
+      <div className="details-card">
+        <h2>Thông tin chi tiết</h2>
 
-        <div className="info-grid">
-          <div className="info-item">
-            <span className="info-label">Phòng ban</span>
-            <span className="info-value">{employee.department}</span>
+        <div className="details-grid">
+          <div className="details-item">
+            <label className="details-label">Số điện thoại</label>
+            <input
+              type="text"
+              className="details-input"
+              value={employee.phone}
+              readOnly
+            />
           </div>
-          <div className="info-divider"></div>
-          <div className="info-item">
-            <span className="info-label">Tên công việc</span>
-            <span className="info-value">{employee.position}</span>
+
+          <div className="details-item">
+            <label className="details-label">Email</label>
+            <input
+              type="email"
+              className="details-input"
+              value={employee.email}
+              readOnly
+            />
           </div>
-          <div className="info-item">
-            <span className="info-label">Loại công việc</span>
-            <span className="info-value">{employee.workType}</span>
+
+          <div className="details-item">
+            <label className="details-label">Địa chỉ</label>
+            <input
+              type="text"
+              className="details-input"
+              value={employee.address}
+              readOnly
+            />
           </div>
         </div>
+
+       
+          <EditButton onClick={() => console.log("Edit details clicked")} />
+        
       </div>
     </div>
   );

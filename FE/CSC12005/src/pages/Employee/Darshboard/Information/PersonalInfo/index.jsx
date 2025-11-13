@@ -1,5 +1,6 @@
 import React from "react";
 import "./style.scss";
+import { EditButton } from "../../../../../components/EditButton/EditButton";
 
 export const PersonalInfo = () => {
   const employee = {
@@ -10,12 +11,17 @@ export const PersonalInfo = () => {
     avatar: "👨‍💼",
   };
 
+  const handleEdit = () => {
+    alert("Chức năng chỉnh sửa sẽ được thêm sau!");
+  };
+
   return (
     <div className="personal-info">
       <div className="employee-card">
         <div className="profile-avatar-medium">
           <span className="avatar-emoji">{employee.avatar}</span>
         </div>
+
         <h2>{employee.name}</h2>
 
         <div className="info-grid">
@@ -33,6 +39,8 @@ export const PersonalInfo = () => {
             <span className="info-value">{employee.workType}</span>
           </div>
         </div>
+
+        <EditButton label="Sửa thông tin" onClick={handleEdit} />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { Dashboard } from "../pages/Employee/Darshboard";
 import { Information } from "../pages/Employee/Darshboard/Information";
 import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalInfo";
 import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/Index";
+import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 export const routes = [
   {
     path: "/",
@@ -24,10 +25,13 @@ export const routes = [
           { path: "dashboard", 
               element: <Dashboard/>,
               children: [
+                { index: true, element: <Information /> },
                 { path: "info", element: <Information />,
                   children: [
+                    {index: true, element: <PersonalInfo />},
                     { path: "personal-info", element: <PersonalInfo /> },
                     { path: "info-details", element: <InfoDetails /> },
+                    {path: "salary-info", element:<SalaryInfo/>}
                   ]
                 },
                 // { path: "attendance", element: <Attendance /> },
