@@ -1,6 +1,5 @@
 import React from "react";
 import "./style.scss";
-import { EditButton } from "../../../../../components/EditButton/EditButton";
 
 export const PersonalInfo = () => {
   const employee = {
@@ -40,7 +39,6 @@ export const PersonalInfo = () => {
           </div>
         </div>
 
-        <EditButton label="Sửa thông tin" onClick={handleEdit} />
       </div>
     </div>
   );
