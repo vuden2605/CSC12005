@@ -8,9 +8,9 @@ import { LayoutDefault } from "../LayoutDefault";
 import { Dashboard } from "../pages/Employee/Darshboard";
 import { Information } from "../pages/Employee/Darshboard/Information";
 import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalInfo";
-import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/Index";
+import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
-import {LeaveRequests} from "../pages/Employee/Darshboard/LeaveRequests"
+import {Requests} from "../pages/Employee/Darshboard/Requests"
 export const routes = [
   {
     path: "/",
@@ -36,7 +36,7 @@ export const routes = [
                   ]
                 },
                 // { path: "attendance", element: <Attendance /> },
-                { path: "leave-request", element: <LeaveRequests/>},
+                { path: "request", element: <Requests/>},
                 // { path: "event", element: <Event /> },
                 // { path: "score", element: <Score /> },
               ]

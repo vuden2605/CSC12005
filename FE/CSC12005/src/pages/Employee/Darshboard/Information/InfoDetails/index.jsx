@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { EditButton } from "../../../../../components/EditButton/EditButton"; 
-import { EditInfoModal } from "../../../../../components/EditInfoModal/EditInfoModal";
+import { EditInfoModal } from "../../../../../components/modals/EditInfoModal/EditInfoModal";
 import "./style.scss";
 
 export const InfoDetails = () => {
