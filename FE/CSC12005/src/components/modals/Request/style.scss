@@ -1,0 +1,143 @@
+/* ===== Modal Overlay ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 10px;
+  }
+  
+  /* ===== Modal Box ===== */
+  .modal-box {
+    background: #fff;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 12px;
+    padding: 24px 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeIn 0.3s ease-out;
+    .error {
+        color: #e53935 !important;
+        font-size: 12px !important;
+        margin-top: -8px;
+        font-weight: 500;
+        display: block;
+      }
+  }
+  
+  /* ===== Modal Header ===== */
+  .modal-box h2 {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  /* ===== Form Elements ===== */
+  .modal-box label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  
+  .modal-box input[type="date"],
+  .modal-box input[type="time"],
+  .modal-box input[type="file"],
+  .modal-box textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    transition: border 0.2s;
+  }
+  
+  .modal-box input:focus,
+  .modal-box textarea:focus {
+    outline: none;
+    border-color: #5c6bc0;
+  }
+  
+  .modal-box textarea {
+    resize: none;
+    min-height: 70px;
+  }
+  
+  /* ===== File Input ===== */
+  .modal-box input[type="file"] {
+    cursor: pointer;
+  }
+  
+  /* ===== Error Messages ===== */
+  
+  
+  /* ===== Button Row ===== */
+  .btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .btn.cancel {
+    background: #e0e0e0;
+    color: #333;
+  }
+  
+  .btn.cancel:hover {
+    background: #d5d5d5;
+  }
+  
+  .btn.confirm {
+    background: #5c6bc0;
+    color: #fff;
+  }
+  
+  .btn.confirm:hover {
+    background: #4a5ab8;
+    transform: translateY(-2px);
+  }
+  
+  /* ===== Animations ===== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* ===== Responsive ===== */
+  @media (max-width: 500px) {
+    .modal-box {
+      padding: 20px 16px;
+    }
+  
+    .btn {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+  }
+  
