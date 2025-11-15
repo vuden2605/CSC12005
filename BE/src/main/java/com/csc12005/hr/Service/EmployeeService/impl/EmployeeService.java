@@ -58,14 +58,16 @@ public class EmployeeService implements IEmployeeService {
 	}
     public EmployeeResponse getMyInfo(){
         var context= SecurityContextHolder.getContext();
-        String employeeCode= context.getAuthentication().getName();
-        Employee employee=employeeRepository.findByEmployeeCode(employeeCode).orElseThrow(()-> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        String employeeId= context.getAuthentication().getName();
+        Employee employee=employeeRepository.findById(Long.parseLong(employeeId))
+		        .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
         return employeeMapper.toEmployeeResponse(employee);
     }
     public EmployeeResponse updateUser(EmployeeUpdateRequest request){
         var context= SecurityContextHolder.getContext();
-        String employeeCode= context.getAuthentication().getName();
-        Employee employee= employeeRepository.findByEmployeeCode(employeeCode).orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
+        String employeeId= context.getAuthentication().getName();
+        Employee employee= employeeRepository.findById(Long.parseLong(employeeId))
+                .orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
         if(request.getEmail()!=null) employee.setEmail(request.getEmail());
         if(request.getPhone()!=null) employee.setPhone(request.getPhone());
         if(request.getAddress()!=null) employee.setAddress(request.getAddress());

@@ -1,0 +1,25 @@
+package com.csc12005.hr.Entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "wfh_requests")
+@PrimaryKeyJoinColumn(name = "wfh_id")
+public class WFHRequest extends Request{
+	private LocalDateTime startDate;
+	private LocalDateTime endDate;
+}
