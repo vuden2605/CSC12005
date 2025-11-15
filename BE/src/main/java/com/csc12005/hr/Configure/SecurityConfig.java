@@ -21,17 +21,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 	private final CustomJwtDecoder customJwtDecoder;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-	private String[] publicEndpoints = {
-			"/v3/api-docs/**",
-			"/swagger-ui/**",
-			"/swagger-ui.html"
-	};
-
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity.authorizeHttpRequests(request -> request
 				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+				.requestMatchers(HttpMethod.POST,"/timesheet-requests").permitAll()
                 .anyRequest().authenticated()
 		);
 		httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
