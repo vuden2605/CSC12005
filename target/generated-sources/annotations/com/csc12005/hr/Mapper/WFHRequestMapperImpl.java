@@ -1,14 +1,14 @@
 package com.csc12005.hr.Mapper;
 
-import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
+import com.csc12005.hr.DTO.Request.WFHCreationRequest;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
-import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
+import com.csc12005.hr.DTO.Response.WFHResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
-import com.csc12005.hr.Entity.TimeSheetRequest;
+import com.csc12005.hr.Entity.WFHRequest;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -18,46 +18,46 @@ import org.springframework.stereotype.Component;
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
-public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
+public class WFHRequestMapperImpl implements WFHRequestMapper {
 
     @Override
-    public TimeSheetRequest toTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
-        if ( timeSheetRequestCreationRequest == null ) {
+    public WFHRequest toWFHRequest(WFHCreationRequest wfhCreationRequest) {
+        if ( wfhCreationRequest == null ) {
             return null;
         }
 
-        TimeSheetRequest.TimeSheetRequestBuilder<?, ?> timeSheetRequest = TimeSheetRequest.builder();
+        WFHRequest.WFHRequestBuilder<?, ?> wFHRequest = WFHRequest.builder();
 
-        timeSheetRequest.requestAttachment( timeSheetRequestCreationRequest.getRequestAttachment() );
-        timeSheetRequest.reason( timeSheetRequestCreationRequest.getReason() );
-        timeSheetRequest.checkInNew( timeSheetRequestCreationRequest.getCheckInNew() );
-        timeSheetRequest.checkOutNew( timeSheetRequestCreationRequest.getCheckOutNew() );
+        wFHRequest.requestAttachment( wfhCreationRequest.getRequestAttachment() );
+        wFHRequest.reason( wfhCreationRequest.getReason() );
+        wFHRequest.startDate( wfhCreationRequest.getStartDate() );
+        wFHRequest.endDate( wfhCreationRequest.getEndDate() );
 
-        return timeSheetRequest.build();
+        return wFHRequest.build();
     }
 
     @Override
-    public TimeSheetRequestResponse toTimeSheetRequestResponse(TimeSheetRequest timeSheetRequest) {
-        if ( timeSheetRequest == null ) {
+    public WFHResponse toWFHResponse(WFHRequest wfhRequest) {
+        if ( wfhRequest == null ) {
             return null;
         }
 
-        TimeSheetRequestResponse.TimeSheetRequestResponseBuilder<?, ?> timeSheetRequestResponse = TimeSheetRequestResponse.builder();
+        WFHResponse.WFHResponseBuilder<?, ?> wFHResponse = WFHResponse.builder();
 
-        timeSheetRequestResponse.requestId( timeSheetRequest.getRequestId() );
-        if ( timeSheetRequest.getRequestType() != null ) {
-            timeSheetRequestResponse.requestType( timeSheetRequest.getRequestType().name() );
+        wFHResponse.requestId( wfhRequest.getRequestId() );
+        if ( wfhRequest.getRequestType() != null ) {
+            wFHResponse.requestType( wfhRequest.getRequestType().name() );
         }
-        timeSheetRequestResponse.status( timeSheetRequest.getStatus() );
-        timeSheetRequestResponse.requestAttachment( timeSheetRequest.getRequestAttachment() );
-        timeSheetRequestResponse.reason( timeSheetRequest.getReason() );
-        timeSheetRequestResponse.createdAt( timeSheetRequest.getCreatedAt() );
-        timeSheetRequestResponse.updatedAt( timeSheetRequest.getUpdatedAt() );
-        timeSheetRequestResponse.employee( employeeToEmployeeResponse( timeSheetRequest.getEmployee() ) );
-        timeSheetRequestResponse.checkInNew( timeSheetRequest.getCheckInNew() );
-        timeSheetRequestResponse.checkOutNew( timeSheetRequest.getCheckOutNew() );
+        wFHResponse.status( wfhRequest.getStatus() );
+        wFHResponse.requestAttachment( wfhRequest.getRequestAttachment() );
+        wFHResponse.reason( wfhRequest.getReason() );
+        wFHResponse.createdAt( wfhRequest.getCreatedAt() );
+        wFHResponse.updatedAt( wfhRequest.getUpdatedAt() );
+        wFHResponse.employee( employeeToEmployeeResponse( wfhRequest.getEmployee() ) );
+        wFHResponse.startDate( wfhRequest.getStartDate() );
+        wFHResponse.endDate( wfhRequest.getEndDate() );
 
-        return timeSheetRequestResponse.build();
+        return wFHResponse.build();
     }
 
     protected DepartmentResponse departmentToDepartmentResponse(Department department) {

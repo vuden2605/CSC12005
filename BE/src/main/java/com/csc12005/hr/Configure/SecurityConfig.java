@@ -26,7 +26,6 @@ public class SecurityConfig {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity.authorizeHttpRequests(request -> request
 				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-				.requestMatchers(HttpMethod.POST,"/timesheet-requests").permitAll()
                 .anyRequest().authenticated()
 		);
 		httpSecurity.oauth2ResourceServer(oauth2 -> oauth2

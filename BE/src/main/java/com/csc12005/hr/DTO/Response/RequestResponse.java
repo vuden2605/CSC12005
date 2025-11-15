@@ -24,4 +24,5 @@ public class RequestResponse {
 	private String reason;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+	private EmployeeResponse employee;
 }
