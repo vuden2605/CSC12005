@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 	private final EmployeeService employeeService;
 	@PostMapping
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")
 	public ApiResponse<EmployeeResponse> createEmployee(@RequestBody @Valid EmployeeCreationRequest employeeCreationRequest) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		log.info("User '{}' is creating a new employee", authentication.getName());
