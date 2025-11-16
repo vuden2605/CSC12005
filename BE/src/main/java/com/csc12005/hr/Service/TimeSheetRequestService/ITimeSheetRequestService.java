@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ITimeSheetRequestService {
-	TimeSheetRequestResponse createTimesheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest);
+	TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest);
 }

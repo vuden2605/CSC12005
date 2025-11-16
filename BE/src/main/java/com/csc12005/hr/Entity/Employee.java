@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.EmployeeRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,8 +9,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,6 +45,6 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "manager_id")
 	private Employee manager;
-	private String role;
-//    private Long allocatePoints;
+	private EmployeeRole role;
+	private String avatarUrl;
 }

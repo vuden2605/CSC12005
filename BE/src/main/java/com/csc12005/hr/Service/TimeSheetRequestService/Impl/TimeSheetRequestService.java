@@ -14,6 +14,7 @@ import com.csc12005.hr.Mapper.RequestMapper;
 import com.csc12005.hr.Mapper.TimeSheetRequestMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.RequestRepository;
+import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Repository.TimeSheetRequestRepository;
 import com.csc12005.hr.Service.TimeSheetRequestService.ITimeSheetRequestService;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,14 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 	private final TimeSheetRequestMapper timeSheetRequestMapper;
 	private final RequestMapper requestMapper;
 	private final EmployeeRepository employeeRepository;
+	private final TimeSheetRepository timeSheetRepository;
 	@Transactional
-	public TimeSheetRequestResponse createTimesheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
+	public TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
 		TimeSheetRequest timeSheetRequest= timeSheetRequestMapper.toTimeSheetRequest(timeSheetRequestCreationRequest);
+		TimeSheet timeSheet  = timeSheetRepository.findById(timeSheetRequestCreationRequest.getTimeSheetId())
+				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);
+		timeSheetRequest.setTimeSheet(timeSheet);
 		var context = SecurityContextHolder.getContext();
 		long employeeId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = employeeRepository.findById(employeeId)

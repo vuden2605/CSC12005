@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-15T21:57:42+0700",
+    date = "2025-11-16T16:11:58+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -112,6 +112,8 @@ public class WFHRequestMapperImpl implements WFHRequestMapper {
         employeeResponse.hireDate( employee.getHireDate() );
         employeeResponse.department( departmentToDepartmentResponse( employee.getDepartment() ) );
         employeeResponse.position( positionToPositionResponse( employee.getPosition() ) );
+        employeeResponse.avatarUrl( employee.getAvatarUrl() );
+        employeeResponse.role( employee.getRole() );
 
         return employeeResponse.build();
     }

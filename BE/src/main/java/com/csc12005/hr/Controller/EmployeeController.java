@@ -23,8 +23,6 @@ public class EmployeeController {
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")
 	public ApiResponse<EmployeeResponse> createEmployee(@RequestBody @Valid EmployeeCreationRequest employeeCreationRequest) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		log.info("User '{}' is creating a new employee", authentication.getName());
 		return ApiResponse.<EmployeeResponse>builder()
 				.message("Employee created successfully")
 				.data(employeeService.createEmployee(employeeCreationRequest))

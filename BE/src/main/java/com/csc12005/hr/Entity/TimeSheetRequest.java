@@ -5,16 +5,19 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "timesheet_requests")
 @PrimaryKeyJoinColumn(name = "request_id")
 public class TimeSheetRequest extends Request {
-	private LocalDateTime checkInNew;
-	private LocalDateTime checkOutNew;
+	private LocalTime checkInNew;
+	private LocalTime checkOutNew;
+	@OneToOne
+	@JoinColumn(name = "timesheet_id")
+	private TimeSheet timeSheet;
 }
