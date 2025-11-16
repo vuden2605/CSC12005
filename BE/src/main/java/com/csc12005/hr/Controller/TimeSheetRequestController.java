@@ -1,6 +1,7 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
+import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
 import com.csc12005.hr.Entity.TimeSheetRequest;
 import com.csc12005.hr.Service.TimeSheetRequestService.Impl.TimeSheetRequestService;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class TimeSheetRequestController {
 	private final TimeSheetRequestService timeSheetRequestService;
 	@PostMapping("/timesheet-requests")
-	public TimeSheetRequestResponse createTimesheetRequest(@RequestBody TimeSheetRequestCreationRequest timeSheetRequest) {
-		return timeSheetRequestService.createTimesheetRequest(timeSheetRequest);
+	public ApiResponse<TimeSheetRequestResponse> createTimesheetRequest(@RequestBody TimeSheetRequestCreationRequest timeSheetRequest) {
+		return ApiResponse.<TimeSheetRequestResponse>builder()
+				.message("Time sheet request created successfully")
+				.data(timeSheetRequestService.createTimeSheetRequest(timeSheetRequest))
+				.build();
 	}
 }

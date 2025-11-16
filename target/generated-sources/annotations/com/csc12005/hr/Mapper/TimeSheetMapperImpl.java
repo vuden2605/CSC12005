@@ -1,63 +1,56 @@
 package com.csc12005.hr.Mapper;
 
-import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
+import com.csc12005.hr.DTO.Request.TimeSheetCreationRequest;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
-import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
+import com.csc12005.hr.DTO.Response.TimeSheetResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
-import com.csc12005.hr.Entity.TimeSheetRequest;
+import com.csc12005.hr.Entity.TimeSheet;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-16T16:11:58+0700",
+    date = "2025-11-16T16:40:27+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
-public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
+public class TimeSheetMapperImpl implements TimeSheetMapper {
 
     @Override
-    public TimeSheetRequest toTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
+    public TimeSheet toTimeSheet(TimeSheetCreationRequest timeSheetRequestCreationRequest) {
         if ( timeSheetRequestCreationRequest == null ) {
             return null;
         }
 
-        TimeSheetRequest.TimeSheetRequestBuilder<?, ?> timeSheetRequest = TimeSheetRequest.builder();
+        TimeSheet.TimeSheetBuilder timeSheet = TimeSheet.builder();
 
-        timeSheetRequest.requestAttachment( timeSheetRequestCreationRequest.getRequestAttachment() );
-        timeSheetRequest.reason( timeSheetRequestCreationRequest.getReason() );
-        timeSheetRequest.checkInNew( timeSheetRequestCreationRequest.getCheckInNew() );
-        timeSheetRequest.checkOutNew( timeSheetRequestCreationRequest.getCheckOutNew() );
+        timeSheet.workDate( timeSheetRequestCreationRequest.getWorkDate() );
+        timeSheet.checkIn( timeSheetRequestCreationRequest.getCheckIn() );
+        timeSheet.checkOut( timeSheetRequestCreationRequest.getCheckOut() );
 
-        return timeSheetRequest.build();
+        return timeSheet.build();
     }
 
     @Override
-    public TimeSheetRequestResponse toTimeSheetRequestResponse(TimeSheetRequest timeSheetRequest) {
-        if ( timeSheetRequest == null ) {
+    public TimeSheetResponse toTimeSheetResponse(TimeSheet timeSheet) {
+        if ( timeSheet == null ) {
             return null;
         }
 
-        TimeSheetRequestResponse.TimeSheetRequestResponseBuilder<?, ?> timeSheetRequestResponse = TimeSheetRequestResponse.builder();
+        TimeSheetResponse.TimeSheetResponseBuilder<?, ?> timeSheetResponse = TimeSheetResponse.builder();
 
-        timeSheetRequestResponse.requestId( timeSheetRequest.getRequestId() );
-        if ( timeSheetRequest.getRequestType() != null ) {
-            timeSheetRequestResponse.requestType( timeSheetRequest.getRequestType().name() );
-        }
-        timeSheetRequestResponse.status( timeSheetRequest.getStatus() );
-        timeSheetRequestResponse.requestAttachment( timeSheetRequest.getRequestAttachment() );
-        timeSheetRequestResponse.reason( timeSheetRequest.getReason() );
-        timeSheetRequestResponse.createdAt( timeSheetRequest.getCreatedAt() );
-        timeSheetRequestResponse.updatedAt( timeSheetRequest.getUpdatedAt() );
-        timeSheetRequestResponse.employee( employeeToEmployeeResponse( timeSheetRequest.getEmployee() ) );
-        timeSheetRequestResponse.checkInNew( timeSheetRequest.getCheckInNew() );
-        timeSheetRequestResponse.checkOutNew( timeSheetRequest.getCheckOutNew() );
+        timeSheetResponse.timesheetId( timeSheet.getTimesheetId() );
+        timeSheetResponse.workDate( timeSheet.getWorkDate() );
+        timeSheetResponse.checkIn( timeSheet.getCheckIn() );
+        timeSheetResponse.checkOut( timeSheet.getCheckOut() );
+        timeSheetResponse.status( timeSheet.getStatus() );
+        timeSheetResponse.employee( employeeToEmployeeResponse( timeSheet.getEmployee() ) );
 
-        return timeSheetRequestResponse.build();
+        return timeSheetResponse.build();
     }
 
     protected DepartmentResponse departmentToDepartmentResponse(Department department) {

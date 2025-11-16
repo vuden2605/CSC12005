@@ -1,27 +1,24 @@
-package com.csc12005.hr.Entity;
+package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Enums.TimeSheetStatus;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-
-@Entity
-@Data
-@Table(name = "timesheets")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class TimeSheet {
-	@Id
+@SuperBuilder
+public class TimeSheetResponse {
 	private Long timesheetId;
 	private LocalDate workDate;
 	private LocalTime checkIn;
 	private LocalTime checkOut;
 	private TimeSheetStatus status;
-	@ManyToOne
-	@JoinColumn(name = "employee_id")
-	private Employee employee;
+	private EmployeeResponse employee;
 }

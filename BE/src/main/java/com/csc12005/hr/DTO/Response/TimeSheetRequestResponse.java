@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -14,6 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class TimeSheetRequestResponse extends RequestResponse{;
-	private LocalDateTime checkInNew;
-	private LocalDateTime checkOutNew;
+	private LocalTime checkInNew;
+	private LocalTime checkOutNew;
 }

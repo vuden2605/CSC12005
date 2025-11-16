@@ -54,7 +54,16 @@ public class EmployeeService implements IEmployeeService {
 		employee.setPosition(position);
 		employee.setEmployeeCode(employeeCode);
 		employee.setPassword(passwordEncoder.encode(employeeCode));
-		return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+		// Set manager info
+		EmployeeResponse employeeResponse =  employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+		if(department.getManager()!=null){
+			Employee manager= department.getManager();
+			employee.setManager(manager);
+			employeeResponse.setManagerName(manager.getFullName());
+			employeeResponse.setManagerId(manager.getEmployeeId());
+			employeeResponse.setManagerCode(manager.getEmployeeCode());
+		}
+		return employeeResponse;
 	}
     public EmployeeResponse getMyInfo(){
         var context= SecurityContextHolder.getContext();

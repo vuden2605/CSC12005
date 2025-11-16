@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,4 +19,7 @@ public class Position {
 	private Long salaryRangeMax;
 	private Long baseWorkTimes;
 	private Long point;
+	@ManyToOne
+	@JoinColumn(name = "department_id")
+	private Department department;
 }
