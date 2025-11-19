@@ -43,7 +43,6 @@ public class TimeSheetService implements ITimeSheetService {
 	private static final int COL_WORK_DATE = 1;
 	private static final int COL_CHECK_IN = 2;
 	private static final int COL_CHECK_OUT = 3;
-	private static final int COL_STATUS = 4;
 
 	@Transactional
 	public ImportResult importTimeSheetExcel(TimeSheetCreationRequest timeSheetCreationRequest) {
@@ -80,8 +79,8 @@ public class TimeSheetService implements ITimeSheetService {
 		LocalDate workDate = parseLocalDate(row.getCell(COL_WORK_DATE));
 		LocalTime checkIn = parseLocalTime(row.getCell(COL_CHECK_IN));
 		LocalTime checkOut = parseLocalTime(row.getCell(COL_CHECK_OUT));
-		TimeSheetStatus status = parseStatus(row.getCell(COL_STATUS));
 		validateCheckInCheckOut(checkIn, checkOut);
+		TimeSheetStatus status = determineTimeSheetStatus(checkIn, checkOut);
 		return TimeSheet.builder()
 				.employee(employee)
 				.workDate(workDate)
@@ -181,5 +180,24 @@ public class TimeSheetService implements ITimeSheetService {
 				.importErrors(errors)
 				.isSuccess(errors.isEmpty())
 				.build();
+	}
+	private TimeSheetStatus determineTimeSheetStatus(LocalTime checkIn, LocalTime checkOut) {
+		if (checkIn == null || checkOut == null) {
+			return TimeSheetStatus.ABSENT;
+		}
+		if(checkIn.isAfter(LocalTime.parse("08:15:00"))) {
+			return TimeSheetStatus.LATE;
+		}
+		Duration workDuration = Duration.between(checkIn, checkOut);
+		if (workDuration.toHours() >= 8) {
+			return TimeSheetStatus.PRESENT;
+		} else if (workDuration.toHours() >= 4) {
+			return TimeSheetStatus.HALF_DAY;
+		}
+		return TimeSheetStatus.ABSENT;
+	}
+	public List<TimeSheetResponse> getAllTimeSheets() {
+		List<TimeSheet> timeSheets = timeSheetRepository.findAll();
+		return timeSheets.stream().map(timeSheetMapper::toTimeSheetResponse).toList();
 	}
 }
