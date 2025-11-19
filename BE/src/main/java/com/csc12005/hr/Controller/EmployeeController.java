@@ -1,6 +1,7 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
+import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
@@ -41,5 +42,11 @@ public class EmployeeController {
                 .data(employeeService.updateUser(request))
                 .build();
     }
-
+    @PatchMapping("/{id}")
+    public ApiResponse<EmployeeResponse> hrUpdateEmployee(@RequestBody @Valid EmployeeHRUpdateRequest request,@PathVariable Long id){
+        return ApiResponse.<EmployeeResponse> builder()
+                .message("HR update employee success")
+                .data(employeeService.hrUpdateEmployee(request,id))
+                .build();
+    }
 }
