@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +18,6 @@ import java.time.LocalDateTime;
 @Table(name = "wfh_requests")
 @PrimaryKeyJoinColumn(name = "wfh_id")
 public class WFHRequest extends Request{
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 }

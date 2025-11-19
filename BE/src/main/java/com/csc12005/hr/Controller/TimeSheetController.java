@@ -10,13 +10,11 @@ import com.csc12005.hr.Service.TimeSheetService.Impl.TimeSheetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,4 +28,13 @@ public class TimeSheetController {
 				.data(timeSheetService.importTimeSheetExcel(request))
 				.build();
 	}
+	@GetMapping("/timesheets")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ApiResponse<List<TimeSheetResponse>> getAllTimeSheets() {
+		return ApiResponse.<List<TimeSheetResponse>>builder()
+				.message("Time sheets retrieved successfully")
+				.data(timeSheetService.getAllTimeSheets())
+				.build();
+	}
+
 }
