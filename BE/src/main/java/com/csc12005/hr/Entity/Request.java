@@ -21,8 +21,10 @@ public class Request {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long requestId;
+	@Enumerated(EnumType.STRING)
 	private RequestType requestType;
 	@Builder.Default
+	@Enumerated(EnumType.STRING)
 	private RequestStatus status = RequestStatus.PENDING;
 	private String requestAttachment;
 	private String reason;

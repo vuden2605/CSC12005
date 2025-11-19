@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 	//Success
 	SUCCESS(9999, "Success", HttpStatus.OK),
+	INTERNAL_SERVER_ERROR(500, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
 	//Employee
 	EMPLOYEE_NOT_FOUND(1001, "Employee not found", HttpStatus.NOT_FOUND),
 	EMAIL_ALREADY_EXISTS(1002, "Email already exists", HttpStatus.BAD_REQUEST),
@@ -30,6 +31,7 @@ public enum ErrorCode {
 	REQUIRED_CHECK_IN_NEW(4010, "New check-in time is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_CHECK_OUT_NEW(4011, "New check-out time is required", HttpStatus.BAD_REQUEST),
 	CHECK_IN_MUST_BE_BEFORE_CHECK_OUT(4012, "Check-in time must be before check-out time", HttpStatus.BAD_REQUEST),
+	REQUIRED_WORK_DATE(4014, "Work date is required", HttpStatus.BAD_REQUEST),
 
     //Authentication
 	AUTHENTICATION_FAILED(5001, "Authentication failed", HttpStatus.UNAUTHORIZED),
@@ -38,8 +40,15 @@ public enum ErrorCode {
 	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 	FORBIDDEN(5005, "Unauthorized", HttpStatus.FORBIDDEN),
 	//Timesheet
-	TIMESHEET_NOT_FOUND(4013, "Timesheet not found", HttpStatus.NOT_FOUND);
+	TIMESHEET_NOT_FOUND(4001, "Timesheet not found", HttpStatus.NOT_FOUND),
+	CHECK_TIME_REQUIRED(4002,"Check-in and check-out time are required", HttpStatus.BAD_REQUEST),
+	WORK_DURATION_TOO_LONG(4003,"Work duration cannot exceed 24 hours", HttpStatus.BAD_REQUEST),
+	//Timesheet request
+	TIMESHEET_REQUEST_NOT_FOUND(6001, "Timesheet request not found", HttpStatus.NOT_FOUND),
 
+	//Import
+	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
+	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;
 	private final HttpStatus httpStatus;

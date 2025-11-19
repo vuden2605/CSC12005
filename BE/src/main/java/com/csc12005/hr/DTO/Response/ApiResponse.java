@@ -4,8 +4,7 @@ import com.csc12005.hr.Exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

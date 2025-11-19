@@ -17,4 +17,5 @@ import java.time.LocalTime;
 public class TimeSheetRequestResponse extends RequestResponse{;
 	private LocalTime checkInNew;
 	private LocalTime checkOutNew;
+	private LocalDate workDate;
 }
