@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.EmployeeService.impl;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
+import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.Entity.Department;
@@ -80,6 +81,13 @@ public class EmployeeService implements IEmployeeService {
         if(request.getEmail()!=null) employee.setEmail(request.getEmail());
         if(request.getPhone()!=null) employee.setPhone(request.getPhone());
         if(request.getAddress()!=null) employee.setAddress(request.getAddress());
+        employee=employeeRepository.save(employee);
+        return employeeMapper.toEmployeeResponse(employee);
+    }
+    public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id){
+        Employee employee= employeeRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        employeeMapper.updateEmployeeFromDto(request,employee);
         employee=employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponse(employee);
     }
