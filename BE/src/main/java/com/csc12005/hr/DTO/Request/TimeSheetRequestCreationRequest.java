@@ -16,8 +16,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimeSheetRequestCreationRequest {
-	@NotNull(message = "REQUIRED_TIMESHEET_ID")
-	private Long timeSheetId;
 	@NotBlank(message = "REQUIRED_REQUEST_ATTACHMENT")
 	private String requestAttachment;
 	@NotBlank(message = "REQUIRED_REASON")
@@ -28,6 +26,9 @@ public class TimeSheetRequestCreationRequest {
 	@JsonFormat(pattern = "HH:mm:ss")
 	@NotNull(message = "REQUIRED_CHECK_OUT_NEW")
 	private LocalTime checkOutNew;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@NotNull(message = "REQUIRED_WORK_DATE")
+	private LocalDate workDate;
 	@AssertTrue(message = "CHECK_IN_MUST_BE_BEFORE_CHECK_OUT")
 	private boolean isCheckInBeforeCheckout() {
 		if (checkInNew == null || checkOutNew == null) {

@@ -6,6 +6,7 @@ import com.csc12005.hr.Entity.Position;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -24,7 +25,7 @@ public class EmployeeCreationRequest {
 	private String phone;
 	@NotBlank(message = "REQUIRED_ADDRESS")
 	private String address;
-	@NotBlank(message = "REQUIRED_BIRTH_DATE")
+	@NotNull(message = "REQUIRED_BIRTH_DATE")
 	private LocalDate birthDate;
 	@NotBlank(message = "REQUIRED_NATIONAL_CODE")
 	private String nationalCode;
@@ -34,11 +35,11 @@ public class EmployeeCreationRequest {
 	private String bankName;
 	@NotBlank(message = "REQUIRED_BANK_ACCOUNT")
 	private String bankAccount;
-	@NotBlank(message = "REQUIRED_BASE_SALARY")
+	@NotNull(message = "REQUIRED_BASE_SALARY")
 	private Long baseSalary;
-	@NotBlank(message = "REQUIRED_DEPARTMENT_ID")
+	@NotNull(message = "REQUIRED_DEPARTMENT_ID")
 	private Long departmentId;
-	@NotBlank(message = "REQUIRED_POSITION_ID")
+	@NotNull(message = "REQUIRED_POSITION_ID")
 	private Long positionId;
 	private String avatarUrl;
 }

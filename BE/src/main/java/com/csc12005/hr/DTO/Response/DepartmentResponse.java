@@ -2,8 +2,7 @@ package com.csc12005.hr.DTO.Response;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

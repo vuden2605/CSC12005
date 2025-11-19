@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -17,7 +18,5 @@ import java.time.LocalTime;
 public class TimeSheetRequest extends Request {
 	private LocalTime checkInNew;
 	private LocalTime checkOutNew;
-	@OneToOne
-	@JoinColumn(name = "timesheet_id")
-	private TimeSheet timeSheet;
+	private LocalDate workDate;
 }
