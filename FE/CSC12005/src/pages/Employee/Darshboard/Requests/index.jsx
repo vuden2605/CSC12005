@@ -117,6 +117,13 @@ export const Requests = () => {
     .reduce((sum, item) => sum + item.duration, 0);
   const unpaidDays = totalDays - paidDays;
 
+  const handleStatusChange = (statusKey) => {
+    setStatusFilter(prev => ({
+      ...prev,
+      [statusKey]: !prev[statusKey]
+    }));
+  };
+
   // --- Chọn modal ---
   const openRequestModal = (type) => {
     setSelectedRequestType(type);
@@ -127,8 +134,84 @@ export const Requests = () => {
 
   return (
     <div className="leave-management">
-      {/* Các filter ở trên giữ nguyên */}
-      {/* ... */}
+      <div className="header-section">
+        <div className="filter-group">
+          <label>Loại yêu cầu</label>
+          <select
+            className="select-input"
+            value={leaveType}
+            onChange={(e) => setLeaveType(e.target.value)}
+          >
+            <option value="Tất cả">Tất cả</option>
+            <option value="Nghỉ phép">Nghỉ phép</option>
+            <option value="Làm việc tại nhà">Làm việc tại nhà</option>
+            <option value="Chấm công">Chấm công</option>
+          </select>
+        </div>
+
+        <div className="date-filter">
+          <label>Khoảng thời gian</label>
+          <div className="date-inputs">
+            <input
+              type="date"
+              className="date-input"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <span>-</span>
+            <input
+              type="date"
+              className="date-input"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="status-filter">
+          <label>Trạng thái</label>
+          <div className="checkbox-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={statusFilter.pending}
+                onChange={() => handleStatusChange('pending')}
+              />
+              Chờ duyệt
+            </label>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={statusFilter.approved}
+                onChange={() => handleStatusChange('approved')}
+              />
+              Đã duyệt
+            </label>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={statusFilter.rejected}
+                onChange={() => handleStatusChange('rejected')}
+              />
+              Từ chối
+            </label>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="summary-item">
+            Tổng số ngày yêu cầu: <strong>{totalDays}</strong>
+          </div>
+          <div className="summary-item">
+            Nghỉ có lương: <strong>{paidDays}</strong>
+          </div>
+          <div className="summary-item">
+            Nghỉ không lương: <strong>{unpaidDays}</strong>
+          </div>
+        </div>
+      </div>
+
+
 
       {/* Table */}
       <div className="table-section">
