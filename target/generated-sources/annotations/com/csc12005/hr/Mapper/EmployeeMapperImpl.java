@@ -1,6 +1,7 @@
 package com.csc12005.hr.Mapper;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
+import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-25T21:36:16+0700",
+    date = "2025-11-20T20:16:05+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -29,13 +30,14 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         employee.fullName( employeeCreationRequest.getFullName() );
         employee.email( employeeCreationRequest.getEmail() );
         employee.phone( employeeCreationRequest.getPhone() );
-        employee.address( employeeCreationRequest.getAddress() );
         employee.birthDate( employeeCreationRequest.getBirthDate() );
         employee.nationalCode( employeeCreationRequest.getNationalCode() );
         employee.taxCode( employeeCreationRequest.getTaxCode() );
         employee.bankName( employeeCreationRequest.getBankName() );
-        employee.bankAccount( employeeCreationRequest.getBankAccount() );
         employee.baseSalary( employeeCreationRequest.getBaseSalary() );
+        employee.bankAccount( employeeCreationRequest.getBankAccount() );
+        employee.address( employeeCreationRequest.getAddress() );
+        employee.avatarUrl( employeeCreationRequest.getAvatarUrl() );
 
         return employee.build();
     }
@@ -63,8 +65,45 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         employeeResponse.hireDate( employee.getHireDate() );
         employeeResponse.department( departmentToDepartmentResponse( employee.getDepartment() ) );
         employeeResponse.position( positionToPositionResponse( employee.getPosition() ) );
+        employeeResponse.avatarUrl( employee.getAvatarUrl() );
+        employeeResponse.role( employee.getRole() );
 
         return employeeResponse.build();
+    }
+
+    @Override
+    public void updateEmployeeFromDto(EmployeeHRUpdateRequest dto, Employee employee) {
+        if ( dto == null ) {
+            return;
+        }
+
+        if ( dto.getFullName() != null ) {
+            employee.setFullName( dto.getFullName() );
+        }
+        if ( dto.getEmail() != null ) {
+            employee.setEmail( dto.getEmail() );
+        }
+        if ( dto.getPhone() != null ) {
+            employee.setPhone( dto.getPhone() );
+        }
+        if ( dto.getBirthDate() != null ) {
+            employee.setBirthDate( dto.getBirthDate() );
+        }
+        if ( dto.getNationalCode() != null ) {
+            employee.setNationalCode( dto.getNationalCode() );
+        }
+        if ( dto.getTaxCode() != null ) {
+            employee.setTaxCode( dto.getTaxCode() );
+        }
+        if ( dto.getBankName() != null ) {
+            employee.setBankName( dto.getBankName() );
+        }
+        if ( dto.getBaseSalary() != null ) {
+            employee.setBaseSalary( dto.getBaseSalary() );
+        }
+        if ( dto.getBankAccount() != null ) {
+            employee.setBankAccount( dto.getBankAccount() );
+        }
     }
 
     protected DepartmentResponse departmentToDepartmentResponse(Department department) {

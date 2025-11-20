@@ -11,6 +11,14 @@ import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler  {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception e) {
+		ApiResponse<?> response = ApiResponse.builder()
+				.code(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
+				.message(e.getMessage())
+				.build();
+		return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getCode()).body(response);
+	}
 	@ExceptionHandler(AppException.class)
 	public ResponseEntity<ApiResponse<?>> handleAppException(AppException e) {
 		ErrorCode errorCode = e.getErrorCode();

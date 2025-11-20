@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.EmployeeService.impl;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
+import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.Entity.Department;
@@ -54,21 +55,39 @@ public class EmployeeService implements IEmployeeService {
 		employee.setPosition(position);
 		employee.setEmployeeCode(employeeCode);
 		employee.setPassword(passwordEncoder.encode(employeeCode));
-		return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+		// Set manager info
+		EmployeeResponse employeeResponse =  employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+		if(department.getManager()!=null){
+			Employee manager= department.getManager();
+			employee.setManager(manager);
+			employeeResponse.setManagerName(manager.getFullName());
+			employeeResponse.setManagerId(manager.getEmployeeId());
+			employeeResponse.setManagerCode(manager.getEmployeeCode());
+		}
+		return employeeResponse;
 	}
     public EmployeeResponse getMyInfo(){
         var context= SecurityContextHolder.getContext();
-        String emloyeeCode= context.getAuthentication().getName();
-        Employee employee=employeeRepository.findByEmployeeCode(emloyeeCode).orElseThrow(()-> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        String employeeId= context.getAuthentication().getName();
+        Employee employee=employeeRepository.findById(Long.parseLong(employeeId))
+		        .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
         return employeeMapper.toEmployeeResponse(employee);
     }
     public EmployeeResponse updateUser(EmployeeUpdateRequest request){
         var context= SecurityContextHolder.getContext();
-        String employeeCode= context.getAuthentication().getName();
-        Employee employee= employeeRepository.findByEmployeeCode(employeeCode).orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
+        String employeeId= context.getAuthentication().getName();
+        Employee employee= employeeRepository.findById(Long.parseLong(employeeId))
+                .orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
         if(request.getEmail()!=null) employee.setEmail(request.getEmail());
         if(request.getPhone()!=null) employee.setPhone(request.getPhone());
         if(request.getAddress()!=null) employee.setAddress(request.getAddress());
+        employee=employeeRepository.save(employee);
+        return employeeMapper.toEmployeeResponse(employee);
+    }
+    public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id){
+        Employee employee= employeeRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        employeeMapper.updateEmployeeFromDto(request,employee);
         employee=employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponse(employee);
     }

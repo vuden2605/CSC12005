@@ -1,12 +1,13 @@
 package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Enums.EmployeeRole;
 import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,4 +28,8 @@ public class EmployeeResponse {
 	private DepartmentResponse department;
 	private PositionResponse position;
 	private String managerName;
+	private String managerCode;
+	private Long managerId;
+	private String avatarUrl;
+	private EmployeeRole role;
 }
