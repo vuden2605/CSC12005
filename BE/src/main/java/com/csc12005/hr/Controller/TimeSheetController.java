@@ -9,6 +9,7 @@ import com.csc12005.hr.Entity.TimeSheet;
 import com.csc12005.hr.Service.TimeSheetService.Impl.TimeSheetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TimeSheetController {
 	private final TimeSheetService timeSheetService;
-	@PostMapping("/timesheets/import" )
+	@PostMapping(
+			value = "/timesheets/import",
+			consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@PreAuthorize("hasRole('ADMIN')")
 	public ApiResponse<ImportResult> importTimeSheet(@ModelAttribute TimeSheetCreationRequest request) throws IOException {
 		return ApiResponse.<ImportResult>builder()

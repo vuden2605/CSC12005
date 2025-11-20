@@ -32,6 +32,12 @@ public class SecurityConfig {
 		httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		httpSecurity.authorizeHttpRequests(request -> request
 				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+				.requestMatchers(
+						"/v3/api-docs/**",
+						"/swagger-ui/**",
+						"/swagger-ui.html",
+						"/v3/api-docs.yaml"
+				).permitAll()
                 .anyRequest().authenticated()
 		);
 		httpSecurity.oauth2ResourceServer(oauth2 -> oauth2

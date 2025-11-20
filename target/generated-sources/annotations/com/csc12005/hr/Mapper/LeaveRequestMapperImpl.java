@@ -1,14 +1,15 @@
 package com.csc12005.hr.Mapper;
 
-import com.csc12005.hr.DTO.Request.TimeSheetCreationRequest;
+import com.csc12005.hr.DTO.Request.LeaveRequestCreationRequest;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
+import com.csc12005.hr.DTO.Response.LeaveRequestResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
-import com.csc12005.hr.DTO.Response.TimeSheetResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Entity.LeaveRequest;
 import com.csc12005.hr.Entity.Position;
-import com.csc12005.hr.Entity.TimeSheet;
+import java.time.format.DateTimeFormatter;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -18,35 +19,48 @@ import org.springframework.stereotype.Component;
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
-public class TimeSheetMapperImpl implements TimeSheetMapper {
+public class LeaveRequestMapperImpl implements LeaveRequestMapper {
 
     @Override
-    public TimeSheet toTimeSheet(TimeSheetCreationRequest timeSheetRequestCreationRequest) {
-        if ( timeSheetRequestCreationRequest == null ) {
+    public LeaveRequest toLeaveRequest(LeaveRequestCreationRequest request) {
+        if ( request == null ) {
             return null;
         }
 
-        TimeSheet.TimeSheetBuilder timeSheet = TimeSheet.builder();
+        LeaveRequest.LeaveRequestBuilder<?, ?> leaveRequest = LeaveRequest.builder();
 
-        return timeSheet.build();
+        leaveRequest.startDate( request.getStartDate() );
+        leaveRequest.endDate( request.getEndDate() );
+
+        return leaveRequest.build();
     }
 
     @Override
-    public TimeSheetResponse toTimeSheetResponse(TimeSheet timeSheet) {
-        if ( timeSheet == null ) {
+    public LeaveRequestResponse toLeaveRequestResponse(LeaveRequest leaveRequest) {
+        if ( leaveRequest == null ) {
             return null;
         }
 
-        TimeSheetResponse.TimeSheetResponseBuilder<?, ?> timeSheetResponse = TimeSheetResponse.builder();
+        LeaveRequestResponse.LeaveRequestResponseBuilder<?, ?> leaveRequestResponse = LeaveRequestResponse.builder();
 
-        timeSheetResponse.timesheetId( timeSheet.getTimesheetId() );
-        timeSheetResponse.workDate( timeSheet.getWorkDate() );
-        timeSheetResponse.checkIn( timeSheet.getCheckIn() );
-        timeSheetResponse.checkOut( timeSheet.getCheckOut() );
-        timeSheetResponse.status( timeSheet.getStatus() );
-        timeSheetResponse.employee( employeeToEmployeeResponse( timeSheet.getEmployee() ) );
+        leaveRequestResponse.requestId( leaveRequest.getRequestId() );
+        if ( leaveRequest.getRequestType() != null ) {
+            leaveRequestResponse.requestType( leaveRequest.getRequestType().name() );
+        }
+        leaveRequestResponse.status( leaveRequest.getStatus() );
+        leaveRequestResponse.requestAttachment( leaveRequest.getRequestAttachment() );
+        leaveRequestResponse.reason( leaveRequest.getReason() );
+        leaveRequestResponse.createdAt( leaveRequest.getCreatedAt() );
+        leaveRequestResponse.updatedAt( leaveRequest.getUpdatedAt() );
+        leaveRequestResponse.employee( employeeToEmployeeResponse( leaveRequest.getEmployee() ) );
+        if ( leaveRequest.getStartDate() != null ) {
+            leaveRequestResponse.startDate( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( leaveRequest.getStartDate() ) );
+        }
+        if ( leaveRequest.getEndDate() != null ) {
+            leaveRequestResponse.endDate( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( leaveRequest.getEndDate() ) );
+        }
 
-        return timeSheetResponse.build();
+        return leaveRequestResponse.build();
     }
 
     protected DepartmentResponse departmentToDepartmentResponse(Department department) {

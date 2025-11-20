@@ -1,7 +1,6 @@
 package com.csc12005.hr.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "leave_types")
 public class LeaveType {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long leaveTypeId;
 	private String leaveTypeName;
 	private Long allow_days_per_year;
