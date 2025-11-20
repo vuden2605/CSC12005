@@ -32,6 +32,8 @@ public enum ErrorCode {
 	REQUIRED_CHECK_OUT_NEW(4011, "New check-out time is required", HttpStatus.BAD_REQUEST),
 	CHECK_IN_MUST_BE_BEFORE_CHECK_OUT(4012, "Check-in time must be before check-out time", HttpStatus.BAD_REQUEST),
 	REQUIRED_WORK_DATE(4014, "Work date is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_START_DATE(4015, "Start date is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_END_DATE(4016, "End date is required", HttpStatus.BAD_REQUEST),
 
     //Authentication
 	AUTHENTICATION_FAILED(5001, "Authentication failed", HttpStatus.UNAUTHORIZED),
