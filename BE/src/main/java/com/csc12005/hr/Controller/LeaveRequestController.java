@@ -3,7 +3,6 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.LeaveRequestCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.LeaveRequestResponse;
-import com.csc12005.hr.Entity.LeaveRequest;
 import com.csc12005.hr.Service.LeaveRequestService.Impl.LeaveRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

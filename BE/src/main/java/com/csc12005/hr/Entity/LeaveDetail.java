@@ -1,9 +1,6 @@
 package com.csc12005.hr.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "leave_details")
 public class LeaveDetail {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long leaveDetailId;
 	private Long usedDays;
 	private Long remainingDays;
