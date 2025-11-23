@@ -50,6 +50,10 @@ public enum ErrorCode {
 	TIMESHEET_REQUEST_NOT_FOUND(6001, "Timesheet request not found", HttpStatus.NOT_FOUND),
 	//WFH Request
 	WFH_REQUEST_NOT_FOUND(6002, "WFH request not found", HttpStatus.NOT_FOUND),
+	//Leave Request
+	LEAVE_REQUEST_NOT_FOUND(6003, "Leave request not found", HttpStatus.NOT_FOUND),
+	//Request
+	REQUEST_NOT_FOUND(6004, "Request not found", HttpStatus.NOT_FOUND),
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);
