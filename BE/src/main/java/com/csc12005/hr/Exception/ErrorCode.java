@@ -54,6 +54,10 @@ public enum ErrorCode {
 	LEAVE_REQUEST_NOT_FOUND(6003, "Leave request not found", HttpStatus.NOT_FOUND),
 	//Request
 	REQUEST_NOT_FOUND(6004, "Request not found", HttpStatus.NOT_FOUND),
+	//File Upload
+	FILE_UPLOAD_FAILED(7000,"File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+	GENERATE_URL_FAILED(7003,"Generate file URL failed", HttpStatus.INTERNAL_SERVER_ERROR),
+	FILE_REQUIRED(7004,"File is required", HttpStatus.BAD_REQUEST),
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);
