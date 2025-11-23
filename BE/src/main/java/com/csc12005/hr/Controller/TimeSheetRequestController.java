@@ -1,14 +1,11 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
-import com.csc12005.hr.DTO.Request.UpdateTimeSheetRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
-import com.csc12005.hr.Entity.TimeSheetRequest;
 import com.csc12005.hr.Service.TimeSheetRequestService.Impl.TimeSheetRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

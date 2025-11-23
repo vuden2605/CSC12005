@@ -8,7 +8,10 @@ import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Service.AuthenticationService.IAuthenticationService;
 import com.csc12005.hr.Service.JwtService.impl.JwtService;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,19 @@ public class AuthenticationService implements IAuthenticationService {
 				.refreshToken(refreshToken)
 				.isAuthenticated(true)
 				.build();
-
+	}
+	public AuthenticationResponse refreshAccessToken(String refreshToken) {
+		if (refreshToken == null || refreshToken.isEmpty()) {
+			throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+		}
+		Claims claims = jwtService.verifyToken(refreshToken);
+		Employee employee = employeeRepository.findById(Long.parseLong(claims.getSubject()))
+				.orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+		String newAccessToken = jwtService.generateAccessToken(employee);
+		return AuthenticationResponse.builder()
+				.accessToken(newAccessToken)
+				.refreshToken(refreshToken)
+				.isAuthenticated(true)
+				.build();
 	}
 }

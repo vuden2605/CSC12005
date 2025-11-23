@@ -41,6 +41,7 @@ public enum ErrorCode {
 	INVALID_PASSWORD(5003, "Invalid password", HttpStatus.UNAUTHORIZED),
 	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 	FORBIDDEN(5005, "Unauthorized", HttpStatus.FORBIDDEN),
+	INVALID_REFRESH_TOKEN(5006, "Invalid refresh token", HttpStatus.UNAUTHORIZED),
 	//Timesheet
 	TIMESHEET_NOT_FOUND(4001, "Timesheet not found", HttpStatus.NOT_FOUND),
 	CHECK_TIME_REQUIRED(4002,"Check-in and check-out time are required", HttpStatus.BAD_REQUEST),
