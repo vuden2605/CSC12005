@@ -32,6 +32,8 @@ public class SecurityConfig {
 		httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		httpSecurity.authorizeHttpRequests(request -> request
 				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+				.requestMatchers(HttpMethod.POST,"/s3/**").permitAll()
+				.requestMatchers(HttpMethod.GET,"/s3/**").permitAll()
 				.requestMatchers(
 						"/v3/api-docs/**",
 						"/swagger-ui/**",

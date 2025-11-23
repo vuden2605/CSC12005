@@ -19,14 +19,16 @@ public class TimeSheetRequestController {
 				.data(timeSheetRequestService.createTimeSheetRequest(timeSheetRequest))
 				.build();
 	}
-	@PatchMapping("/timesheet-requests/{id}")
-	public ApiResponse<TimeSheetRequestResponse> updateTimesheetRequest(
-													@RequestBody @Valid UpdateTimeSheetRequest updateTimeSheetRequest,
-													@PathVariable Long id )
-	{
+	public ApiResponse<TimeSheetRequestResponse> approveTimesheetRequest(@PathVariable Long id) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()
-				.message("Update time sheet successfully")
-				.data(timeSheetRequestService.updateTimeSheetRequest(updateTimeSheetRequest,id))
+				.message("Time sheet request approved successfully")
+				.data(timeSheetRequestService.approvedTimeSheetRequest(id))
+				.build();
+	}
+	public ApiResponse<TimeSheetRequestResponse> rejectTimesheetRequest(@PathVariable Long id) {
+		return ApiResponse.<TimeSheetRequestResponse>builder()
+				.message("Time sheet request rejected successfully")
+				.data(timeSheetRequestService.rejectedTimeSheetRequest(id))
 				.build();
 	}
 }

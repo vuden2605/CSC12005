@@ -27,7 +27,7 @@ public class S3Service implements IS3Service {
 	@Value("${aws.region}")
 	private String region;
 
-	@Value("${aws.s3.bucketName}")
+	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
 
 	@Override
