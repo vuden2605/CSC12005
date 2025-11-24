@@ -125,12 +125,14 @@
   justify-content: center;
   z-index: 1000;
 }
-
+.model-content-c{
+  max-width: 970px;
+}
 .modal {
   background: #f5f8ff;
   width: 950px;
   max-height: 95vh;
-  overflow-y: hidden;
+  // overflow-y: hidden;
   border-radius: 12px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   padding: 24px;

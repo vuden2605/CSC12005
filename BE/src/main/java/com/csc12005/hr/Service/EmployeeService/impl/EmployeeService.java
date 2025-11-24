@@ -15,6 +15,8 @@ import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.Manager;
@@ -107,7 +109,7 @@ public class EmployeeService implements IEmployeeService {
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Department department = departmentRepository.findById(departmentId)
 				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
-		Page<Employee> employees = employeeRepository.findByDepartmentId(departmentId, pageable);
+		Page<Employee> employees = employeeRepository.findByDepartment_DepartmentId(departmentId, pageable);
 		return employees.map(employeeMapper::toEmployeeResponse);
 	}
 	public Page<EmployeeResponse> getEmployeesByManager(Long managerId, PageRequestDTO pageRequestDTO) {

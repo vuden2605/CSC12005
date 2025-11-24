@@ -5,7 +5,7 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content-e">
         <h3>Sửa Hồ sơ Nhân viên</h3>
 
         <form className="employee-form">

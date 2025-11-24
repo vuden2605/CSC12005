@@ -54,7 +54,7 @@ public class EmployeeController {
 		return ApiResponse.<Page<EmployeeResponse>>builder()
 				.message("Get employees by manager successfully")
 				.data(employeeService.getEmployeesByManager(managerId, pageRequestDTO))
-				.build()
+				.build();
     }
     @PatchMapping
     public ApiResponse<EmployeeResponse> updateEmployee(@RequestBody @Valid EmployeeUpdateRequest request){
