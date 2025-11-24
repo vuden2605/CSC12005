@@ -62,4 +62,9 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 		timeSheetRequest.setStatus(RequestStatus.REJECTED);
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
+	public TimeSheetRequestResponse getTimeSheetRequestById (Long id) {
+		TimeSheetRequest timeSheetRequest = timeSheetRequestRepository.findById(id)
+				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_REQUEST_NOT_FOUND));
+		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequest);
+	}
 }

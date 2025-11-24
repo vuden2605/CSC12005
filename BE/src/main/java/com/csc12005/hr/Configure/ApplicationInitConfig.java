@@ -30,7 +30,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 		createDefaultDepartmentAndPosition();
 	}
 	private void createDefaultUser() {
-		if(!employeeRepository.existsByEmployeeCode("admin")) {
+		if(employeeRepository.existsByEmployeeCode("admin")) {
 			Employee admin = Employee.builder()
 					.employeeCode("admin")
 					.fullName("Administrator")
@@ -40,7 +40,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.build();
 			employeeRepository.save(admin);
 		}
-		if (!employeeRepository.existsByEmployeeCode("CEO")) {
+		if (employeeRepository.existsByEmployeeCode("CEO")) {
 			Employee user = Employee.builder()
 					.employeeCode("CEO")
 					.fullName("Chief Executive Officer")

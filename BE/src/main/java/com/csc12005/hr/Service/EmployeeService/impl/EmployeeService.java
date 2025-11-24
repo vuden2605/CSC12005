@@ -3,6 +3,7 @@ package com.csc12005.hr.Service.EmployeeService.impl;
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
 import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
+import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
@@ -16,11 +17,17 @@ import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.Manager;
+import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +63,15 @@ public class EmployeeService implements IEmployeeService {
 		employee.setEmployeeCode(employeeCode);
 		employee.setPassword(passwordEncoder.encode(employeeCode));
 		// Set manager info
-		EmployeeResponse employeeResponse =  employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
-		if(department.getManager()!=null){
-			Employee manager= department.getManager();
+		Employee manager = department.getManager();
+		if (manager != null) {
 			employee.setManager(manager);
+		}
+
+		EmployeeResponse employeeResponse =
+				employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+
+		if (manager != null) {
 			employeeResponse.setManagerName(manager.getFullName());
 			employeeResponse.setManagerId(manager.getEmployeeId());
 			employeeResponse.setManagerCode(manager.getEmployeeCode());
@@ -91,5 +103,18 @@ public class EmployeeService implements IEmployeeService {
         employee=employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponse(employee);
     }
-
+	public Page<EmployeeResponse> getEmployeesByDepartment(Long departmentId, PageRequestDTO pageRequestDTO) {
+		Pageable pageable = pageRequestDTO.buildPageable();
+		Department department = departmentRepository.findById(departmentId)
+				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+		Page<Employee> employees = employeeRepository.findByDepartmentId(departmentId, pageable);
+		return employees.map(employeeMapper::toEmployeeResponse);
+	}
+	public Page<EmployeeResponse> getEmployeesByManager(Long managerId, PageRequestDTO pageRequestDTO) {
+		Pageable pageable = pageRequestDTO.buildPageable();
+		Employee manager = employeeRepository.findById(managerId)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		Page<Employee> employees = employeeRepository.findByManagerEmployeeId(managerId, pageable);
+		return employees.map(employeeMapper::toEmployeeResponse);
+	}
 }

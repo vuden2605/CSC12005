@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class RequestController {
 	private final RequestService requestService;
 	@GetMapping("/requests")
-	public ApiResponse<Page<RequestResponse>> getRequests (PageRequestDTO pageRequest, RequestFilter requestFilter) {
+	public ApiResponse<Page<RequestResponse>> getRequests (
+			PageRequestDTO pageRequest,
+			RequestFilter requestFilter) {
+
 		return ApiResponse.<Page<RequestResponse>>builder()
 				.message("Get request success")
 				.data(requestService.getRequest(pageRequest, requestFilter))
