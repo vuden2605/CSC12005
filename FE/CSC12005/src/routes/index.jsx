@@ -10,16 +10,17 @@ import { Information } from "../pages/Employee/Darshboard/Information";
 import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalInfo";
 import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
-import { Requests } from "../pages/Employee/Darshboard/Requests"
+import { Requests } from "../pages/Employee/Darshboard/Requests";
+import { EventPageHR } from "../pages/EventHR";
+import { RequestManager } from "../pages/RequestManager";
 export const routes = [
   {
     path: "/",
     element: <LayoutDefault />,
     children: [
       { index: true, element: <Home /> },
-      { path: "login", element: <Login /> },
       { path: "admin", element: <Admin /> },
-      { path: "manager", element: <Manager /> },
+      { path: "manager/department", element: <Manager /> },
       {
         path: "employee",
         element: <Employee />,
@@ -30,24 +31,31 @@ export const routes = [
             children: [
               { index: true, element: <Information /> },
               {
-                path: "info", element: <Information />,
+                path: "info",
+                element: <Information />,
                 children: [
                   { index: true, element: <PersonalInfo /> },
                   { path: "personal-info", element: <PersonalInfo /> },
                   { path: "info-details", element: <InfoDetails /> },
-                  { path: "salary-info", element: <SalaryInfo /> }
-                ]
+                  { path: "salary-info", element: <SalaryInfo /> },
+                ],
               },
               // { path: "attendance", element: <Attendance /> },
               { path: "request", element: <Requests /> },
               // { path: "event", element: <Event /> },
               // { path: "score", element: <Score /> },
-            ]
+            ],
           },
-        ]
+        ],
       },
-      { path: "hr", element: <HRAdmin /> },
-      { path: "manager", element: <Manager /> }
+      { path: "hr/humans", element: <HRAdmin /> },
+      { path: "manager", element: <Manager /> },
+      { path: "hr/events", element: <EventPageHR /> },
+      { path: "manager/requests", element: <RequestManager /> },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ];

@@ -135,3 +135,32 @@
       }
     }
   }
+  .avatar-wrapper {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  left: 2px;
+  background: #fff;
+  width: 145px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 16px;
+
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}

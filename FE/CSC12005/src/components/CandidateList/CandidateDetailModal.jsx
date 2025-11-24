@@ -12,7 +12,7 @@ const CandidateDetailModal = ({ visible, onClose, candidate }) => {
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
-        <div className="modal-content">
+        <div className="modal-content-c">
           {/* --- Thông tin cá nhân --- */}
           <section className="info-section">
             <h3>Thông tin Cá nhân</h3>

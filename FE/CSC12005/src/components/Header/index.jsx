@@ -1,60 +1,67 @@
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { Bell, User } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { useLocation, Link, Navigate, useNavigate } from "react-router-dom";
+import { Bell, User, LogOut } from "lucide-react";
 import "./style.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../../redux";
+import { AuthService } from "../../services/AuthService";
 
 export const Header = () => {
   const location = useLocation();
-  
-  // Xác định role dựa vào URL
-  const path = location.pathname.toLowerCase();
-  let role = "GUEST";
-  if (path.startsWith("/admin")) role = "ADMIN";
-  else if (path.startsWith("/manager")) role = "MANAGER";
-  else if (path.startsWith("/employee")) role = "EMPLOYEE";
-  
-  // Menu tương ứng với role
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user.currentUser);
+  const dispatch = useDispatch();
+  console.log("role", user.role);
+  const role = user?.role?.toUpperCase();
   const menuItems = {
-    ADMIN: [
-      { label: "Trang tổng quan", path: "/admin/dashboard" },
-      { label: "Yêu cầu", path: "/admin/requests" },
-      { label: "Sự kiện", path: "/admin/events" },
-      { label: "Ứng viên", path: "/admin/candidates" },
+    ADMIN: [{ label: "Trang tổng quan", path: "/admin/dashboard" }],
+    EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
+    HR: [
+      { label: "Trang tổng quan", path: "/employee/dashboard" },
+      { label: "Quản lý Sự kiện", path: "/hr/events" },
+      { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
     ],
     MANAGER: [
-      { label: "Trang tổng quan", path: "/manager/dashboard" },
-      { label: "Yêu cầu", path: "/manager/requests" },
-      { label: "Sự kiện", path: "/manager/events" },
-      { label: "Ứng viên", path: "/manager/candidates" },
-    ],
-    EMPLOYEE: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
-      { label: "Yêu cầu", path: "/employee/requests" },
-      { label: "Sự kiện", path: "/employee/events" },
-      { label: "Ứng viên", path: "/employee/candidates" },
-    ],
-    GUEST: [
-      { label: "Trang tổng quan", path: "/" },
-      { label: "Yêu cầu", path: "/requests" },
-      { label: "Sự kiện", path: "/events" },
-      { label: "Ứng viên", path: "/candidates" },
+      { label: "Quản lý yêu cầu", path: "/manager/requests" },
+      { label: "Quản lý phòng ban", path: "/manager/department" },
     ],
   };
 
-  // Hàm kiểm tra active: so sánh pathname hiện tại có bắt đầu bằng path của menu item không
-  const isActiveMenu = (menuPath) => {
-    // Trường hợp đặc biệt cho trang chủ (GUEST)
-    if (menuPath === "/" && location.pathname === "/") {
-      return true;
+  // Click outside để đóng dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const logout = async () => {
+    try {
+      await AuthService.logout();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("persist:root");
+      dispatch(clearUser());
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-    // Đối với các path khác, kiểm tra pathname có bắt đầu bằng menuPath không
+  };
+  const isActiveMenu = (menuPath) => {
+    if (menuPath === "/" && location.pathname === "/") return true;
     return location.pathname.startsWith(menuPath);
   };
 
   return (
     <header className="header">
       <nav className="header-nav">
-        {menuItems[role].map((item) => {
+        {menuItems[role]?.map((item) => {
           const isActive = isActiveMenu(item.path);
           return (
             <Link
@@ -67,21 +74,42 @@ export const Header = () => {
           );
         })}
       </nav>
+
       <div className="header-right">
-        {/* <button className="icon-button language-button">
-          <span className="flag">🇻🇳</span>
-          <span className="lang-text">VN</span>
-        </button> */}
-        
         <button className="icon-button notification-button">
           <Bell size={20} />
           <span className="notification-badge">5</span>
         </button>
-        <button className="icon-button profile-button">
-          <div className="avatar">
-            <User size={20} />
-          </div>
-        </button>
+
+        <div className="avatar-wrapper" ref={dropdownRef}>
+          <button
+            className="icon-button profile-button"
+            onClick={() => setOpenDropdown(!openDropdown)}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "20px",
+              }}
+            >
+              <div className="avatar">
+                <User size={20} />
+              </div>
+              <div className="UserName">{user.fullName}</div>
+            </div>
+          </button>
+
+          {openDropdown && (
+            <div className="profile-dropdown">
+              <div className="dropdown-item" onClick={logout}>
+                <LogOut size={18} />
+                <span>Đăng xuất</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

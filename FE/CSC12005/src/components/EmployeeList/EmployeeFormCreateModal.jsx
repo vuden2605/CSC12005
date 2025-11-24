@@ -8,7 +8,7 @@ const EmployeeFormCreateModal = ({ visible, onClose }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content-e">
         <h3>Thêm Hồ sơ Nhân viên</h3>
 
         <form className="employee-form">
