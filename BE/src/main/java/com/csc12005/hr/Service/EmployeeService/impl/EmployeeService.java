@@ -48,7 +48,7 @@ public class EmployeeService implements IEmployeeService {
 		log.info("count: {}", count);
 		long sequence = count + 1;
 		String sequenceFormatted = String.format("%03d", sequence);
-		return year + "-" + department.getDepartmentCode() + "-" + position.getPositionCode() + "-" + sequenceFormatted;
+		return year + "-" + department.getDepartmentCode() + "_" + position.getPositionCode() + "_" + sequenceFormatted;
 	}
 	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
 		if(employeeRepository.existsByEmail(employeeCreationRequest.getEmail())) {

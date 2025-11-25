@@ -28,6 +28,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		createDefaultUser();
 		createDefaultDepartmentAndPosition();
+		createDepartmentManagers();
 	}
 	private void createDefaultUser() {
 		if(employeeRepository.existsByEmployeeCode("admin")) {
@@ -115,7 +116,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 				.baseWorkTimes(8L).point(55L).department(hr).build());
 
 
-
 		// ---------- FINANCE ------------
 		positions.add(Position.builder().positionName("CFO").positionCode("FIN-CFO")
 				.salaryRangeMin(50000000L).salaryRangeMax(90000000L)
@@ -138,7 +138,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 				.baseWorkTimes(8L).point(85L).department(finance).build());
 
 
-
 		// ---------- ADMIN ------------
 		positions.add(Position.builder().positionName("Admin Manager").positionCode("ADM-MAN")
 				.salaryRangeMin(18000000L).salaryRangeMax(30000000L)
@@ -155,7 +154,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 		positions.add(Position.builder().positionName("Asset Manager").positionCode("ADM-AST")
 				.salaryRangeMin(10000000L).salaryRangeMax(20000000L)
 				.baseWorkTimes(8L).point(70L).department(admin).build());
-
 
 
 		// ---------- IT ------------
@@ -180,7 +178,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 				.baseWorkTimes(8L).point(75L).department(it).build());
 
 
-
 		// ---------- SALES ------------
 		positions.add(Position.builder().positionName("Sales Director").positionCode("SAL-DIR")
 				.salaryRangeMin(30000000L).salaryRangeMax(60000000L)
@@ -199,7 +196,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 				.baseWorkTimes(8L).point(85L).department(sales).build());
 
 
-
 		// ---------- MARKETING ------------
 		positions.add(Position.builder().positionName("Marketing Manager").positionCode("MKT-MAN")
 				.salaryRangeMin(20000000L).salaryRangeMax(40000000L)
@@ -216,7 +212,6 @@ public class ApplicationInitConfig implements CommandLineRunner {
 		positions.add(Position.builder().positionName("Graphic Designer").positionCode("MKT-DES")
 				.salaryRangeMin(9000000L).salaryRangeMax(17000000L)
 				.baseWorkTimes(8L).point(55L).department(marketing).build());
-
 
 
 		// ---------- MANUFACTURING ------------
@@ -238,6 +233,32 @@ public class ApplicationInitConfig implements CommandLineRunner {
 
 		// Save all
 		positionRepository.saveAll(positions);
+	}
+	@Transactional
+	private void createDepartmentManagers() {
+		// Lấy danh sách tất cả phòng ban
+		List<Department> departments = departmentRepository.findAll();
+
+		for (Department department : departments) {
+			if (department.getManager() != null) {
+				continue;
+			}
+			// Tạo tài khoản trưởng phòng
+			String code = department.getDepartmentCode() + "-HEAD"; // ví dụ HR-HEAD, FIN-HEAD
+			String fullName = department.getDepartmentName() + " Manager";
+
+			Employee manager = Employee.builder()
+					.employeeCode(code)
+					.fullName(fullName)
+					.email(code.toLowerCase() + "@company.com")
+					.password(passwordEncoder.encode("123456")) // mật khẩu mặc định
+					.role(EmployeeRole.MN)
+					.department(department) // gán vào phòng ban
+					.build();
+			department.setManager(manager);
+			employeeRepository.save(manager);
+			departmentRepository.save(department);
+		}
 	}
 
 }
