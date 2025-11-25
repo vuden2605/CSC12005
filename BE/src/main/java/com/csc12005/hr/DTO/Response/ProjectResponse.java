@@ -1,46 +1,39 @@
-package com.csc12005.hr.Entity;
+package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Entity.Department;
+import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Enums.ProjectPriority;
 import com.csc12005.hr.Enums.ProjectStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "projects")
-public class Project {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ProjectResponse {
 	private Long id;
 	private String projectCode;
 	private String projectName;
 	private String description;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	@Enumerated(EnumType.STRING)
-	private ProjectStatus status = ProjectStatus.Pending;
-	@Enumerated(EnumType.STRING)
+	private ProjectStatus status;
 	private ProjectPriority priority;
-	@CreationTimestamp
 	private LocalDateTime createdAt;
-	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 	private Double progress_percentage;
-	@ManyToOne
-	@JoinColumn(name = "department_id")
-	private Department department;
-	@ManyToOne
-	@JoinColumn(name = "leader_id")
-	private Employee leader;
+	private DepartmentResponse department;
+	private EmployeeResponse leader;
 }

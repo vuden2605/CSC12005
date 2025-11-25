@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.TaskPriority;
 import com.csc12005.hr.Enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,8 @@ public class Task {
 	private Long id;
 	private String taskName;
 	private String description;
-	private Long priority;
+	@Enumerated(EnumType.STRING)
+	private TaskPriority priority;
 	private TaskStatus status;
 	private Long estimatedTime;
 	private Long timeSpent;

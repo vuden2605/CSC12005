@@ -58,6 +58,16 @@ public enum ErrorCode {
 	FILE_UPLOAD_FAILED(7000,"File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
 	GENERATE_URL_FAILED(7003,"Generate file URL failed", HttpStatus.INTERNAL_SERVER_ERROR),
 	FILE_REQUIRED(7004,"File is required", HttpStatus.BAD_REQUEST),
+	//Project
+	PROJECT_NOT_FOUND(8001, "Project not found", HttpStatus.NOT_FOUND),
+	PROJECT_CODE_ALREADY_EXISTS(8002, "Project code already exists", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_NAME(8003, "Project name is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_PRIORITY(8004, "Project priority is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_DEPARTMENT_ID(8005, "Department ID is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_CODE(8006, "Project code is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_START_DATE(8007, "Project start date is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_END_DATE(8008, "Project end date is required", HttpStatus.BAD_REQUEST),
+
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);

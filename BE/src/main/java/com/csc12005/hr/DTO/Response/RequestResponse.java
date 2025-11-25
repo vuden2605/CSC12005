@@ -2,6 +2,7 @@ package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Enums.RequestStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestResponse {
 	private Long id;
 	private String requestType;

@@ -2,6 +2,7 @@ package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Enums.EmployeeRole;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeResponse {
 	private Long id;
 	private String employeeCode;

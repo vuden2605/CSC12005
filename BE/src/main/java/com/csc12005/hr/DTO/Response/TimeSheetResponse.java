@@ -1,6 +1,7 @@
 package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Enums.TimeSheetStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -10,6 +11,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TimeSheetResponse {
 	private Long id;
 	private LocalDate workDate;
