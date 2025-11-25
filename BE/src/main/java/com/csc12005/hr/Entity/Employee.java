@@ -17,7 +17,7 @@ import java.util.Date;
 public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long employeeId;
+	private Long id;
 	private String employeeCode;
 	private String fullName;
 	private String email;

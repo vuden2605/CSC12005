@@ -6,22 +6,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "leave_details")
-public class LeaveDetail {
+@Table(name = "project_members")
+public class ProjectMember {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private Long usedDays;
-	private Long remainingDays;
-	@OneToOne
-	@JoinColumn(name = "leave_type_id")
-	private LeaveType leaveType;
-	@OneToOne
+	private String role;
+	private LocalDate joinedDate;
+	private LocalDate leftDate;
+	private boolean isActive;
+	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
+	@ManyToOne
+	@JoinColumn(name = "project_id")
+	private Project project;
 }

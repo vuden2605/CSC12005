@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-24T00:22:25+0700",
+    date = "2025-11-25T17:03:25+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -36,6 +36,7 @@ public class DepartmentMapperImpl implements DepartmentMapper {
 
         DepartmentResponse.DepartmentResponseBuilder departmentResponse = DepartmentResponse.builder();
 
+        departmentResponse.id( department.getId() );
         departmentResponse.departmentName( department.getDepartmentName() );
         departmentResponse.departmentCode( department.getDepartmentCode() );
 

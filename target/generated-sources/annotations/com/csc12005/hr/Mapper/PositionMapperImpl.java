@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-24T00:22:25+0700",
+    date = "2025-11-25T17:03:25+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -40,6 +40,7 @@ public class PositionMapperImpl implements PositionMapper {
 
         PositionResponse.PositionResponseBuilder positionResponse = PositionResponse.builder();
 
+        positionResponse.id( position.getId() );
         positionResponse.positionName( position.getPositionName() );
         positionResponse.positionCode( position.getPositionCode() );
         positionResponse.salaryRangeMin( position.getSalaryRangeMin() );

@@ -18,7 +18,7 @@ import java.time.LocalTime;
 public class TimeSheet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long timesheetId;
+	private Long id;
 	private LocalDate workDate;
 	private LocalTime checkIn;
 	private LocalTime checkOut;

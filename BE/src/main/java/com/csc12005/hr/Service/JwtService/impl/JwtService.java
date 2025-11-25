@@ -25,7 +25,7 @@ public class JwtService implements IJwtService {
 	}
 	public String generateAccessToken(Employee employee) {
 		return Jwts.builder()
-				.setSubject(employee.getEmployeeId().toString())
+				.setSubject(employee.getId().toString())
 				.claim("scope", employee.getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())
@@ -37,7 +37,7 @@ public class JwtService implements IJwtService {
 	}
 	public String generateRefreshToken(Employee employee) {
 		return Jwts.builder()
-				.setSubject(employee.getEmployeeId().toString())
+				.setSubject(employee.getId().toString())
 				.claim("scope", employee.getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())

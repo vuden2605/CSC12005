@@ -32,7 +32,7 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 		long employeeId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		TimeSheet timeSheet = timeSheetRepository.findByEmployeeEmployeeIdAndWorkDate(employeeId, timeSheetRequestCreationRequest.getWorkDate())
+		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employeeId, timeSheetRequestCreationRequest.getWorkDate())
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
 		TimeSheetRequest timeSheetRequest= timeSheetRequestMapper.toTimeSheetRequest(timeSheetRequestCreationRequest);
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);
@@ -47,8 +47,8 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 		var context = SecurityContextHolder.getContext();
 		long managerId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = timeSheetRequest.getEmployee();
-		if(managerId == employee.getEmployeeId()) {
-			TimeSheet timeSheet = timeSheetRepository.findByEmployeeEmployeeIdAndWorkDate(employee.getEmployeeId(), timeSheetRequest.getWorkDate())
+		if(managerId == employee.getId()) {
+			TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employee.getId(), timeSheetRequest.getWorkDate())
 					.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
 			timeSheet.setCheckIn(timeSheetRequest.getCheckInNew());
 			timeSheet.setCheckOut(timeSheetRequest.getCheckOutNew());

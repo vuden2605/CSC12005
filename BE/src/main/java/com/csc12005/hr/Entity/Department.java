@@ -12,7 +12,7 @@ import lombok.*;
 public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long departmentId;
+	private Long id;
 	private String departmentName;
 	private String departmentCode;
 	@OneToOne

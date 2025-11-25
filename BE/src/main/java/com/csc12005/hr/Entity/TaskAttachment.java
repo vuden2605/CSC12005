@@ -11,12 +11,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "leave_types")
-public class LeaveType {
+@Table(name = "task_attachments")
+public class TaskAttachment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String leaveTypeName;
-	private Long allow_days_per_year;
-	private String description;
+	private String name;
+	private String filePath;
+	private String fileType;
+	@ManyToOne
+	@JoinColumn(name = "task_id")
+	private Task task;
+	@ManyToOne
+	@JoinColumn(name = "uploaded_by")
+	private Employee uploadedBy;
 }

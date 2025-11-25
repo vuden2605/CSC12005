@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class RequestResponse {
-	private Long requestId;
+	private Long id;
 	private String requestType;
 	private RequestStatus status;
 	private String requestAttachment;

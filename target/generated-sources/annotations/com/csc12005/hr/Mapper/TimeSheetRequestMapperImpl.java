@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-24T00:22:25+0700",
+    date = "2025-11-25T17:03:25+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -45,7 +45,7 @@ public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
 
         TimeSheetRequestResponse.TimeSheetRequestResponseBuilder<?, ?> timeSheetRequestResponse = TimeSheetRequestResponse.builder();
 
-        timeSheetRequestResponse.requestId( timeSheetRequest.getRequestId() );
+        timeSheetRequestResponse.id( timeSheetRequest.getId() );
         if ( timeSheetRequest.getRequestType() != null ) {
             timeSheetRequestResponse.requestType( timeSheetRequest.getRequestType().name() );
         }
@@ -69,6 +69,7 @@ public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
 
         DepartmentResponse.DepartmentResponseBuilder departmentResponse = DepartmentResponse.builder();
 
+        departmentResponse.id( department.getId() );
         departmentResponse.departmentName( department.getDepartmentName() );
         departmentResponse.departmentCode( department.getDepartmentCode() );
 
@@ -82,6 +83,7 @@ public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
 
         PositionResponse.PositionResponseBuilder positionResponse = PositionResponse.builder();
 
+        positionResponse.id( position.getId() );
         positionResponse.positionName( position.getPositionName() );
         positionResponse.positionCode( position.getPositionCode() );
         positionResponse.salaryRangeMin( position.getSalaryRangeMin() );
@@ -99,7 +101,7 @@ public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
 
         EmployeeResponse.EmployeeResponseBuilder employeeResponse = EmployeeResponse.builder();
 
-        employeeResponse.employeeId( employee.getEmployeeId() );
+        employeeResponse.id( employee.getId() );
         employeeResponse.employeeCode( employee.getEmployeeCode() );
         employeeResponse.fullName( employee.getFullName() );
         employeeResponse.email( employee.getEmail() );

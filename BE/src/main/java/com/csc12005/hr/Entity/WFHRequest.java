@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "wfh_requests")
-@PrimaryKeyJoinColumn(name = "wfh_id")
 public class WFHRequest extends Request{
 	private LocalDate startDate;
 	private LocalDate endDate;

@@ -6,17 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "leave_types")
-public class LeaveType {
+@Table(name = "activities")
+public class Activity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String leaveTypeName;
-	private Long allow_days_per_year;
+	private String activityName;
 	private String description;
+	private LocalDate startDate;
+	private LocalDate endDate;
+	private Long points;
 }

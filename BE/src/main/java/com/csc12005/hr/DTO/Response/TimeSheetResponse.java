@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @SuperBuilder
 public class TimeSheetResponse {
-	private Long timesheetId;
+	private Long id;
 	private LocalDate workDate;
 	private LocalTime checkIn;
 	private LocalTime checkOut;

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-24T00:22:25+0700",
+    date = "2025-11-25T17:03:25+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -50,7 +50,7 @@ public class EmployeeMapperImpl implements EmployeeMapper {
 
         EmployeeResponse.EmployeeResponseBuilder employeeResponse = EmployeeResponse.builder();
 
-        employeeResponse.employeeId( employee.getEmployeeId() );
+        employeeResponse.id( employee.getId() );
         employeeResponse.employeeCode( employee.getEmployeeCode() );
         employeeResponse.fullName( employee.getFullName() );
         employeeResponse.email( employee.getEmail() );
@@ -113,6 +113,7 @@ public class EmployeeMapperImpl implements EmployeeMapper {
 
         DepartmentResponse.DepartmentResponseBuilder departmentResponse = DepartmentResponse.builder();
 
+        departmentResponse.id( department.getId() );
         departmentResponse.departmentName( department.getDepartmentName() );
         departmentResponse.departmentCode( department.getDepartmentCode() );
 
@@ -126,6 +127,7 @@ public class EmployeeMapperImpl implements EmployeeMapper {
 
         PositionResponse.PositionResponseBuilder positionResponse = PositionResponse.builder();
 
+        positionResponse.id( position.getId() );
         positionResponse.positionName( position.getPositionName() );
         positionResponse.positionCode( position.getPositionCode() );
         positionResponse.salaryRangeMin( position.getSalaryRangeMin() );

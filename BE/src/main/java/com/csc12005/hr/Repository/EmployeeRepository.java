@@ -26,6 +26,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	                                         @Param("position") Long position);
 	boolean existsByEmployeeCode(String employeeCode);
 	Optional<Employee> findByEmployeeCode(String employeeCode);
-	Page<Employee> findByManagerEmployeeId(Long managerId, Pageable pageable);
-    Page<Employee> findByDepartment_DepartmentId(Long departmentId, Pageable pageable);
+	Page<Employee> findByManagerId(Long managerId, Pageable pageable);
+    Page<Employee> findByDepartmentId(Long departmentId, Pageable pageable);
 }

@@ -12,7 +12,7 @@ import lombok.*;
 public class Position {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long positionId;
+	private Long id;
 	private String positionName;
 	private String positionCode;
 	private Long salaryRangeMin;

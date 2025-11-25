@@ -15,7 +15,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "timesheet_requests")
-@PrimaryKeyJoinColumn(name = "request_id")
 public class TimeSheetRequest extends Request {
 	private LocalTime checkInNew;
 	private LocalTime checkOutNew;

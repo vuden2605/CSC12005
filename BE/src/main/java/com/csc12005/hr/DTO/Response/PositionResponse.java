@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PositionResponse {
+	private Long id;
 	private String positionName;
 	private String positionCode;
 	private Long salaryRangeMin;

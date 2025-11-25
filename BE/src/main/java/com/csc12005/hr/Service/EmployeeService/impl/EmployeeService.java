@@ -44,7 +44,7 @@ public class EmployeeService implements IEmployeeService {
 		// Generate employee code logic
 		int year = LocalDate.now().getYear();
 		log.info("year: {}", year);
-		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getDepartmentId(), position.getPositionId());
+		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId(), position.getId());
 		log.info("count: {}", count);
 		long sequence = count + 1;
 		String sequenceFormatted = String.format("%03d", sequence);
@@ -75,7 +75,7 @@ public class EmployeeService implements IEmployeeService {
 
 		if (manager != null) {
 			employeeResponse.setManagerName(manager.getFullName());
-			employeeResponse.setManagerId(manager.getEmployeeId());
+			employeeResponse.setManagerId(manager.getId());
 			employeeResponse.setManagerCode(manager.getEmployeeCode());
 		}
 		return employeeResponse;
@@ -109,14 +109,14 @@ public class EmployeeService implements IEmployeeService {
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Department department = departmentRepository.findById(departmentId)
 				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
-		Page<Employee> employees = employeeRepository.findByDepartment_DepartmentId(departmentId, pageable);
+		Page<Employee> employees = employeeRepository.findByDepartmentId(departmentId, pageable);
 		return employees.map(employeeMapper::toEmployeeResponse);
 	}
 	public Page<EmployeeResponse> getEmployeesByManager(Long managerId, PageRequestDTO pageRequestDTO) {
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Employee manager = employeeRepository.findById(managerId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		Page<Employee> employees = employeeRepository.findByManagerEmployeeId(managerId, pageable);
+		Page<Employee> employees = employeeRepository.findByManagerId(managerId, pageable);
 		return employees.map(employeeMapper::toEmployeeResponse);
 	}
 }

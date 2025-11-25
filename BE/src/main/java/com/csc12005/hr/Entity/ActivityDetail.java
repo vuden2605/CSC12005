@@ -11,12 +11,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "leave_types")
-public class LeaveType {
+@Table(name = "activity_details")
+public class ActivityDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String leaveTypeName;
-	private Long allow_days_per_year;
-	private String description;
+	@ManyToOne
+	@JoinColumn(name = "activity_id")
+	private Activity activity;
+	@ManyToOne
+	@JoinColumn(name = "employee_id")
+	private Employee employee;
+	private boolean isSuccess;
 }

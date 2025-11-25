@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeResponse {
-	private Long employeeId;
+	private Long id;
 	private String employeeCode;
 	private String fullName;
 	private String email;

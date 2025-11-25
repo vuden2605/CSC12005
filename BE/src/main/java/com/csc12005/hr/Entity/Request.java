@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class Request {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long requestId;
+	private Long id;
 	@Enumerated(EnumType.STRING)
 	private RequestType requestType;
 	@Builder.Default
