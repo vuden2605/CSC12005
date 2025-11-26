@@ -28,6 +28,7 @@ public class Project {
 	private String description;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	private ProjectStatus status = ProjectStatus.Pending;
 	@Enumerated(EnumType.STRING)

@@ -67,7 +67,16 @@ public enum ErrorCode {
 	REQUIRED_PROJECT_CODE(8006, "Project code is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_PROJECT_START_DATE(8007, "Project start date is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_PROJECT_END_DATE(8008, "Project end date is required", HttpStatus.BAD_REQUEST),
-
+	//Task
+	TASK_NOT_FOUND(9001, "Task not found", HttpStatus.NOT_FOUND),
+	REQUIRED_TASK_NAME(9002, "Task name is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_TASK_DESCRIPTION(9003, "Task description is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_TASK_PRIORITY(9004, "Task priority is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_TASK_TIME_SPENT(9005, "Task time spent is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_TASK_START_DATE(9006, "Task start date is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_TASK_DUE_DATE(9007, "Task due date is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_PROJECT_ID(9008, "Project ID is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_EMPLOYEE_ID(9009, "Employee ID is required", HttpStatus.BAD_REQUEST),
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);

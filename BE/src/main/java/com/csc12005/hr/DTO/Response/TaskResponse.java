@@ -1,47 +1,33 @@
-package com.csc12005.hr.Entity;
-
+package com.csc12005.hr.DTO.Response;
 import com.csc12005.hr.Enums.TaskPriority;
 import com.csc12005.hr.Enums.TaskStatus;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tasks")
-public class Task {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class TaskResponse {
 	private Long id;
 	private String taskName;
 	private String description;
-	@Enumerated(EnumType.STRING)
 	private TaskPriority priority;
-	@Builder.Default
-	@Enumerated(EnumType.STRING)
-	private TaskStatus status = TaskStatus.TO_DO;
+	private TaskStatus status;
 	private Long estimatedTime;
 	private Long timeSpent;
 	private LocalDate startDate;
 	private LocalDate dueDate;
 	private LocalDate completedDate;
-	@CreationTimestamp
 	private LocalDateTime createdAt;
-	@UpdateTimestamp
 	private LocalDateTime updatedAt;
-	@ManyToOne
-	private Project project;
-	@ManyToOne
-	@JoinColumn(name = "assigned_to")
-	private Employee assignedTo;
+	private ProjectResponse project;
+	private EmployeeResponse assignedTo;
 }
