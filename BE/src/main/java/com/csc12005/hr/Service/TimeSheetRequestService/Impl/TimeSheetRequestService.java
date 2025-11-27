@@ -41,19 +41,17 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 	}
 	@Transactional
 	public TimeSheetRequestResponse approvedTimeSheetRequest (Long id) {
-		TimeSheetRequest timeSheetRequest = timeSheetRequestRepository.findById(id)
+		TimeSheetRequest timeSheetRequest = timeSheetRequestRepository.findByIdWithEmployee(id)
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_REQUEST_NOT_FOUND));
 		timeSheetRequest.setStatus(RequestStatus.APPROVED);
-		var context = SecurityContextHolder.getContext();
-		long managerId = Long.parseLong(context.getAuthentication().getName());
-		Employee employee = timeSheetRequest.getEmployee();
-		if(managerId == employee.getId()) {
-			TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employee.getId(), timeSheetRequest.getWorkDate())
-					.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
-			timeSheet.setCheckIn(timeSheetRequest.getCheckInNew());
-			timeSheet.setCheckOut(timeSheetRequest.getCheckOutNew());
-			timeSheetRepository.save(timeSheet);
-		}
+
+		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(
+				timeSheetRequest.getEmployee().getId(),
+				timeSheetRequest.getWorkDate())
+				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
+		timeSheet.setCheckIn(timeSheetRequest.getCheckInNew());
+		timeSheet.setCheckOut(timeSheetRequest.getCheckOutNew());
+		timeSheetRepository.save(timeSheet);
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
 	public TimeSheetRequestResponse rejectedTimeSheetRequest (Long id) {

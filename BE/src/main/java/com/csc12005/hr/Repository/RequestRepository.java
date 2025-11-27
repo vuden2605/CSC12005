@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
@@ -29,4 +30,9 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 	                         @Param("requestType") RequestType requestType,
 	                         @Param("startDate") LocalDateTime startDate,
 	                         @Param("endDate") LocalDateTime endDate);
+	@Query("SELECT r FROM Request r " +
+			"JOIN FETCH r.employee e " +
+			"JOIN FETCH e.manager m " +
+			"WHERE r.id = :requestId")
+	Optional<Request> findByIdWithEmployeeAndManager(@Param("requestId") Long requestId);
 }
