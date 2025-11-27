@@ -37,7 +37,7 @@ public class EmployeeController {
                 .data(employeeService.getMyInfo())
                 .build();
     }
-    @GetMapping("/employees/department/{departmentId}")
+    @GetMapping("/department/{departmentId}")
 	public ApiResponse<Page<EmployeeResponse>> getEmployeeByDepartment(
 		    @PathVariable Long departmentId,
 		    PageRequestDTO pageRequestDTO) {
@@ -47,7 +47,7 @@ public class EmployeeController {
 				.data(employeeService.getEmployeesByDepartment(departmentId, pageRequestDTO))
 				.build();
     }
-    @GetMapping("/employees/by-manager/{managerId}")
+    @GetMapping("/by-manager/{managerId}")
 	public ApiResponse<Page<EmployeeResponse>> getEmployeeByManager(
 		    @PathVariable Long managerId,
 		    PageRequestDTO pageRequestDTO) {

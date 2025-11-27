@@ -35,5 +35,5 @@ public class TaskCreationRequest {
 	@NotNull(message = "REQUIRED_PROJECT_ID")
 	private Long projectId;
 	@NotNull(message = "REQUIRED_EMPLOYEE_ID")
-	private Long employeeId;
+	private Long assignedToId;
 }

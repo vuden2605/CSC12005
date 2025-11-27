@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TaskController {
 	private final TaskService taskService;
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("@projectAuthService.canCreateTask(#request.projectId, authentication.getName())")
 	@PostMapping("/tasks")
 	public ApiResponse<TaskResponse> createTask(@RequestBody @Valid TaskCreationRequest request) {
 		return ApiResponse.<TaskResponse>builder()

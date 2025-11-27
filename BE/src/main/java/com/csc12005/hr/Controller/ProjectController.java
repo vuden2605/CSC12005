@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProjectController {
 	private final ProjectService projectService;
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('MN')")
 	@PostMapping("/projects")
 	public ApiResponse<ProjectResponse> createProject(@RequestBody @Valid ProjectCreationRequest request) {
 		return ApiResponse.<ProjectResponse>builder()
@@ -27,7 +27,7 @@ public class ProjectController {
 				.data(projectService.createProject(request))
 				.build();
 	}
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('MN')")
 	@GetMapping("/projects")
 	public ApiResponse<Page<ProjectResponse>> getAllProjects(PageRequestDTO pageRequestDTO) {
 		return ApiResponse.<Page<ProjectResponse>>builder()

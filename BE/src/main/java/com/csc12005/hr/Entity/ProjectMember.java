@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.ProjectMemberRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +19,12 @@ public class ProjectMember {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String role;
+	@Enumerated(EnumType.STRING)
+	private ProjectMemberRole role;
 	private LocalDate joinedDate;
 	private LocalDate leftDate;
-	private boolean isActive;
+	@Builder.Default
+	private boolean isActive = true;
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	private Employee employee;

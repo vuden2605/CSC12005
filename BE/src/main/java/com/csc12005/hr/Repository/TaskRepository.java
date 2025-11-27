@@ -19,7 +19,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByProjectIdAndAssignedToId(Long projectId, Long userId);
 	@Query("""
 		SELECT t FROM Task t
-			WHERE (:taskName IS NULL OR t.name LIKE %:taskName%)
+			WHERE (:taskName IS NULL OR t.taskName LIKE %:taskName%)
 			AND (:taskPriority IS NULL OR t.priority = :taskPriority)
 			AND (:taskStatus IS NULL OR t.status = :taskStatus)
 			AND (:startDate IS NULL OR t.startDate >= :startDate)
@@ -30,7 +30,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	                       LocalDate startDate, LocalDate dueDate, Long assignedToId, Pageable pageable);
 	@Query("""
 		SELECT t FROM Task t
-			WHERE (:taskName IS NULL OR t.name LIKE LIKE CONCAT('%', :taskName, '%'))
+			WHERE (:taskName IS NULL OR t.taskName LIKE CONCAT('%', :taskName, '%'))
 			AND (:taskPriority IS NULL OR t.priority = :taskPriority)
 			AND (:taskStatus IS NULL OR t.status = :taskStatus)
 			AND (:startDate IS NULL OR t.startDate >= :startDate)
