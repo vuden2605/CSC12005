@@ -11,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +30,18 @@ public class TaskController {
 		return ApiResponse.<Page<TaskResponse>>builder()
 				.message("Get my tasks successfully")
 				.data(taskService.getMyTasks(filterRequest, pageRequestDTO))
+				.build();
+
+	}
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/tasks/project/{projectId}")
+	public ApiResponse<Page<TaskResponse>> getTasksByProject(
+				@PathVariable("projectId") Long projectId,
+				TaskFilterRequest filterRequest,
+				PageRequestDTO pageRequestDTO) {
+		return ApiResponse.<Page<TaskResponse>>builder()
+				.message("Get tasks by project ID successfully")
+				.data(taskService.getTasksByProject(projectId, filterRequest, pageRequestDTO))
 				.build();
 
 	}

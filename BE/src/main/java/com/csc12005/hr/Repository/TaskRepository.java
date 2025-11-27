@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -26,8 +27,15 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			AND (:dueDate IS NULL OR t.dueDate <= :dueDate)
 			AND (t.assignedTo.id = :assignedToId)
 	""")
-	Page<Task> myTasks(String taskName, TaskPriority taskPriority, TaskStatus taskStatus,
-	                       LocalDate startDate, LocalDate dueDate, Long assignedToId, Pageable pageable);
+	Page<Task> myTasks(
+			@Param("taskName") String taskName,
+			@Param("taskPriority") TaskPriority taskPriority,
+			@Param("taskStatus") TaskStatus taskStatus,
+			@Param("startDate") LocalDate startDate,
+			@Param("dueDate") LocalDate dueDate,
+			@Param("assignedToId") Long assignedToId,
+			Pageable pageable
+	);
 	@Query("""
 		SELECT t FROM Task t
 			WHERE (:taskName IS NULL OR t.taskName LIKE CONCAT('%', :taskName, '%'))
@@ -37,6 +45,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			AND (:dueDate IS NULL OR t.dueDate <= :dueDate)
 			AND ( t.project.id = :projectId )
 	""")
-	Page<Task> getTasksByProject(String taskName, TaskPriority taskPriority, TaskStatus taskStatus,
-	                             LocalDate startDate, LocalDate dueDate, Long projectId, Pageable pageable);
+	Page<Task> getTasksByProject(
+			@Param("taskName")String taskName,
+			@Param("taskPriority") TaskPriority taskPriority,
+			@Param("taskStatus")TaskStatus taskStatus,
+			@Param("startDate")LocalDate startDate,
+			@Param("dueDate")LocalDate dueDate,
+			@Param("projectId")Long projectId,
+			Pageable pageable
+	);
 }
