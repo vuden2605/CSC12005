@@ -21,7 +21,6 @@ public class RequestController {
 	public ApiResponse<Page<RequestResponse>> getRequests (
 			PageRequestDTO pageRequest,
 			RequestFilter requestFilter) {
-
 		return ApiResponse.<Page<RequestResponse>>builder()
 				.message("Get request success")
 				.data(requestService.getRequest(pageRequest, requestFilter))

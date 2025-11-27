@@ -34,7 +34,7 @@ public class TaskService implements ITaskService {
 	public TaskResponse createTask(TaskCreationRequest taskCreationRequest) {
 		Project project = projectRepository.findById(taskCreationRequest.getProjectId())
 				.orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
-		Employee employee = employeeRepository.findById(taskCreationRequest.getEmployeeId())
+		Employee employee = employeeRepository.findById(taskCreationRequest.getAssignedToId())
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		Task task = taskMapper.toTask(taskCreationRequest);
 		task.setProject(project);

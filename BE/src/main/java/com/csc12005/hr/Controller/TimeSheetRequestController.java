@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
 import com.csc12005.hr.Service.TimeSheetRequestService.Impl.TimeSheetRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,12 +20,16 @@ public class TimeSheetRequestController {
 				.data(timeSheetRequestService.createTimeSheetRequest(timeSheetRequest))
 				.build();
 	}
+	@PreAuthorize("@timeSheetRequestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
+	@PutMapping("/timesheet-requests/{id}/approve")
 	public ApiResponse<TimeSheetRequestResponse> approveTimesheetRequest(@PathVariable Long id) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()
 				.message("Time sheet request approved successfully")
 				.data(timeSheetRequestService.approvedTimeSheetRequest(id))
 				.build();
 	}
+	@PreAuthorize("@timeSheetRequestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
+	@PutMapping("/timesheet-requests/{id}/reject")
 	public ApiResponse<TimeSheetRequestResponse> rejectTimesheetRequest(@PathVariable Long id) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()
 				.message("Time sheet request rejected successfully")

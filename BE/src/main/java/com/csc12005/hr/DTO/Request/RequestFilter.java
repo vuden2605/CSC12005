@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import com.csc12005.hr.Enums.RequestType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestFilter {
-	private String requestType;
+	private RequestType requestType;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private String status;
