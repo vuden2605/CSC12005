@@ -69,6 +69,8 @@ public class TaskService implements ITaskService {
 	public Page<TaskResponse> getMyTasks(TaskFilterRequest request, PageRequestDTO pageRequestDTO) {
 		var context = SecurityContextHolder.getContext();
 		long userId = Long.parseLong(context.getAuthentication().getName());
+		Employee employee = employeeRepository.findById(userId)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Page<Task> tasks = taskRepository.myTasks(
 				request.getTaskName(),
@@ -76,21 +78,14 @@ public class TaskService implements ITaskService {
 				request.getTaskStatus(),
 				request.getStartDate(),
 				request.getDueDate(),
-				userId,
+				employee.getId(),
 				pageable
 		);
 		return tasks.map(taskMapper::toTaskResponse);
 	}
-	public Page<TaskResponse> getTasksByProject(TaskFilterRequest taskFilterRequest, PageRequestDTO pageRequestDTO) {
-		var context = SecurityContextHolder.getContext();
-		Long userId = Long.parseLong(context.getAuthentication().getName());
-		Project project = projectRepository.findById(taskFilterRequest.getProjectId())
+	public Page<TaskResponse> getTasksByProject(Long projectId, TaskFilterRequest taskFilterRequest, PageRequestDTO pageRequestDTO) {
+		Project project = projectRepository.findById(projectId)
 				.orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
-		Employee employee = employeeRepository.findById(userId)
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		if(!Objects.equals(project.getDepartment(), employee.getDepartment())) {
-			throw new AppException(ErrorCode.FORBIDDEN);
-		}
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Page<Task> tasks = taskRepository.getTasksByProject(
 				taskFilterRequest.getTaskName(),
@@ -98,7 +93,7 @@ public class TaskService implements ITaskService {
 				taskFilterRequest.getTaskStatus(),
 				taskFilterRequest.getStartDate(),
 				taskFilterRequest.getDueDate(),
-				taskFilterRequest.getProjectId(),
+				project.getId(),
 				pageable
 		);
 		return tasks.map(taskMapper::toTaskResponse);

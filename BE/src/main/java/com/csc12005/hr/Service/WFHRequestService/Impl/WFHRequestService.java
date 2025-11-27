@@ -56,13 +56,14 @@ public class WFHRequestService implements IWFHRequestService {
 	public WFHResponse approveWFHRequest(Long requestId) {
 		WFHRequest wfhRequest = wFhRequestRepository.findById(requestId)
 				.orElseThrow(() -> new AppException(ErrorCode.WFH_REQUEST_NOT_FOUND));
+		Employee employee = wfhRequest.getEmployee();
 		LocalDate startDate = wfhRequest.getStartDate();
 		LocalDate endDate = wfhRequest.getEndDate();
 		int days = (int) (endDate.toEpochDay() - startDate.toEpochDay()) + 1;
 		List<TimeSheet> timeSheets = new ArrayList<>();
 		for (int i = 0; i < days; i++) {
 			TimeSheet timeSheet = TimeSheet.builder()
-					.employee(wfhRequest.getEmployee())
+					.employee(employee)
 					.workDate(startDate.plusDays(i))
 					.checkIn(LocalTime.parse("08:00:00"))
 					.checkOut(LocalTime.parse("17:00:00"))

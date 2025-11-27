@@ -19,6 +19,5 @@ public class TaskFilterRequest {
 	private TaskStatus taskStatus;
 	private LocalDate startDate;
 	private LocalDate dueDate;
-	private Long projectId;
 	private Long assignedToId;
 }
