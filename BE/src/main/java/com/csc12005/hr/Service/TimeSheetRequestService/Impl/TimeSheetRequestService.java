@@ -13,6 +13,7 @@ import com.csc12005.hr.Mapper.TimeSheetRequestMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Repository.TimeSheetRequestRepository;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.TimeSheetRequestService.ITimeSheetRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 	private final TimeSheetRequestMapper timeSheetRequestMapper;
 	private final EmployeeRepository employeeRepository;
 	private final TimeSheetRepository timeSheetRepository;
+	private final S3Service s3Service;
 	@Transactional
 	public TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
 		var context = SecurityContextHolder.getContext();
@@ -34,7 +36,9 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employeeId, timeSheetRequestCreationRequest.getWorkDate())
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
+		String requestAttachmentUrl = s3Service.uploadFile(timeSheetRequestCreationRequest.getFile(), "images/");
 		TimeSheetRequest timeSheetRequest= timeSheetRequestMapper.toTimeSheetRequest(timeSheetRequestCreationRequest);
+		timeSheetRequest.setRequestAttachment(requestAttachmentUrl);
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);
 		timeSheetRequest.setEmployee(employee);
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));

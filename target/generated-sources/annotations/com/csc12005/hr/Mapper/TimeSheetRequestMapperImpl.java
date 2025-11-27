@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-27T22:05:26+0700",
+    date = "2025-11-27T22:19:03+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -28,7 +28,6 @@ public class TimeSheetRequestMapperImpl implements TimeSheetRequestMapper {
 
         TimeSheetRequest.TimeSheetRequestBuilder<?, ?> timeSheetRequest = TimeSheetRequest.builder();
 
-        timeSheetRequest.requestAttachment( timeSheetRequestCreationRequest.getRequestAttachment() );
         timeSheetRequest.reason( timeSheetRequestCreationRequest.getReason() );
         timeSheetRequest.checkInNew( timeSheetRequestCreationRequest.getCheckInNew() );
         timeSheetRequest.checkOutNew( timeSheetRequestCreationRequest.getCheckOutNew() );

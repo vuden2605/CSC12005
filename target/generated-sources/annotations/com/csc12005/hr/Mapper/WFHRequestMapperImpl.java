@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-27T22:05:26+0700",
+    date = "2025-11-27T22:19:03+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -28,7 +28,6 @@ public class WFHRequestMapperImpl implements WFHRequestMapper {
 
         WFHRequest.WFHRequestBuilder<?, ?> wFHRequest = WFHRequest.builder();
 
-        wFHRequest.requestAttachment( wfhCreationRequest.getRequestAttachment() );
         wFHRequest.reason( wfhCreationRequest.getReason() );
         wFHRequest.startDate( wfhCreationRequest.getStartDate() );
         wFHRequest.endDate( wfhCreationRequest.getEndDate() );

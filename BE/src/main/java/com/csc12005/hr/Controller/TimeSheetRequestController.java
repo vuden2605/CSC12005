@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
 import com.csc12005.hr.Service.TimeSheetRequestService.Impl.TimeSheetRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TimeSheetRequestController {
 	private final TimeSheetRequestService timeSheetRequestService;
-	@PostMapping("/timesheet-requests")
-	public ApiResponse<TimeSheetRequestResponse> createTimesheetRequest(@RequestBody @Valid TimeSheetRequestCreationRequest timeSheetRequest) {
+	@PostMapping(
+		value = "/timesheet-requests",
+		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ApiResponse<TimeSheetRequestResponse> createTimesheetRequest(@ModelAttribute @Valid TimeSheetRequestCreationRequest timeSheetRequest) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()
 				.message("Time sheet request created successfully")
 				.data(timeSheetRequestService.createTimeSheetRequest(timeSheetRequest))

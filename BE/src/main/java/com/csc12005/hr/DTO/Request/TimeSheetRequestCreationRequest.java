@@ -2,10 +2,12 @@ package com.csc12005.hr.DTO.Request;
 
 import com.csc12005.hr.Enums.TimeSheetStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,17 +18,19 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimeSheetRequestCreationRequest {
-	@NotBlank(message = "REQUIRED_REQUEST_ATTACHMENT")
-	private String requestAttachment;
+	@NotNull(message = "REQUIRED_REQUEST_ATTACHMENT")
+	private MultipartFile file;
 	@NotBlank(message = "REQUIRED_REASON")
 	private String reason;
 	@JsonFormat(pattern = "HH:mm:ss")
 	@NotNull(message = "REQUIRED_CHECK_IN_NEW")
 	private LocalTime checkInNew;
 	@JsonFormat(pattern = "HH:mm:ss")
+	@Schema(type = "string", example = "08:00:00")
 	@NotNull(message = "REQUIRED_CHECK_OUT_NEW")
 	private LocalTime checkOutNew;
 	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Schema(type = "string", example = "17:00:00")
 	@NotNull(message = "REQUIRED_WORK_DATE")
 	private LocalDate workDate;
 	@AssertTrue(message = "CHECK_IN_MUST_BE_BEFORE_CHECK_OUT")
