@@ -8,6 +8,8 @@ import com.csc12005.hr.DTO.Response.TaskResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Project;
 import com.csc12005.hr.Entity.Task;
+import com.csc12005.hr.Enums.EmployeeRole;
+import com.csc12005.hr.Enums.TaskStatus;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.TaskMapper;
@@ -97,5 +99,23 @@ public class TaskService implements ITaskService {
 				pageable
 		);
 		return tasks.map(taskMapper::toTaskResponse);
+	}
+	public TaskResponse updateTaskStatus(TaskStatus newStatus, Long taskId) {
+		var context = SecurityContextHolder.getContext();
+		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+		Employee leader = task.getProject().getLeader();
+		if(newStatus == TaskStatus.DONE) {
+			if(employee.getRole() != EmployeeRole.MN || !leader.getId().equals(employeeId)) {
+				throw new AppException(ErrorCode.FORBIDDEN);
+			}
+		}
+		task.setStatus(newStatus);
+		return taskMapper.toTaskResponse(taskRepository.save(task));
+
+
 	}
 }

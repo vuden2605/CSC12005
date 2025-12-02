@@ -28,7 +28,7 @@ public class WFHRequestController {
 				.data(wfhRequestService.getAllWFHRequests())
 				.build();
 	}
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("requestAuthService.canApproveOrRejectWFHRequest(#id, authentication.getName()) or hasRole('ADMIN')")
 	@PutMapping("/wfh-requests/{id}/approve")
 	public ApiResponse<WFHResponse> approveWFHRequest(@PathVariable Long id) {
 		return ApiResponse.<WFHResponse>builder()
@@ -36,7 +36,7 @@ public class WFHRequestController {
 				.data(wfhRequestService.approveWFHRequest(id))
 				.build();
 	}
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("requestAuthService.canApproveOrRejectWFHRequest(#id, authentication.getName()) or hasRole('ADMIN')")
 	@PutMapping("/wfh-requests/{id}/reject")
 	public ApiResponse<WFHResponse> rejectWFHRequest(@PathVariable Long id) {
 		return ApiResponse.<WFHResponse>builder()
