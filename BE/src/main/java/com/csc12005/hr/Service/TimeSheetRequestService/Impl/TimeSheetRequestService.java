@@ -36,7 +36,7 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employeeId, timeSheetRequestCreationRequest.getWorkDate())
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
-		String requestAttachmentUrl = s3Service.uploadFile(timeSheetRequestCreationRequest.getFile(), "images/");
+		String requestAttachmentUrl = s3Service.uploadFile(timeSheetRequestCreationRequest.getFile());
 		TimeSheetRequest timeSheetRequest= timeSheetRequestMapper.toTimeSheetRequest(timeSheetRequestCreationRequest);
 		timeSheetRequest.setRequestAttachment(requestAttachmentUrl);
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);

@@ -23,7 +23,16 @@ public class RequestController {
 			RequestFilter requestFilter) {
 		return ApiResponse.<Page<RequestResponse>>builder()
 				.message("Get request success")
-				.data(requestService.getRequest(pageRequest, requestFilter))
+				.data(requestService.getRequestByManager(pageRequest, requestFilter))
+				.build();
+	}
+	@GetMapping("/requests/me")
+	public ApiResponse<Page<RequestResponse>> myRequests (
+			PageRequestDTO pageRequest,
+			RequestFilter requestFilter) {
+		return ApiResponse.<Page<RequestResponse>>builder()
+				.message("Get my request success")
+				.data(requestService.myRequests(pageRequest, requestFilter))
 				.build();
 	}
 }

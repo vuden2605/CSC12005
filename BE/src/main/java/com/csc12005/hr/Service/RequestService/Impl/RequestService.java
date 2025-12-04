@@ -10,6 +10,7 @@ import com.csc12005.hr.Service.RequestService.IRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,14 +19,33 @@ public class RequestService implements IRequestService {
 	private final RequestRepository requestRepository;
 	private final RequestMapper requestMapper;
 	@Override
-	public Page<RequestResponse> getRequest(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
+	public Page<RequestResponse> getRequestByManager(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
 		Pageable pageable = pageRequestDTO.buildPageable();
-		Page<Request> requests = requestRepository.getRequest(
+		var context = SecurityContextHolder.getContext();
+		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Page<Request> requests = requestRepository.getRequestByManager(
 					pageable,
 					requestFilter.getStatus(),
 					requestFilter.getRequestType(),
 					requestFilter.getStartDate(),
-					requestFilter.getEndDate()
+					requestFilter.getEndDate(),
+					employeeId
+		);
+		return requests.map(requestMapper::toRequestResponse);
+	}
+
+	@Override
+	public Page<RequestResponse> myRequests(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
+		Pageable pageable = pageRequestDTO.buildPageable();
+		var context = SecurityContextHolder.getContext();
+		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Page<Request> requests = requestRepository.myRequests(
+				pageable,
+				requestFilter.getStatus(),
+				requestFilter.getRequestType(),
+				requestFilter.getStartDate(),
+				requestFilter.getEndDate(),
+				employeeId
 		);
 		return requests.map(requestMapper::toRequestResponse);
 	}

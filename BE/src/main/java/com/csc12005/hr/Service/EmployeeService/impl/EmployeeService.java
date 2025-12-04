@@ -15,6 +15,7 @@ import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class EmployeeService implements IEmployeeService {
 	private final DepartmentRepository departmentRepository;
 	private final PositionRepository positionRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final S3Service s3Service;
 	private String generateEmployeeCode(Department department, Position position) {
 		// Generate employee code logic
 		int year = LocalDate.now().getYear();
@@ -92,10 +94,18 @@ public class EmployeeService implements IEmployeeService {
         String employeeId= context.getAuthentication().getName();
         Employee employee= employeeRepository.findById(Long.parseLong(employeeId))
                 .orElseThrow(()->new AppException(ErrorCode.USERNAME_NOT_FOUND));
-        if(request.getEmail()!=null) employee.setEmail(request.getEmail());
-        if(request.getPhone()!=null) employee.setPhone(request.getPhone());
-        if(request.getAddress()!=null) employee.setAddress(request.getAddress());
-        employee=employeeRepository.save(employee);
+        if (request.getEmail()!=null) employee.setEmail(request.getEmail());
+        if (request.getPhone()!=null) employee.setPhone(request.getPhone());
+        if (request.getAddress()!=null) employee.setAddress(request.getAddress());
+        if (request.getAvatar()!=null){
+			try {
+				String avatarUrl = s3Service.uploadFile(request.getAvatar());
+				employee.setAvatarUrl(avatarUrl);
+			} catch (Exception e) {
+				throw new AppException(ErrorCode.FILE_PROCESSING_ERROR);
+			}
+		}
+        employee = employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponse(employee);
     }
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id){

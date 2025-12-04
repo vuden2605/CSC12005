@@ -77,6 +77,7 @@ public enum ErrorCode {
 	REQUIRED_TASK_DUE_DATE(9007, "Task due date is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_PROJECT_ID(9008, "Project ID is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_EMPLOYEE_ID(9009, "Employee ID is required", HttpStatus.BAD_REQUEST),
+	FILE_PROCESSING_ERROR(7010,"File processing error", HttpStatus.INTERNAL_SERVER_ERROR),
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);

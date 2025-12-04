@@ -5,6 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface IS3Service {
-	String uploadFile(MultipartFile file, String folder);
+	String uploadFile(MultipartFile file);
 	String generatePresignedUrl(String fileKey);
 }

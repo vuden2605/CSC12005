@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +22,5 @@ public class EmployeeUpdateRequest {
     private String phone;
     @NotBlank(message = "REQUIRED_ADDRESS")
     private String address;
+    private MultipartFile avatar;
 }
