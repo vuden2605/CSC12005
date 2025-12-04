@@ -21,7 +21,7 @@ public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, 
 				AND (:activityName IS NULL OR LOWER(a.activityName) LIKE LOWER(CONCAT('%', :activityName, '%')))
 				AND (:startDate IS NULL OR a.startDate >= :startDate)
 				AND (:endDate IS NULL OR a.endDate <= :endDate)
-				AMD (:isSuccess IS NULL or ad.isSuccess = :isSuccess)
+				AND (:isSuccess IS NULL or ad.isSuccess = :isSuccess)
 			"""
 	)
 	Page<ActivityDetail> myActivities(
