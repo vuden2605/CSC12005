@@ -255,6 +255,9 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.role(EmployeeRole.MN)
 					.department(department) // gán vào phòng ban
 					.build();
+			if(department.getDepartmentCode().equals("HR")) {
+				manager.setRole(EmployeeRole.HRM);
+			}
 			department.setManager(manager);
 			employeeRepository.save(manager);
 			departmentRepository.save(department);
