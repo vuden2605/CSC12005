@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./style.scss";
 
-export const EditInfoModal = ({ isOpen, onClose, onSave, currentData }) => {
+export const EditInfoModal = ({ isOpen, onClose, onSave, currentData, isUpdating = false }) => {
   const [formData, setFormData] = useState({
     phone: "",
     email: "",
@@ -55,9 +55,9 @@ export const EditInfoModal = ({ isOpen, onClose, onSave, currentData }) => {
   };
 
   const handleSave = () => {
-    if (validate()) {
+    if (validate() && !isUpdating) {
       onSave(formData);
-      onClose();
+      // Không đóng modal ở đây, để component cha xử lý sau khi API thành công
     }
   };
 
@@ -102,8 +102,10 @@ export const EditInfoModal = ({ isOpen, onClose, onSave, currentData }) => {
           </div>
         </div>
         <div className="modal-actions">
-          <button onClick={onClose}>Hủy</button>
-          <button onClick={handleSave}>Lưu</button>
+          <button onClick={onClose} disabled={isUpdating}>Hủy</button>
+          <button onClick={handleSave} disabled={isUpdating}>
+            {isUpdating ? "Đang lưu..." : "Lưu"}
+          </button>
         </div>
       </div>
     </div>
