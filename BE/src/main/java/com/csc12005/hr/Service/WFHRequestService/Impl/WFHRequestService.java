@@ -14,6 +14,7 @@ import com.csc12005.hr.Mapper.WFHRequestMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Repository.WFhRequestRepository;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.WFHRequestService.IWFHRequestService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,13 @@ public class WFHRequestService implements IWFHRequestService {
 	private final WFhRequestRepository wFhRequestRepository;
 	private final EmployeeRepository employeeRepository;
 	private final TimeSheetRepository timeSheetRepository;
+	private final S3Service s3Service;
 	@Override
 	public WFHResponse createWFHRequest(WFHCreationRequest wfhCreationRequest) {
+		String filePath = s3Service.uploadFile(wfhCreationRequest.getFile());
 		WFHRequest wfhRequest = wfhRequestMapper.toWFHRequest(wfhCreationRequest);
 		wfhRequest.setRequestType(RequestType.WorkFromHome);
+		wfhRequest.setRequestAttachment(filePath);
 		var context = SecurityContextHolder.getContext();
 		long employeeId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = employeeRepository.findById(employeeId)

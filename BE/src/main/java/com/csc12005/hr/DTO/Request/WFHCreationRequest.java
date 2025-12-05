@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WFHCreationRequest {
-	@NotNull(message = "REQUIRED_ATTACHMENT")
+	@NotNull(message = "REQUIRED_REQUEST_ATTACHMENT")
 	private MultipartFile file;
 	@NotBlank(message = "REQUIRED_REASON")
 	private String reason;

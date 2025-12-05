@@ -11,9 +11,11 @@ import com.csc12005.hr.Mapper.LeaveRequestMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.LeaveRequestRepository;
 import com.csc12005.hr.Service.LeaveRequestService.ILeaveRequestService;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +23,13 @@ public class LeaveRequestService implements ILeaveRequestService {
 	private final LeaveRequestRepository leaveRequestRepository;
 	private final LeaveRequestMapper leaveRequestMapper;
 	private final EmployeeRepository employeeRepository;
+	private final S3Service s3Service;
+	@Transactional
 	@Override
 	public LeaveRequestResponse createLeaveRequest(LeaveRequestCreationRequest request) {
+		String attachmentUrl = s3Service.uploadFile(request.getFile());
 		LeaveRequest leaveRequest = leaveRequestMapper.toLeaveRequest(request);
+		leaveRequest.setRequestAttachment(attachmentUrl);
 		var context = SecurityContextHolder.getContext();
 		Long employeeId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = employeeRepository.findById(employeeId)
