@@ -13,7 +13,7 @@ const roleRedirects = {
   ADMIN: "/admin",
   MANAGER: "/manager",
   EMP: "/employee",
-  HR: "/hr",
+  HR: "/employee/dashboard/info",
 };
 
 export const Login = () => {

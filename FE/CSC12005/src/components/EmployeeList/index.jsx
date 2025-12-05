@@ -1,77 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.scss";
 import EmployeeFormUpdateModel from "./EmployeeFormUpdateModal";
 import EmployeeFormCreateModal from "./EmployeeFormCreateModal";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import { EmployeeService } from "../../services/EmployeeService";
+import { HRService } from "../../services/HRService";
 function EmployeeList() {
+    const [isLoading,setIsLoading] = useState(false);
   // Dữ liệu mẫu
-  const employees = [
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 3,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 5,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 6,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-    {
-      id: 7,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 8,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 9,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-  ];
-
+  const [employees, setEmployees] = useState([]);
+  useEffect(() => {
+    const fetAllEmp = async () => {
+      try {
+        const data = await HRService.getAllEmp();
+        console.log(data);
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetAllEmp();
+  }, [isLoading]);
   // State filter
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
@@ -79,7 +29,7 @@ function EmployeeList() {
 
   // Lọc dữ liệu
   const filteredEmployees = employees.filter((emp) => {
-    const matchName = emp.name.toLowerCase().includes(search.toLowerCase());
+    const matchName = emp.fullName.toLowerCase().includes(search.toLowerCase());
     const matchDept =
       departmentFilter === "all" || emp.department === departmentFilter;
     const matchStatus = statusFilter === "all" || emp.status === statusFilter;
@@ -184,16 +134,19 @@ function EmployeeList() {
 
         {paginatedEmployees.map((emp) => (
           <div className="table-row" key={emp.id}>
-            <div>{emp.name}</div>
-            <div>{emp.department}</div>
-            <div>{emp.position}</div>
-            <div
+            <div>{emp.fullName}</div>
+            {/* <div>{emp.department.departmentName}</div> */}
+            <div>tên phòng</div>
+            {/* <div>{emp.position}</div> */}
+            <div>tên vị trí</div>
+            {/* <div
               className={`status ${
                 emp.status === "active" ? "active" : "inactive"
               }`}
             >
               {emp.status === "active" ? "Hoạt động" : "Không hoạt động"}
-            </div>
+            </div> */}
+            <div>hành động</div>
             <div>
               <button className="btn edit" onClick={() => handleEdit(emp.id)}>
                 Chỉnh sửa
@@ -234,11 +187,10 @@ function EmployeeList() {
         </button>
       </div>
       {/* test message */}
-        {/* <Alert severity="success">
+      {/* <Alert severity="success">
           <AlertTitle>Success</AlertTitle>
           Thêm nhân viên thành công.
         </Alert> */}
-    
     </div>
   );
 }

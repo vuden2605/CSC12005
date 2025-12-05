@@ -235,3 +235,13 @@
     border-radius: 6px;
     cursor: pointer;
   }
+  .form-group.invalid input,
+.form-group.invalid select {
+  border-color: #e74c3c;
+}
+.form-group .error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
