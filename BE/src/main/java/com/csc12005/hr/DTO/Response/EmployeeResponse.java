@@ -25,7 +25,8 @@ public class EmployeeResponse {
 	private String taxCode;
 	private String bankName;
 	private String bankAccount;
-	private Long baseSalary;
+    private Boolean status ;
+    private Long baseSalary;
 	private LocalDate hireDate;
 	private DepartmentResponse department;
 	private PositionResponse position;

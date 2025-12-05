@@ -13,4 +13,5 @@ public interface IEmployeeService {
     public EmployeeResponse updateUser(EmployeeUpdateRequest employeeUpdateRequest);
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest employeeHRUpdateRequest, Long id);
     public List<EmployeeResponse> getAll();
+    public EmployeeResponse updateStatus(Long id);
 }

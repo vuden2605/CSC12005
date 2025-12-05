@@ -72,6 +72,14 @@ public class EmployeeController {
                 .data(employeeService.hrUpdateEmployee(request,id))
                 .build();
     }
+    @PatchMapping("/status/{id}")
+    public ApiResponse<EmployeeResponse> updateStatus(@PathVariable Long id){
+        return ApiResponse.<EmployeeResponse> builder()
+                .message("Disable success")
+                .data(employeeService.updateStatus(id))
+                .build();
+
+    }
     @GetMapping()
     public ApiResponse<List<EmployeeResponse>> getAllEmp() {
         return ApiResponse.<List<EmployeeResponse>>builder()
