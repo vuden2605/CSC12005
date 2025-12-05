@@ -80,7 +80,9 @@ public enum ErrorCode {
 	FILE_PROCESSING_ERROR(7010,"File processing error", HttpStatus.INTERNAL_SERVER_ERROR),
 	//Import
 	IMPORT_TIMESHEET_FAIL(7001,"Import timesheet fail", HttpStatus.BAD_REQUEST),
-	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST);
+	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST),
+	TYPE_MISMATCH(40013,"Type mismatch error", HttpStatus.BAD_REQUEST),
+	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;
 	private final HttpStatus httpStatus;

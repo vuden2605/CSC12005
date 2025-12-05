@@ -29,8 +29,8 @@ public class RequestController {
 	}
 	@GetMapping("/requests/me")
 	public ApiResponse<Page<RequestResponse>> myRequests (
-			@ModelAttribute PageRequestDTO pageRequest,
-			@ModelAttribute RequestFilter requestFilter) {
+			PageRequestDTO pageRequest,
+			RequestFilter requestFilter) {
 		return ApiResponse.<Page<RequestResponse>>builder()
 				.message("Get my request success")
 				.data(requestService.myRequests(pageRequest, requestFilter))
