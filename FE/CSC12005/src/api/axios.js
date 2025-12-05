@@ -12,6 +12,12 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Xử lý FormData: xóa Content-Type để axios tự động set với boundary phù hợp (không có charset)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
