@@ -32,7 +32,6 @@ const EmployeeFormCreateModal = ({ visible, onClose, onCreateEmp }) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  // Helpers
   const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isPhoneVN = (v) => /^[0-9]{9,11}$/.test(v);
   const isNumber = (v) => /^-?\d+(\.\d+)?$/.test(`${v}`);
@@ -40,7 +39,6 @@ const EmployeeFormCreateModal = ({ visible, onClose, onCreateEmp }) => {
   const validate = () => {
     const err = {};
 
-    // Required
     if (!formData.fullName.trim()) err.fullName = "Vui lòng nhập họ và tên";
     if (!formData.birthDate) err.birthDate = "Vui lòng chọn ngày sinh";
     if (!formData.nationalCode.trim()) err.nationalCode = "Vui lòng nhập CCCD/CMND";
@@ -54,7 +52,6 @@ const EmployeeFormCreateModal = ({ visible, onClose, onCreateEmp }) => {
     if (!`${formData.baseSalary}`.trim()) err.baseSalary = "Vui lòng nhập lương cơ bản";
     if (!formData.taxCode.trim()) err.taxCode = "Vui lòng nhập mã số thuế";
 
-    // Formats
     if (formData.email && !isEmail(formData.email)) err.email = "Email không hợp lệ";
     if (formData.phone && !isPhoneVN(formData.phone)) err.phone = "Số điện thoại 9-11 chữ số";
     if (formData.bankAccount && !isNumber(formData.bankAccount)) err.bankAccount = "Số tài khoản chỉ chứa chữ số";
@@ -66,7 +63,6 @@ const EmployeeFormCreateModal = ({ visible, onClose, onCreateEmp }) => {
     return err;
   };
 
-  // Load positions when department changes
   useEffect(() => {
     const fetchPositions = async () => {
       if (!formData.departmentId) {
@@ -93,7 +89,6 @@ const EmployeeFormCreateModal = ({ visible, onClose, onCreateEmp }) => {
     const err = validate();
     if (Object.keys(err).length > 0) return;
 
-    // Chuẩn hóa kiểu dữ liệu theo Postman (số)
     const payload = {
       ...formData,
       departmentId: Number(formData.departmentId),

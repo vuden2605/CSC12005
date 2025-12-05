@@ -109,10 +109,35 @@ public class EmployeeService implements IEmployeeService {
         return employeeMapper.toEmployeeResponse(employee);
     }
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id){
-        Employee employee= employeeRepository.findById(id)
-                .orElseThrow(()->new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-        employeeMapper.updateEmployeeFromDto(request,employee);
-        employee=employeeRepository.save(employee);
+        // Tìm employee
+        Employee employee = employeeRepository. findById(id)
+                . orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        // Update basic fields
+        employeeMapper.updateEmployeeFromDto(request, employee);
+
+        // Update department nếu có
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request. getDepartmentId())
+                    . orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+            employee.setDepartment(department);
+
+            // Optional: Update manager nếu đổi department
+            Employee manager = department.getManager();
+            if (manager != null) {
+                employee.setManager(manager);
+            }
+        }
+
+        // Update position nếu có
+        if (request. getPositionId() != null) {
+            Position position = positionRepository.findById(request.getPositionId())
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(position);
+        }
+
+        // Save và return với department & position đầy đủ
+        employee = employeeRepository.save(employee);
         return employeeMapper.toEmployeeResponse(employee);
     }
 	public Page<EmployeeResponse> getEmployeesByDepartment(Long departmentId, PageRequestDTO pageRequestDTO) {
@@ -132,5 +157,12 @@ public class EmployeeService implements IEmployeeService {
     public List<EmployeeResponse> getAll(){
         List<Employee> employeeList=employeeRepository.findAll();
         return employeeList.stream().map(employeeMapper::toEmployeeResponse).toList();
+    }
+    public EmployeeResponse updateStatus(Long id){
+        Employee employee=employeeRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        employee.setStatus(!employee.getStatus());
+
+        employeeRepository.save(employee);
+        return employeeMapper.toEmployeeResponse(employee);
     }
 }
