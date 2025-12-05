@@ -5,9 +5,12 @@ import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 
+import java.util.List;
+
 public interface IEmployeeService {
     public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) ;
     public EmployeeResponse getMyInfo();
     public EmployeeResponse updateUser(EmployeeUpdateRequest employeeUpdateRequest);
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest employeeHRUpdateRequest, Long id);
+    public List<EmployeeResponse> getAll();
 }

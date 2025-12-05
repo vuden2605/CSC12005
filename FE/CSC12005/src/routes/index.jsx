@@ -1,4 +1,5 @@
-import { Home } from "../pages/Home";
+import { Navigate } from "react-router-dom";
+// import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
 import { Manager } from "../pages/Manager";
@@ -14,11 +15,13 @@ import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { EventPageHR } from "../pages/EventHR";
 import { RequestManager } from "../pages/RequestManager";
 export const routes = [
+    { path: "/", element: <Navigate to="/login" replace /> },
+
   {
     path: "/",
     element: <LayoutDefault />,
     children: [
-      { index: true, element: <Home /> },
+      // { index: true, element: <Navigate to="/login" replace /> },
       { path: "admin", element: <Admin /> },
       { path: "manager/department", element: <Manager /> },
       {

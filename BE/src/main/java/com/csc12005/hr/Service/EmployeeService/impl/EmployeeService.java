@@ -129,4 +129,8 @@ public class EmployeeService implements IEmployeeService {
 		Page<Employee> employees = employeeRepository.findByManagerId(managerId, pageable);
 		return employees.map(employeeMapper::toEmployeeResponse);
 	}
+    public List<EmployeeResponse> getAll(){
+        List<Employee> employeeList=employeeRepository.findAll();
+        return employeeList.stream().map(employeeMapper::toEmployeeResponse).toList();
+    }
 }

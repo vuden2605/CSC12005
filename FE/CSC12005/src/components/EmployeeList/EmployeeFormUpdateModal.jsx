@@ -10,12 +10,12 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee }) => {
 
         <form className="employee-form">
           {/* --- Thông tin cá nhân --- */}
-          <fieldset>
+            <fieldset>
             <legend>Thông tin cá nhân</legend>
             <div className="form-row">
               <div className="form-group">
                 <label>Họ và tên</label>
-                <input type="text" defaultValue={employee?.name} />
+                <input type="text" />
               </div>
               <div className="form-group">
                 <label>Ngày sinh</label>
@@ -40,6 +40,12 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee }) => {
                 <input type="text" />
               </div>
               <div className="form-group">
+                <label>Địa chỉ</label>
+                <input type="text" />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
                 <label>Tên ngân hàng</label>
                 <select>
                   <option>MB Bank</option>
@@ -47,13 +53,13 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee }) => {
                   <option>ACB</option>
                 </select>
               </div>
+
               <div className="form-group">
                 <label>Số tài khoản</label>
                 <input type="text" />
               </div>
             </div>
           </fieldset>
-
           {/* --- Việc làm --- */}
           <fieldset>
             <legend>Việc làm</legend>

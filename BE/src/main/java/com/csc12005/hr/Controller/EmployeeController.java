@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -68,6 +70,13 @@ public class EmployeeController {
         return ApiResponse.<EmployeeResponse> builder()
                 .message("HR update employee success")
                 .data(employeeService.hrUpdateEmployee(request,id))
+                .build();
+    }
+    @GetMapping()
+    public ApiResponse<List<EmployeeResponse>> getAllEmp() {
+        return ApiResponse.<List<EmployeeResponse>>builder()
+                .message("get all emp")
+                .data(employeeService.getAll())
                 .build();
     }
 
