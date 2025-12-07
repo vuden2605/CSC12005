@@ -79,5 +79,86 @@ export const EmployeeService = {
       console.error("Error creating WFH request:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  getRequests: async (params = {}) => {
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      
+      // Pagination
+      if (params.page !== undefined) queryParams.append("page", params.page);
+      if (params.size !== undefined) queryParams.append("size", params.size);
+      
+      // Sorting
+      if (params.direction) queryParams.append("direction", params.direction);
+      if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+      
+      // Date filters
+      if (params.startDate) queryParams.append("startDate", params.startDate);
+      if (params.endDate) queryParams.append("endDate", params.endDate);
+      
+      // Request type filter
+      if (params.requestType) queryParams.append("requestType", params.requestType);
+      
+      // Request status filter
+      if (params.requeststatus) queryParams.append("requeststatus", params.requeststatus);
+
+      const queryString = queryParams.toString();
+      const url = `/requests/me${queryString ? `?${queryString}` : ""}`;
+
+      const response = await api.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching requests";
+      console.error("Error fetching requests:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  createTimesheetRequest: async (timesheetData) => {
+    try {
+      // Nếu timesheetData là FormData, gửi trực tiếp (axios sẽ tự động xử lý)
+      // Nếu không, wrap vào FormData
+      let requestData = timesheetData;
+      if (!(timesheetData instanceof FormData)) {
+        requestData = new FormData();
+        Object.keys(timesheetData).forEach(key => {
+          requestData.append(key, timesheetData[key]);
+        });
+      }
+
+      const response = await api.post(`/timesheet-requests`, requestData);
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error creating timesheet request";
+      console.error("Error creating timesheet request:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  createLeaveRequest: async (leaveData) => {
+    try {
+      // Nếu leaveData là FormData, gửi trực tiếp
+      // Nếu không, wrap vào FormData
+      let requestData = leaveData;
+      if (!(leaveData instanceof FormData)) {
+        requestData = new FormData();
+        Object.keys(leaveData).forEach(key => {
+          requestData.append(key, leaveData[key]);
+        });
+      }
+
+      const response = await api.post(`/leave-requests`, requestData);
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error creating leave request";
+      console.error("Error creating leave request:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };
