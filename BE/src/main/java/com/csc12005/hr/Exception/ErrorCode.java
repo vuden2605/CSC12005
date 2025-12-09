@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+	
 	//Success
 	SUCCESS(9999, "Success", HttpStatus.OK),
 	//Employee
