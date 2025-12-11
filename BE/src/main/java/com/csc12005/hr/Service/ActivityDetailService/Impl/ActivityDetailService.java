@@ -16,19 +16,19 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ActivityDetailService implements IActivityDetailService {
-	private final ActivityDetailRepository activityDetailRepository;
-	private final ActivityDetailMapper activityDetailMapper;
-	public Page<ActivityDetailResponse> myActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO) {
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
-		Page<ActivityDetail>  myActivities = activityDetailRepository.myActivities(
-				employeeId,
-				activityDetailFilterRequest.getActivityName(),
-				activityDetailFilterRequest.getStartDate(),
-				activityDetailFilterRequest.getEndDate(),
-				activityDetailFilterRequest.isSuccess(),
-				pageRequestDTO.buildPageable()
-		);
-		return myActivities.map(activityDetailMapper::toActivityDetailResponse);
-	}
+//	private final ActivityDetailRepository activityDetailRepository;
+//	private final ActivityDetailMapper activityDetailMapper;
+//	public Page<ActivityDetailResponse> myActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO) {
+//		var context = SecurityContextHolder.getContext();
+//		long employeeId = Long.parseLong(context.getAuthentication().getName());
+//		Page<ActivityDetail>  myActivities = activityDetailRepository.(
+//				employeeId,
+//				activityDetailFilterRequest.getActivityName(),
+//				activityDetailFilterRequest.getStartDate(),
+//				activityDetailFilterRequest.getEndDate(),
+//				activityDetailFilterRequest.isSuccess(),
+//				pageRequestDTO.buildPageable()
+//		);
+//		return myActivities.map(activityDetailMapper::toActivityDetailResponse);
+//	}
 }

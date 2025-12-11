@@ -1,5 +1,6 @@
 package com.csc12005.hr.Service.TimeSheetService.Impl;
 
+import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.TimeSheetCreationRequest;
 import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
 import com.csc12005.hr.DTO.Response.ImportError;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -199,6 +202,14 @@ public class TimeSheetService implements ITimeSheetService {
 	public List<TimeSheetResponse> getAllTimeSheets() {
 		List<TimeSheet> timeSheets = timeSheetRepository.findAll();
 		return timeSheets.stream().map(timeSheetMapper::toTimeSheetResponse).toList();
+	}
+	public Page<TimeSheetResponse> myTimeSheets(PageRequestDTO pageRequestDTO, LocalDate fromDate, LocalDate toDate) {
+		long employeeId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+		Pageable pageable = pageRequestDTO.buildPageable();
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		Page<TimeSheet> timeSheets = timeSheetRepository.myTimeSheets(employeeId, pageable, fromDate, toDate);
+		return timeSheets.map(timeSheetMapper::toTimeSheetResponse);
 	}
 
 }

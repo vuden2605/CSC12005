@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActivityDetailResponse {
 	private ActivityResponse activity;
-	private EmployeeResponse employee;
+	private boolean isRegistered;
 	private boolean isSuccess;
 	private Long score;
 }

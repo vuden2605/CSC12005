@@ -29,17 +29,10 @@ public class ActivityController {
 				.build();
 	}
 	@GetMapping
-	public ApiResponse<Page<ActivityResponse>> filterActivity(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO) {
-		return ApiResponse.<Page<ActivityResponse>>builder()
-				.message("Success")
-				.data(activityService.filterActivities(activityFilterRequest, pageRequestDTO))
-				.build();
-	}
-	@GetMapping("/me")
-	public ApiResponse<Page<ActivityDetailResponse>> myActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO) {
+	public ApiResponse<Page<ActivityDetailResponse>> getActivities(PageRequestDTO pageRequestDTO, ActivityFilterRequest activityFilterRequest) {
 		return ApiResponse.<Page<ActivityDetailResponse>>builder()
-				.message("Success")
-				.data(activityDetailService.myActivities(activityDetailFilterRequest, pageRequestDTO))
+				.message("Get activities successfully")
+				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
 				.build();
 	}
 
