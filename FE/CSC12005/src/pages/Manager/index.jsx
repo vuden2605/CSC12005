@@ -1,36 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import './style.scss';
 import InfoCard from '../../components/InfoCard';
+import { ManagerService } from '../../services/ManagerService';
+import { useSelector } from "react-redux";
 export const Manager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [showDropdown, setShowDropdown] = useState(false);
+  
   const itemsPerPage = 7;
+  const currentUser = useSelector((state) => state.user.currentUser);
   const employee = {
-    name: "Nguyễn Quang Vũ",
-    role: "Nhân viên kỹ thuật",
+    name: currentUser?.fullName || "Nguyễn Văn Quản Lý",
+    role: currentUser.position.positionName || "Quản lý",
     avatar: "👨‍💼",
   };
 
   // Dữ liệu mẫu với nhiều nhân viên hơn để test phân trang
-  const allEmployees = [
-    { id: 'NV001', name: 'Nguyễn Văn A', department: 'Kế toán', position: 'Kế toán trưởng' },
-    { id: 'NV002', name: 'Trần Thị B', department: 'Kế toán', position: 'Kế toán viên' },
-    { id: 'NV003', name: 'Lê Văn C', department: 'Nhân sự', position: 'Trưởng phòng' },
-    { id: 'NV004', name: 'Phạm Thị D', department: 'Marketing', position: 'Marketing Manager' },
-    { id: 'NV005', name: 'Hoàng Văn E', department: 'IT', position: 'Developer' },
-    { id: 'NV006', name: 'Ngô Thị F', department: 'Kế toán', position: 'Kế toán viên' },
-    { id: 'NV007', name: 'Đặng Văn G', department: 'Nhân sự', position: 'HR Specialist' },
-    { id: 'NV008', name: 'Vũ Thị H', department: 'Marketing', position: 'Content Writer' },
-    { id: 'NV009', name: 'Bùi Văn I', department: 'IT', position: 'Tech Lead' },
-    { id: 'NV010', name: 'Đinh Thị K', department: 'Kế toán', position: 'Kế toán trưởng' },
-    { id: 'NV011', name: 'Dương Văn L', department: 'Nhân sự', position: 'Recruiter' },
-    { id: 'NV012', name: 'Mai Thị M', department: 'Marketing', position: 'SEO Specialist' },
-    { id: 'NV013', name: 'Lý Văn N', department: 'IT', position: 'Backend Developer' },
-    { id: 'NV014', name: 'Phan Thị O', department: 'Kế toán', position: 'Kế toán viên' },
-    { id: 'NV015', name: 'Tô Văn P', department: 'Marketing', position: 'Brand Manager' },
-  ];
+  const allEmployees = ManagerService.getEmployeesByManager(currentUser.id) || [];
+  use
 
   // Lọc nhân viên theo search term
   const filteredEmployees = useMemo(() => {

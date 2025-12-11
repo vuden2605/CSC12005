@@ -6,14 +6,13 @@ import { AuthService } from "../../services/AuthService";
 import { EmployeeService } from "../../services/EmployeeService";
 import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { setUser } from "../../redux";
 
 const roleRedirects = {
   ADMIN: "/admin",
-  MANAGER: "/manager",
+  MN: "/manager",
   EMP: "/employee",
-  HR: "/employee/dashboard/info",
+  HRM: "/employee/dashboard/info",
 };
 
 export const Login = () => {
@@ -62,7 +61,7 @@ export const Login = () => {
       dispatch(setUser(userRes)); // lưu user vào Redux
       setStatus("success");
       console.log("role", userRes.role);
-      const redirectPath = roleRedirects[userRes.role] || "/";
+      const redirectPath = roleRedirects[userRes.position.role] || "/";
       navigate(redirectPath, { replace: true });
     } catch (error) {
       setErrorMessage(error.message || "Đăng nhập thất bại, vui lòng thử lại.");
