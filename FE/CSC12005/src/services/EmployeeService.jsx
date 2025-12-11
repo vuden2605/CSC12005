@@ -160,5 +160,41 @@ export const EmployeeService = {
       console.error("Error creating leave request:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  getActivities: async (params = {}) => {
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+      
+      // Activity name filter
+      if (params.activityName) queryParams.append("activityName", params.activityName);
+      
+      // Date filters
+      if (params.startDate) queryParams.append("startDate", params.startDate);
+      if (params.endDate) queryParams.append("endDate", params.endDate);
+      
+      // Pagination
+      if (params.page !== undefined) queryParams.append("page", params.page);
+      if (params.size !== undefined) queryParams.append("size", params.size);
+      
+      // Sorting
+      if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+      if (params.direction) queryParams.append("direction", params.direction);
+
+      const queryString = queryParams.toString();
+      const url = `/activities${queryString ? `?${queryString}` : ""}`;
+
+      const response = await api.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching activities";
+      console.error("Error fetching activities:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };

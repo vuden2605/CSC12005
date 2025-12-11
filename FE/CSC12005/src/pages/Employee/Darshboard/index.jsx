@@ -9,12 +9,6 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const employee = {
-    name: "Nguyễn Quang Vũ",
-    role: "Nhân viên kỹ thuật",
-    avatar: "👨‍💼",
-  };
-
   const tabs = [
     { id: "personal", label: "Thông tin cá nhân", path: "/employee/dashboard/info" },
     { id: "attendance", label: "Lịch sử chấm công", path: "/employee/dashboard/attendance" },
@@ -46,8 +40,8 @@ export const Dashboard = () => {
 
   return (
     <div className="dashboard-page">
-      {/* Header Section */}
-      <InfoCard employee={employee} />
+      {/* Header Section - Fetch thông tin nhân viên từ API */}
+      <InfoCard />
       
       <h3 className="section-title">Thao tác nhanh</h3>
       <div className="tabs">

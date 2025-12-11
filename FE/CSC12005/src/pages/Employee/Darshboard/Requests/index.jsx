@@ -5,6 +5,7 @@ import { ModalLeave } from "../../../../components/modals/Request/ModalLeave/Mod
 import { ModalWFH } from "../../../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
 import { EmployeeService } from "../../../../services/EmployeeService";
+import { Pagination } from "../../../../components/Pagination";
 
 export const Requests = () => {
   const [leaveType, setLeaveType] = useState("Tất cả");
@@ -232,87 +233,12 @@ export const Requests = () => {
     setPagination(prev => ({ ...prev, size: parseInt(newSize), page: 0 }));
   };
 
-  const renderPagination = () => {
-    if (pagination.totalPages <= 1) return null;
+  const handlePaginationPageChange = (page) => {
+    setPagination(prev => ({ ...prev, page }));
+  };
 
-    const currentPage = pagination.page;
-    const totalPages = pagination.totalPages;
-
-    // Tính toán các trang để hiển thị (tối đa 5 trang)
-    let startPage = Math.max(0, currentPage - 2);
-    let endPage = Math.min(totalPages - 1, currentPage + 2);
-
-    // Điều chỉnh để luôn hiển thị 5 trang nếu có thể
-    if (endPage - startPage < 4) {
-      if (startPage === 0) {
-        endPage = Math.min(4, totalPages - 1);
-      } else if (endPage === totalPages - 1) {
-        startPage = Math.max(0, totalPages - 5);
-      }
-    }
-
-    const pagesToShow = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-
-    return (
-      <div className="pagination" style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        gap: "0.5rem",
-        marginTop: "1rem",
-        padding: "1rem"
-      }}>
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 0 || loading}
-          style={{
-            padding: "0.5rem 1rem",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            background: currentPage === 0 ? "#f0f0f0" : "white",
-            cursor: currentPage === 0 ? "not-allowed" : "pointer",
-            minWidth: "40px"
-          }}
-        >
-          ‹
-        </button>
-
-        {pagesToShow.map((page) => (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            disabled={loading}
-            style={{
-              padding: "0.5rem 1rem",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              background: page === currentPage ? "#007bff" : "white",
-              color: page === currentPage ? "white" : "black",
-              cursor: loading ? "not-allowed" : "pointer",
-              fontWeight: page === currentPage ? "bold" : "normal",
-              minWidth: "40px"
-            }}
-          >
-            {page + 1}
-          </button>
-        ))}
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages - 1 || loading}
-          style={{
-            padding: "0.5rem 1rem",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            background: currentPage >= totalPages - 1 ? "#f0f0f0" : "white",
-            cursor: currentPage >= totalPages - 1 ? "not-allowed" : "pointer",
-            minWidth: "40px"
-          }}
-        >
-          ›
-        </button>
-      </div>
-    );
+  const handlePaginationSizeChange = (size) => {
+    setPagination(prev => ({ ...prev, size, page: 0 }));
   };
 
   return (
@@ -463,39 +389,15 @@ export const Requests = () => {
 
         {/* Pagination */}
         {!loading && !error && pagination.totalPages > 0 && (
-          <div style={{ 
-            display: "flex", 
-            flexDirection: "column",
-            gap: "1rem",
-            marginTop: "1.5rem",
-            padding: "1rem",
-            borderTop: "1px solid #eee"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <label style={{ fontSize: "14px", color: "#666" }}>Số mục mỗi trang:</label>
-                <select
-                  value={pagination.size}
-                  onChange={(e) => handleSizeChange(e.target.value)}
-                  style={{
-                    padding: "0.5rem",
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    fontSize: "14px"
-                  }}
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-              </div>
-              <div style={{ fontSize: "14px", color: "#666" }}>
-                Hiển thị {pagination.page * pagination.size + 1} - {Math.min((pagination.page + 1) * pagination.size, pagination.totalElements)} / {pagination.totalElements} kết quả
-              </div>
-            </div>
-            {renderPagination()}
-          </div>
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            pageSize={pagination.size}
+            totalElements={pagination.totalElements}
+            onPageChange={handlePaginationPageChange}
+            onPageSizeChange={handlePaginationSizeChange}
+            loading={loading}
+          />
         )}
       </div>
 
