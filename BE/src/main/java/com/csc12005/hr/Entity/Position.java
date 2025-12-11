@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.EmployeeRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,9 @@ public class Position {
 	private Long salaryRangeMax;
 	private Long baseWorkTimes;
 	private Long point;
+	@Enumerated(EnumType.STRING)
+	@Builder.Default
+	private EmployeeRole role = EmployeeRole.EMP;
 	@ManyToOne
 	@JoinColumn(name = "department_id")
 	private Department department;

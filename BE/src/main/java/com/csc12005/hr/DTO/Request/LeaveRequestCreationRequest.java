@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 public class LeaveRequestCreationRequest {
 	@NotNull(message = "REQUIRED_REQUEST_ATTACHMENT")
 	private MultipartFile file;
+	@NotBlank(message = "REQUIRED_REASON")
+	private String reason;
 	@NotNull(message = "REQUIRED_START_DATE")
 	private LocalDateTime startDate;
 	@NotNull(message = "REQUIRED_END_DATE")

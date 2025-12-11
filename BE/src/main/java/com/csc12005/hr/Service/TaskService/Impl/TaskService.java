@@ -109,7 +109,7 @@ public class TaskService implements ITaskService {
 				.orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 		Employee leader = task.getProject().getLeader();
 		if(newStatus == TaskStatus.DONE) {
-			if(employee.getRole() != EmployeeRole.MN || !leader.getId().equals(employeeId)) {
+			if(employee.getPosition().getRole() != EmployeeRole.MN || !leader.getId().equals(employeeId)) {
 				throw new AppException(ErrorCode.FORBIDDEN);
 			}
 		}

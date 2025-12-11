@@ -3,6 +3,9 @@ package com.csc12005.hr.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "departments")
@@ -18,4 +21,7 @@ public class Department {
 	@OneToOne
 	@JoinColumn(name = "manager_id")
 	private Employee manager;
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Position> positions = new ArrayList<>();
 }

@@ -5,6 +5,7 @@ import com.csc12005.hr.DTO.Response.LeaveRequestResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.LeaveRequest;
 import com.csc12005.hr.Enums.RequestStatus;
+import com.csc12005.hr.Enums.RequestType;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.LeaveRequestMapper;
@@ -35,6 +36,7 @@ public class LeaveRequestService implements ILeaveRequestService {
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		leaveRequest.setEmployee(employee);
+		leaveRequest.setRequestType(RequestType.Leave);
 		return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
 	}
 	public LeaveRequestResponse approvedLeaveRequest(Long id) {

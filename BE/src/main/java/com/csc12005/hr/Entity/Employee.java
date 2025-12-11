@@ -45,8 +45,5 @@ public class Employee {
 	@ManyToOne
 	@JoinColumn(name = "manager_id")
 	private Employee manager;
-	@Enumerated(EnumType.STRING)
-	@Builder.Default
-	private EmployeeRole role = EmployeeRole.EMP;
 	private String avatarUrl;
 }

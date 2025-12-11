@@ -26,10 +26,10 @@ public class ProjectAuthService implements IProjectAuthService {
 		Long employeeId = Long.parseLong(username);
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		if(Arrays.asList(EmployeeRole.ADMIN,EmployeeRole.CEO).contains(employee.getRole())) {
+		if(Arrays.asList(EmployeeRole.ADMIN,EmployeeRole.CEO).contains(employee.getPosition().getRole())) {
 			return true;
 		}
-		if(EmployeeRole.MN.equals(employee.getRole())) {
+		if(EmployeeRole.MN.equals(employee.getPosition().getRole())) {
 			Project project = projectRepository.findById(projectId)
 					.orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 			if (project.getDepartment().getId().equals(employee.getDepartment().getId())) {

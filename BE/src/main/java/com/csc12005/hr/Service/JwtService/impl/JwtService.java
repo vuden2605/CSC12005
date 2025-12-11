@@ -26,7 +26,7 @@ public class JwtService implements IJwtService {
 	public String generateAccessToken(Employee employee) {
 		return Jwts.builder()
 				.setSubject(employee.getId().toString())
-				.claim("scope", employee.getRole())
+				.claim("scope", employee.getPosition().getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())
 				.claim("type", "access_token")
@@ -38,10 +38,10 @@ public class JwtService implements IJwtService {
 	public String generateRefreshToken(Employee employee) {
 		return Jwts.builder()
 				.setSubject(employee.getId().toString())
-				.claim("scope", employee.getRole())
+				.claim("scope", employee.getPosition().getRole())
 				.claim("name", employee.getFullName())
 				.claim("email", employee.getEmail())
-				.claim("type", "access_token")
+				.claim("type", "refresh_token")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + refreshTime))
 				.signWith(getSecretKey())
