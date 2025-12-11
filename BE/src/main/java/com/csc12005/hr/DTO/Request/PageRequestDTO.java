@@ -14,8 +14,8 @@ public class PageRequestDTO {
 	private int page = 0;
 	@Builder.Default
 	private int size = 10;
-	@NotNull
-	private String sortBy;
+	@Builder.Default
+	private String sortBy = "id";
 	@Builder.Default
 	private Sort.Direction direction = Sort.Direction.ASC;
 	public Pageable buildPageable() {
