@@ -196,5 +196,16 @@ export const EmployeeService = {
       console.error("Error fetching activities:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  registerActivity: async (activityId) => {
+    try {
+      const response = await api.post(`/activities/${activityId}/details`, {});
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error registering activity";
+      console.error("Error registering activity:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };
