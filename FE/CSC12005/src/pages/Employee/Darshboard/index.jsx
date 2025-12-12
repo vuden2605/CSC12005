@@ -14,7 +14,7 @@ export const Dashboard = () => {
     { id: "attendance", label: "Lịch sử chấm công", path: "/employee/dashboard/attendance" },
     { id: "request", label: "Yêu cầu", path: "/employee/dashboard/request" },
     { id: "event", label: "Sự kiện", path: "/employee/dashboard/event" },
-    { id: "score", label: "Điểm", path: "/employee/dashboard/score" },
+    // { id: "score", label: "Điểm", path: "/employee/dashboard/score" },
   ];
 
   // Navigate tới trang mặc định khi vào component
