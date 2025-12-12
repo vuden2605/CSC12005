@@ -39,4 +39,11 @@ public class TimeSheetRequestController {
 				.data(timeSheetRequestService.rejectedTimeSheetRequest(id))
 				.build();
 	}
+	@GetMapping("/timesheet-requests/{id}")
+	public ApiResponse<TimeSheetRequestResponse> getTimeSheetRequestById(@PathVariable Long id) {
+		return ApiResponse.<TimeSheetRequestResponse>builder()
+				.message("Time sheet request fetched successfully")
+				.data(timeSheetRequestService.getTimeSheetRequestById(id))
+				.build();
+	}
 }

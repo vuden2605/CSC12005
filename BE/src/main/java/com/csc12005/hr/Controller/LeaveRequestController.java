@@ -7,10 +7,7 @@ import com.csc12005.hr.Service.LeaveRequestService.Impl.LeaveRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +31,12 @@ public class LeaveRequestController {
 	public ApiResponse<LeaveRequestResponse> rejectLeaveRequest(Long id) {
 		return ApiResponse.<LeaveRequestResponse>builder()
 				.data(leaveRequestService.rejectedLeaveRequest(id))
+				.build();
+	}
+	@GetMapping("/leave-requests/{id}")
+	public ApiResponse<LeaveRequestResponse> getLeaveRequestById(@PathVariable Long id) {
+		return ApiResponse.<LeaveRequestResponse>builder()
+				.data(leaveRequestService.getLeaveRequestById(id))
 				.build();
 	}
 }

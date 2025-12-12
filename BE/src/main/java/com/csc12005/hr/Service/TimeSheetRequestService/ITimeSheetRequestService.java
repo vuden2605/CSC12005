@@ -9,4 +9,6 @@ import org.springframework.stereotype.Service;
 public interface ITimeSheetRequestService {
 	TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest);
 	TimeSheetRequestResponse approvedTimeSheetRequest(Long id);
+	TimeSheetRequestResponse rejectedTimeSheetRequest(Long id);
+	TimeSheetRequestResponse getTimeSheetRequestById(Long id);
 }

@@ -47,4 +47,11 @@ public class WFHRequestController {
 				.data(wfhRequestService.rejectWFHRequest(id))
 				.build();
 	}
+	@GetMapping("/wfh-requests/{id}")
+	public ApiResponse<WFHResponse> getWFHRequestById(@PathVariable Long id) {
+		return ApiResponse.<WFHResponse>builder()
+				.message("WFH request fetched successfully")
+				.data(wfhRequestService.getWFHRequestById(id))
+				.build();
+	}
 }
