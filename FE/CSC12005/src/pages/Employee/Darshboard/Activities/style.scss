@@ -34,6 +34,35 @@
           color: #555;
         }
 
+        .filter-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: #555;
+          align-self: flex-start;
+        }
+
+        .checkbox-row {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          padding-top: 15px;
+          
+
+          .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #555;
+
+            input {
+              width: 16px;
+              height: 16px;
+              cursor: pointer;
+            }
+          }
+        }
+
         .input-field {
           padding: 10px;
           border: 1px solid #ddd;
@@ -99,7 +128,7 @@
           tr {
             th {
               padding: 15px;
-              text-align: left;
+              text-align: center;
               font-weight: 600;
               color: #333;
               white-space: nowrap;
@@ -123,6 +152,7 @@
             td {
               padding: 15px;
               color: #666;
+              text-align: center;
 
               &.name-cell {
                 font-weight: 500;
@@ -157,14 +187,28 @@
                   cursor: pointer;
                   transition: all 0.3s;
 
-                  &:hover {
+                  &:hover:not(:disabled) {
                     background-color: #1976D2;
                     transform: translateY(-2px);
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                   }
 
-                  &:active {
+                  &:active:not(:disabled) {
                     transform: translateY(0);
+                  }
+
+                  &:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.8;
+                  }
+
+                  &.registered {
+                    background-color: #4CAF50;
+                  }
+
+                  &.registered:disabled {
+                    background-color: #4CAF50;
+                    opacity: 0.9;
                   }
                 }
               }
@@ -178,6 +222,10 @@
                   font-weight: 500;
                   cursor: pointer;
                   transition: color 0.3s;
+                  background: none;
+                  border: none;
+                  padding: 0;
+                  font-size: 14px;
 
                   &:hover {
                     color: #1976D2;
