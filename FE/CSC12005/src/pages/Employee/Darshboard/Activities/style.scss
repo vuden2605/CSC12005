@@ -168,7 +168,8 @@
               }
 
               &.point-cell,
-              &.quantity-cell {
+              &.quantity-cell,
+              &.registered-count-cell {
                 text-align: center;
                 font-weight: 500;
               }
