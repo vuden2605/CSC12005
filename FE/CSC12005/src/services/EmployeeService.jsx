@@ -207,5 +207,31 @@ export const EmployeeService = {
       console.error("Error registering activity:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  getAttendanceHistory: async (params = {}) => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params.page !== undefined) queryParams.append("page", params.page);
+      if (params.size !== undefined) queryParams.append("size", params.size);
+      if (params.startDate) queryParams.append("fromDate", params.startDate);
+      if (params.endDate) queryParams.append("toDate", params.endDate);
+      if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+      if (params.direction) queryParams.append("direction", params.direction);
+
+      const queryString = queryParams.toString();
+      const url = `/timesheets/my${queryString ? `?${queryString}` : ""}`;
+
+      const response = await api.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching attendance history";
+      console.error("Error fetching attendance history:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };

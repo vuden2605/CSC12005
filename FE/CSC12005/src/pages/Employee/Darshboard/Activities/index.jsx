@@ -142,9 +142,10 @@ export const Activities = () => {
     setRegisteringMap(prev => ({ ...prev, [activityId]: true }));
     try {
       await EmployeeService.registerActivity(activityId);
-      setActivitiesData(prev => prev.map(item => (
-        item.id === activityId ? { ...item, isRegistered: true } : item
-      )));
+      await fetchActivities();
+
+      // Update modal data if currently viewing this activity
+      setSelectedActivity(prev => (prev && prev.id === activityId ? { ...prev, isRegistered: true } : prev));
     } catch (err) {
       console.error("Failed to register activity:", err);
       setError(err.message || "Đăng ký thất bại");
@@ -273,7 +274,6 @@ export const Activities = () => {
                 <thead>
                   <tr>
                     <th>Tên</th>
-                    <th>Loại</th>
                     <th 
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                       onClick={() => handleSortColumn('startDate')}
@@ -284,6 +284,7 @@ export const Activities = () => {
                     <th>Ngày kết thúc</th>
                     <th>Điểm thưởng</th>
                     <th>Số lượng</th>
+                    <th>Đã đăng ký</th>
                     <th>Đăng ký</th>
                     <th>Xem</th>
                   </tr>
@@ -292,11 +293,11 @@ export const Activities = () => {
                   {activitiesData.map((activity, index) => (
                     <tr key={activity.id || index} className={index % 2 === 0 ? 'even-row' : ''}>
                       <td className="name-cell">{activity.activityName || activity.name || "N/A"}</td>
-                      <td className="type-cell">{activity.activityType || activity.type || "N/A"}</td>
                       <td className="date-cell">{formatDate(activity.startDate) || "N/A"}</td>
                       <td className="date-cell">{formatDate(activity.endDate) || "N/A"}</td>
                       <td className="point-cell">{activity.points ?? activity.point ?? activity.reward ?? 0}</td>
-                      <td className="quantity-cell">{activity.totalSlot || activity.slots || "N/A"}</td>
+                      <td className="quantity-cell">{activity.count || activity.totalSlot || activity.slots || "N/A"}</td>
+                      <td className="registered-count-cell">{activity.registeredCount || 0}</td>
                       <td className="register-cell">
                         <button
                           className={`register-button ${activity.isRegistered ? 'registered' : ''}`}

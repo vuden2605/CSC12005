@@ -34,11 +34,6 @@ export const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
             </div>
 
             <div className="detail-row">
-              <label>Loại sự kiện:</label>
-              <span>{activity.activityType || activity.type || "N/A"}</span>
-            </div>
-
-            <div className="detail-row">
               <label>Mô tả:</label>
               <span>{activity.description || "N/A"}</span>
             </div>
@@ -55,12 +50,17 @@ export const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
 
             <div className="detail-row">
               <label>Điểm thưởng:</label>
-              <span>{activity.points ?? activity.point ?? activity.reward ?? 0}</span>
+              <span>{activity.points ?? 0}</span>
             </div>
 
             <div className="detail-row">
               <label>Số lượng:</label>
-              <span>{activity.totalSlot || activity.slots || "N/A"}</span>
+              <span>{activity.count || "N/A"}</span>
+            </div>
+
+            <div className="detail-row">
+              <label>Đã đăng ký:</label>
+              <span>{activity.registeredCount || 0}</span>
             </div>
 
             <div className="detail-row">

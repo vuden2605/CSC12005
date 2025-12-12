@@ -17,13 +17,13 @@ import java.time.LocalDate;
 public class Activity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String activityName;
-	private String description;
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private Long points;
-	private Long count;
+    private Long id;
+    private String activityName;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Long count;
+    private Long points;
 	@Builder.Default
 	private Long registeredCount = 0L;
 }

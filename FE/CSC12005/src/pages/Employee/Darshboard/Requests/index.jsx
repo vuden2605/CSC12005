@@ -39,7 +39,7 @@ export const Requests = () => {
       "WorkFromHome": "Làm việc tại nhà",
       "Leave": "Nghỉ phép",
       "Attendance": "Chấm công",
-      "TimeSheet": "Chấm công", // Có thể có cả TimeSheet
+      "TimeSheet": "Chấm công",
     };
     return typeMap[requestType] || requestType;
   };
@@ -69,16 +69,6 @@ export const Requests = () => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
-  };
-
-  // Tính số ngày giữa 2 ngày
-  const calculateDuration = (start, end) => {
-    if (!start || !end) return 0;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate - startDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    return diffDays;
   };
 
   // Fetch requests từ API
@@ -131,21 +121,16 @@ export const Requests = () => {
       // Map dữ liệu từ API sang format component
       const mappedData = response.content.map((item) => {
         const statusMapped = mapStatus(item.status);
-        const requestStartDate = item.startDate || item.createdAt;
-        const requestEndDate = item.endDate || item.createdAt;
-        
+
         return {
           id: item.id,
-          name: item.employee?.fullName || "",
-          duration: calculateDuration(requestStartDate, requestEndDate),
-          startDate: formatDate(requestStartDate),
-          endDate: formatDate(requestEndDate),
+          type: mapRequestType(item.requestType),
+          requestType: item.requestType,
+          createdAt: formatDate(item.createdAt),
           status: statusMapped.status,
           statusText: statusMapped.statusText,
           reason: item.reason || "",
-          paid: false, // API không có field này, có thể cần điều chỉnh
-          type: mapRequestType(item.requestType),
-          requestType: item.requestType, // Giữ nguyên để filter
+          attachment: item.requestAttachment || "",
         };
       });
 
@@ -201,11 +186,10 @@ export const Requests = () => {
     }
   };
 
-  const totalDays = filteredData.reduce((sum, item) => sum + item.duration, 0);
-  const paidDays = filteredData
-    .filter((item) => item.paid)
-    .reduce((sum, item) => sum + item.duration, 0);
-  const unpaidDays = totalDays - paidDays;
+  const totalRequests = filteredData.length;
+  const pendingCount = filteredData.filter((item) => item.status === "pending").length;
+  const approvedCount = filteredData.filter((item) => item.status === "approved").length;
+  const rejectedCount = filteredData.filter((item) => item.status === "rejected").length;
 
   const handleStatusChange = (statusKey) => {
     setStatusFilter(prev => ({
@@ -309,13 +293,16 @@ export const Requests = () => {
 
         <div className="summary-card">
           <div className="summary-item">
-            Tổng số ngày yêu cầu: <strong>{totalDays}</strong>
+            Tổng yêu cầu: <strong>{totalRequests}</strong>
           </div>
           <div className="summary-item">
-            Nghỉ có lương: <strong>{paidDays}</strong>
+            Chờ duyệt: <strong>{pendingCount}</strong>
           </div>
           <div className="summary-item">
-            Nghỉ không lương: <strong>{unpaidDays}</strong>
+            Đã duyệt: <strong>{approvedCount}</strong>
+          </div>
+          <div className="summary-item">
+            Từ chối: <strong>{rejectedCount}</strong>
           </div>
         </div>
       </div>
@@ -345,31 +332,26 @@ export const Requests = () => {
           <table className="leave-table">
             <thead>
               <tr>
-                <th>Họ tên</th>
-                <th>Thời gian</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày kết thúc</th>
-                <th>Trạng thái</th>
-                <th>Lí do</th>
-                <th>Loại nghỉ</th>
                 <th>Loại yêu cầu</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Lý do</th>
+                <th>Tệp đính kèm</th>
               </tr>
             </thead>
 
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: "center", padding: "2rem" }}>
+                  <td colSpan="5" style={{ textAlign: "center", padding: "2rem" }}>
                     Không có dữ liệu
                   </td>
                 </tr>
               ) : (
                 filteredData.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>{item.duration}</td>
-                    <td>{item.startDate}</td>
-                    <td>{item.endDate}</td>
+                    <td>{item.type}</td>
+                    <td>{item.createdAt}</td>
                     <td>
                       <span
                         className={`status-badge ${getStatusClass(item.status)}`}
@@ -377,9 +359,16 @@ export const Requests = () => {
                         {item.statusText}
                       </span>
                     </td>
-                    <td>{item.reason}</td>
-                    <td>{item.paid ? "Có lương" : "Không lương"}</td>
-                    <td>{item.type}</td>
+                    <td>{item.reason || "-"}</td>
+                    <td>
+                      {item.attachment ? (
+                        <a href={item.attachment} target="_blank" rel="noreferrer">
+                          Tải xuống
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                   </tr>
                 ))
               )}

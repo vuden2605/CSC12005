@@ -126,7 +126,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         />
         {errors.reason && <p className="error">{errors.reason}</p>}
 
-        <label>File minh chứng (PDF, ≤ 20MB)</label>
+        <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
         <input 
           type="file" 
           accept="application/pdf" 

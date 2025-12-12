@@ -41,7 +41,7 @@ public class ActivityDetailService implements IActivityDetailService {
 				.employee(employee)
 				.build();
 		activityDetailRepository.save(activityDetail);
-		activity.setCount(activity.getCount() + 1);
+		activity.setRegisteredCount((activity.getRegisteredCount() + 1));
 		activityRepository.save(activity);
 	}
 }

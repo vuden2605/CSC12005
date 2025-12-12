@@ -22,6 +22,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             a.description,
             a.startDate,
             a.endDate,
+            a.count,
+            a.registeredCount,
             a.points
         ),
         CAST((CASE WHEN ad.id IS NULL THEN 0 ELSE 1 END) AS boolean),
