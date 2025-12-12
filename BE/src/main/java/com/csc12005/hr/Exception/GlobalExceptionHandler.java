@@ -40,26 +40,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
-		FieldError fieldError = e.getFieldError();
-
-		if (fieldError == null) {
-			return ResponseEntity.badRequest().body(
-					ApiResponse.builder()
-							.code(ErrorCode.INVALID_INPUT.getCode())
-							.message(ErrorCode.INVALID_INPUT.getMessage())
-							.build()
-			);
-		}
-		String fieldName = fieldError.getField();
-		String errorCode = fieldError.getCode();
-		if ("typeMismatch".equals(errorCode)) {
-			return ResponseEntity.badRequest().body(
-					ApiResponse.builder()
-							.code(ErrorCode.TYPE_MISMATCH.getCode())
-							.message(ErrorCode.TYPE_MISMATCH.getMessage())
-							.build()
-			);
-		}
 		String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
 		ErrorCode error = ErrorCode.valueOf(errorMessage);
 		ApiResponse<?> response = ApiResponse.builder()

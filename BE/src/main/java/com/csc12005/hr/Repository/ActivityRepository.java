@@ -1,5 +1,6 @@
 package com.csc12005.hr.Repository;
 
+import com.csc12005.hr.DTO.Response.ActivityDetailResponse;
 import com.csc12005.hr.Entity.Activity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,17 +10,33 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	@Query("""
-			SELECT a FROM Activity a
-			WHERE (:activityName IS NULL OR LOWER(a.activityName) LIKE LOWER(CONCAT('%', :activityName, '%')))
-			AND (:startDate IS NULL OR a.startDate >= :startDate)
-			AND (:endDate IS NULL OR a.endDate <= :endDate)
-		"""
-	)
-	Page<Activity> filterActivities(
+    SELECT new com.csc12005.hr.DTO.Response.ActivityDetailResponse(
+        new com.csc12005.hr.DTO.Response.ActivityResponse(
+            a.id,
+            a.activityName,
+            a.description,
+            a.startDate,
+            a.endDate,
+            a.points
+        ),
+        CAST((CASE WHEN ad.id IS NULL THEN 0 ELSE 1 END) AS boolean),
+		CAST((CASE WHEN ad.isSuccess IS NULL THEN 0 ELSE ad.isSuccess END) AS boolean),
+        ad.score
+    )
+    FROM Activity a
+    LEFT JOIN ActivityDetail ad ON ad.activity = a
+    AND ad.employee.id = :employeeId
+    WHERE (:activityName IS NULL OR LOWER(a.activityName) LIKE LOWER(CONCAT('%', :activityName, '%')))
+      AND (:startDate IS NULL OR a.startDate >= :startDate)
+      AND (:endDate IS NULL OR a.endDate <= :endDate)
+""")
+	Page<ActivityDetailResponse> getActivities(
+			@Param("employeeId") Long employeeId,
 			@Param("activityName") String activityName,
 			@Param("startDate") LocalDate startDate,
 			@Param("endDate") LocalDate endDate,
