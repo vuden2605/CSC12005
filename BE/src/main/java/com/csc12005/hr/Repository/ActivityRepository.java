@@ -24,12 +24,13 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             a.endDate,
             a.points
         ),
-        CASE WHEN ad.id IS NULL THEN false ELSE true END,
-        CASE WHEN ad.isSuccess IS NULL THEN false ELSE ad.isSuccess END,
+        CAST((CASE WHEN ad.id IS NULL THEN 0 ELSE 1 END) AS boolean),
+		CAST((CASE WHEN ad.isSuccess IS NULL THEN 0 ELSE ad.isSuccess END) AS boolean),
         ad.score
     )
     FROM Activity a
-    LEFT JOIN ActivityDetail ad ON ad.activity = a AND ad.employee.id = :employeeId AND ad.employee.id = :employeeId
+    LEFT JOIN ActivityDetail ad ON ad.activity = a
+    AND ad.employee.id = :employeeId
     WHERE (:activityName IS NULL OR LOWER(a.activityName) LIKE LOWER(CONCAT('%', :activityName, '%')))
       AND (:startDate IS NULL OR a.startDate >= :startDate)
       AND (:endDate IS NULL OR a.endDate <= :endDate)
@@ -41,4 +42,5 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 			@Param("endDate") LocalDate endDate,
 			Pageable pageable
 	);
+
 }

@@ -35,5 +35,12 @@ public class ActivityController {
 				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
 				.build();
 	}
+	@PostMapping("/{activityId}/details")
+	public ApiResponse<Void> createActivityDetail(@PathVariable Long activityId) {
+		activityDetailService.createActivityDetail(activityId);
+		return ApiResponse.<Void>builder()
+				.message("Create activity detail successfully")
+				.build();
+	}
 
 }
