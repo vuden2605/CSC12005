@@ -13,6 +13,7 @@ import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetail
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
+import { Attendance } from "../pages/Employee/Darshboard/Attendance";
 import { EventPageHR } from "../pages/EventHR";
 import { RequestManager } from "../pages/RequestManager";
 export const routes = [
@@ -45,6 +46,7 @@ export const routes = [
                 ],
               },
               // { path: "attendance", element: <Attendance /> },
+              { path: "attendance", element: <Attendance /> },
               { path: "request", element: <Requests /> },
               { path: "event", element: <Activities /> },
               // { path: "score", element: <Score /> },

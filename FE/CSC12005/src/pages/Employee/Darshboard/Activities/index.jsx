@@ -142,9 +142,10 @@ export const Activities = () => {
     setRegisteringMap(prev => ({ ...prev, [activityId]: true }));
     try {
       await EmployeeService.registerActivity(activityId);
-      setActivitiesData(prev => prev.map(item => (
-        item.id === activityId ? { ...item, isRegistered: true } : item
-      )));
+      await fetchActivities();
+
+      // Update modal data if currently viewing this activity
+      setSelectedActivity(prev => (prev && prev.id === activityId ? { ...prev, isRegistered: true } : prev));
     } catch (err) {
       console.error("Failed to register activity:", err);
       setError(err.message || "Đăng ký thất bại");
