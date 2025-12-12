@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface IActivityDetailService {
-//	Page<ActivityDetailResponse> getActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO);
+	void createActivityDetail(Long activityId);
 }

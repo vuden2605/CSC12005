@@ -23,4 +23,7 @@ public class Activity {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private Long points;
+	private Long count;
+	@Builder.Default
+	private Long registeredCount = 0L;
 }

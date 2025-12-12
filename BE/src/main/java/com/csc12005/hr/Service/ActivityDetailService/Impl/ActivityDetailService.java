@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,8 @@ public class ActivityDetailService implements IActivityDetailService {
 	private final ActivityDetailRepository activityDetailRepository;
 	private final ActivityRepository activityRepository;
 	private final EmployeeRepository EmployeeRepository;
-	private final ActivityDetailMapper activityDetailMapper;
+	@Transactional
+	@Override
 	public void createActivityDetail(Long activityId) {
 		Activity activity = activityRepository.findById(activityId)
 				.orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
@@ -39,5 +41,7 @@ public class ActivityDetailService implements IActivityDetailService {
 				.employee(employee)
 				.build();
 		activityDetailRepository.save(activityDetail);
+		activity.setCount(activity.getCount() + 1);
+		activityRepository.save(activity);
 	}
 }
