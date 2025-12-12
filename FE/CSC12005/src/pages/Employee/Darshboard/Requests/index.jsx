@@ -4,6 +4,9 @@ import "./style.scss";
 import { ModalLeave } from "../../../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
+import { WFHDetailModal } from "../../../../components/modals/Request/WFHDetailModal/WFHDetailModal";
+import { TimeSheetDetailModal } from "../../../../components/modals/Request/TimeSheetDetailModal/TimeSheetDetailModal";
+import { LeaveDetailModal } from "../../../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
 
@@ -21,6 +24,9 @@ export const Requests = () => {
   // Modal control
   const [showChooseTypeModal, setShowChooseTypeModal] = useState(false);
   const [selectedRequestType, setSelectedRequestType] = useState(null);
+  const [selectedWFHRequestId, setSelectedWFHRequestId] = useState(null);
+  const [selectedTimeSheetRequestId, setSelectedTimeSheetRequestId] = useState(null);
+  const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState(null);
 
   // API data states
   const [requestData, setRequestData] = useState([]);
@@ -206,6 +212,24 @@ export const Requests = () => {
 
   const closeModal = () => setSelectedRequestType(null);
 
+  const closeWFHDetailModal = () => setSelectedWFHRequestId(null);
+
+  const openWFHDetailModal = (requestId) => {
+    setSelectedWFHRequestId(requestId);
+  };
+
+  const closeTimeSheetDetailModal = () => setSelectedTimeSheetRequestId(null);
+
+  const openTimeSheetDetailModal = (requestId) => {
+    setSelectedTimeSheetRequestId(requestId);
+  };
+
+  const closeLeaveDetailModal = () => setSelectedLeaveRequestId(null);
+
+  const openLeaveDetailModal = (requestId) => {
+    setSelectedLeaveRequestId(requestId);
+  };
+
   // Pagination handlers
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
@@ -337,13 +361,14 @@ export const Requests = () => {
                 <th>Trạng thái</th>
                 <th>Lý do</th>
                 <th>Tệp đính kèm</th>
+                <th>Hành động</th>
               </tr>
             </thead>
 
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "2rem" }}>
+                  <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
                     Không có dữ liệu
                   </td>
                 </tr>
@@ -367,6 +392,35 @@ export const Requests = () => {
                         </a>
                       ) : (
                         "-"
+                      )}
+                    </td>
+                    <td>
+                      {item.requestType === "WorkFromHome" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openWFHDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                      {item.requestType === "TimeSheet" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openTimeSheetDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                      {item.requestType === "Leave" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openLeaveDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -450,6 +504,30 @@ export const Requests = () => {
       )}
       {selectedRequestType === "Chấm công" && (
         <AttendanceModal onClose={closeModal} onSuccess={fetchRequests} />
+      )}
+
+      {/* Modal chi tiết WFH request */}
+      {selectedWFHRequestId && (
+        <WFHDetailModal
+          requestId={selectedWFHRequestId}
+          onClose={closeWFHDetailModal}
+        />
+      )}
+
+      {/* Modal chi tiết TimeSheet request */}
+      {selectedTimeSheetRequestId && (
+        <TimeSheetDetailModal
+          requestId={selectedTimeSheetRequestId}
+          onClose={closeTimeSheetDetailModal}
+        />
+      )}
+
+      {/* Modal chi tiết Leave request */}
+      {selectedLeaveRequestId && (
+        <LeaveDetailModal
+          requestId={selectedLeaveRequestId}
+          onClose={closeLeaveDetailModal}
+        />
       )}
     </div>
   );

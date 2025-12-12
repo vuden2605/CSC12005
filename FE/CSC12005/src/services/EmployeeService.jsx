@@ -233,5 +233,50 @@ export const EmployeeService = {
       console.error("Error fetching attendance history:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  getWFHRequestDetail: async (requestId) => {
+    try {
+      const response = await api.get(`/wfh-requests/${requestId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching WFH request detail";
+      console.error("Error fetching WFH request detail:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  getTimeSheetRequestDetail: async (requestId) => {
+    try {
+      const response = await api.get(`/timesheet-requests/${requestId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching TimeSheet request detail";
+      console.error("Error fetching TimeSheet request detail:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  getLeaveRequestDetail: async (requestId) => {
+    try {
+      const response = await api.get(`/leave-requests/${requestId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching Leave request detail";
+      console.error("Error fetching Leave request detail:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };
