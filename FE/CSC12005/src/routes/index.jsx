@@ -13,8 +13,8 @@ import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetail
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
-import { EventPageHR } from "../pages/EventHR";
 import { RequestManager } from "../pages/RequestManager";
+import EventPageHR from "../pages/EventHR";
 export const routes = [
     { path: "/", element: <Navigate to="/login" replace /> },
 
