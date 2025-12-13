@@ -10,7 +10,10 @@ import { Information } from "../pages/Employee/Darshboard/Information";
 import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalInfo";
 import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
-import { Requests } from "../pages/Employee/Darshboard/Requests"
+import { Requests } from "../pages/Employee/Darshboard/Requests";
+import EmployeeListPage from "../pages/Employee/EmployeeListPage";
+import EmployeeDetailPage from "../pages/Employee/EmployeeDetailPage";
+
 export const routes = [
   {
     path: "/",
@@ -44,6 +47,8 @@ export const routes = [
               // { path: "score", element: <Score /> },
             ]
           },
+          { path: "employee-list", element: <EmployeeListPage /> },
+          { path: "employee/:employeeId", element: <EmployeeDetailPage /> },
         ]
       },
       { path: "hr", element: <HRAdmin /> },
