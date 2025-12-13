@@ -19,7 +19,7 @@ export const Header = () => {
   const menuItems = {
     ADMIN: [{ label: "Trang tổng quan", path: "/admin/dashboard" }],
     EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
-    HR: [
+    HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý Sự kiện", path: "/hr/events" },
       { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
