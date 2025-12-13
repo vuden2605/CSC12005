@@ -29,17 +29,17 @@ public class ActivityController {
 				.build();
 	}
 	@GetMapping
-	public ApiResponse<Page<ActivityResponse>> filterActivity(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO) {
-		return ApiResponse.<Page<ActivityResponse>>builder()
-				.message("Success")
-				.data(activityService.filterActivities(activityFilterRequest, pageRequestDTO))
+	public ApiResponse<Page<ActivityDetailResponse>> getActivities(PageRequestDTO pageRequestDTO, ActivityFilterRequest activityFilterRequest) {
+		return ApiResponse.<Page<ActivityDetailResponse>>builder()
+				.message("Get activities successfully")
+				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
 				.build();
 	}
-	@GetMapping("/me")
-	public ApiResponse<Page<ActivityDetailResponse>> myActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO) {
-		return ApiResponse.<Page<ActivityDetailResponse>>builder()
-				.message("Success")
-				.data(activityDetailService.myActivities(activityDetailFilterRequest, pageRequestDTO))
+	@PostMapping("/{activityId}/details")
+	public ApiResponse<Void> createActivityDetail(@PathVariable Long activityId) {
+		activityDetailService.createActivityDetail(activityId);
+		return ApiResponse.<Void>builder()
+				.message("Create activity detail successfully")
 				.build();
 	}
 

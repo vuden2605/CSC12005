@@ -51,6 +51,7 @@ public class LeaveRequestService implements ILeaveRequestService {
 		leaveRequest.setStatus(RequestStatus.REJECTED);
 		return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
 	}
+	@Override
 	public LeaveRequestResponse getLeaveRequestById(Long id) {
 		LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
 				.orElseThrow(() -> new AppException(ErrorCode.LEAVE_REQUEST_NOT_FOUND));

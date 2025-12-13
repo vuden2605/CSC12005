@@ -1,4 +1,4 @@
-.activities-page {
+.attendance-page {
   width: 100%;
   padding: 20px;
 
@@ -25,42 +25,13 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
-        flex: 1;
-        min-width: 200px;
+        flex: 0 1 auto;
+        min-width: 120px;
 
         label {
           font-size: 14px;
           font-weight: 500;
           color: #555;
-        }
-
-        .filter-label {
-          font-size: 14px;
-          font-weight: 500;
-          color: #555;
-          align-self: flex-start;
-        }
-
-        .checkbox-row {
-          display: flex;
-          gap: 16px;
-          align-items: center;
-          padding-top: 15px;
-          
-
-          .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: #555;
-
-            input {
-              width: 16px;
-              height: 16px;
-              cursor: pointer;
-            }
-          }
         }
 
         .input-field {
@@ -79,6 +50,7 @@
       }
 
       .search-button,
+      .export-button,
       .reset-button {
         padding: 10px 20px;
         border: none;
@@ -98,6 +70,15 @@
         }
       }
 
+      .export-button {
+        background-color: #2196F3;
+        color: white;
+
+        &:hover {
+          background-color: #1976D2;
+        }
+      }
+
       .reset-button {
         background-color: #f0f0f0;
         color: #333;
@@ -109,14 +90,51 @@
     }
   }
 
-  .activities-section {
+  .statistics-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #666;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+
+        &.warning {
+          color: #ff9800;
+        }
+
+        &.danger {
+          color: #f44336;
+        }
+      }
+    }
+  }
+
+  .attendance-section {
     .table-container {
       overflow-x: auto;
       background: white;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-      .activities-table {
+      .attendance-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 14px;
@@ -151,65 +169,70 @@
 
             td {
               padding: 15px;
-              color: #666;
               text-align: center;
+              color: #666;
 
-              &.name-cell {
+              &.date-cell {
                 font-weight: 500;
                 color: #333;
               }
 
-              &.type-cell {
-                color: #666;
+              &.checkin-cell,
+              &.checkout-cell {
+                .time-success {
+                  color: #4CAF50;
+                  font-weight: 600;
+                  font-size: 15px;
+                }
+
+                .time-danger {
+                  color: #f44336;
+                  font-weight: 600;
+                  font-size: 15px;
+                }
               }
 
-              &.date-cell {
-                white-space: nowrap;
-              }
-
-              &.point-cell,
-              &.quantity-cell,
-              &.registered-count-cell {
-                text-align: center;
-                font-weight: 500;
-              }
-
-              &.register-cell {
-                text-align: center;
-
-                .register-button {
-                  padding: 6px 16px;
-                  border: none;
+              &.status-cell {
+                .status {
+                  display: inline-block;
+                  padding: 4px 12px;
                   border-radius: 20px;
-                  background-color: #2196F3;
-                  color: white;
-                  font-size: 13px;
+                  font-size: 12px;
                   font-weight: 500;
-                  cursor: pointer;
-                  transition: all 0.3s;
 
-                  &:hover:not(:disabled) {
-                    background-color: #1976D2;
-                    transform: translateY(-2px);
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                  &.present {
+                    background-color: #e8f5e9;
+                    color: #2e7d32;
                   }
 
-                  &:active:not(:disabled) {
-                    transform: translateY(0);
+                  &.wfh {
+                    background-color: #e3f2fd;
+                    color: #1565c0;
                   }
 
-                  &:disabled {
-                    cursor: not-allowed;
-                    opacity: 0.8;
+                  &.half_day {
+                    background-color: #fff3e0;
+                    color: #e65100;
                   }
 
-                  &.registered {
-                    background-color: #4CAF50;
+                  &.holiday {
+                    background-color: #f3e5f5;
+                    color: #6a1b9a;
                   }
 
-                  &.registered:disabled {
-                    background-color: #4CAF50;
-                    opacity: 0.9;
+                  &.late {
+                    background-color: #fff3e0;
+                    color: #e65100;
+                  }
+
+                  &.absent {
+                    background-color: #ffebee;
+                    color: #c62828;
+                  }
+
+                  &.normal {
+                    background-color: #e8f5e9;
+                    color: #2e7d32;
                   }
                 }
               }
@@ -217,20 +240,27 @@
               &.action-cell {
                 text-align: center;
 
-                .view-link {
-                  color: #2196F3;
-                  text-decoration: none;
-                  font-weight: 500;
-                  cursor: pointer;
-                  transition: color 0.3s;
-                  background: none;
+                .create-request-btn {
+                  padding: 8px 16px;
+                  background: #667eea;
+                  color: white;
                   border: none;
-                  padding: 0;
-                  font-size: 14px;
+                  border-radius: 6px;
+                  font-size: 13px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
 
                   &:hover {
-                    color: #1976D2;
-                    text-decoration: underline;
+                    background: #5568d3;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+                  }
+
+                  &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
                   }
                 }
               }
@@ -260,4 +290,3 @@
     }
   }
 }
-

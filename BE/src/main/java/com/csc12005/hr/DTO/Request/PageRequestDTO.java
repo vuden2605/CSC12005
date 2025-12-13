@@ -1,24 +1,35 @@
 package com.csc12005.hr.DTO.Request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PageRequestDTO {
 	@Builder.Default
-	private int page = 0;
+	private Integer page = 0;
 	@Builder.Default
-	private int size = 10;
-	@NotNull
-	private String sortBy;
+	private Integer size = 10;
+	@Builder.Default
+	private String sortBy = "id";
 	@Builder.Default
 	private Sort.Direction direction = Sort.Direction.ASC;
 	public Pageable buildPageable() {
-		return PageRequest.of(page, size, Sort.by(direction, sortBy));
+		return PageRequest.of(
+				page,
+				size,
+				Sort.by(
+						direction,
+						sortBy
+				)
+		);
 	}
 }

@@ -2,22 +2,30 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
+import { ActivityDetailModal } from "../../../../components/modals/ActivityDetailModal/ActivityDetailModal";
 
 export const Activities = () => {
   const [activityName, setActivityName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [isRegisteredChecked, setIsRegisteredChecked] = useState(false);
+  const [isUnregisteredChecked, setIsUnregisteredChecked] = useState(false);
 
   // API data states
   const [activitiesData, setActivitiesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [registeringMap, setRegisteringMap] = useState({});
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
     page: 0,
     size: 10,
     totalPages: 0,
     totalElements: 0,
   });
+  const [sortBy, setSortBy] = useState("startDate");
+  const [sortDirection, setSortDirection] = useState("DESC");
 
   // Format date từ ISO string sang DD/MM/YYYY
   const formatDate = (dateString) => {
@@ -37,8 +45,8 @@ export const Activities = () => {
       const params = {
         page: pagination.page,
         size: pagination.size,
-        sortBy: "id",
-        direction: "ASC",
+        sortBy: sortBy,
+        direction: sortDirection,
       };
 
       if (activityName) params.activityName = activityName;
@@ -46,10 +54,31 @@ export const Activities = () => {
       if (endDate) params.endDate = endDate;
 
       const data = await EmployeeService.getActivities(params);
-      
-      // Handle response - có thể là array hoặc object với content
-      const activities = Array.isArray(data) ? data : (data?.content || data?.activities || []);
-      setActivitiesData(activities);
+
+      // Normalize payload so table can render nested shape from API
+      const rawActivities = Array.isArray(data) ? data : (data?.content || data?.activities || []);
+      let normalizedActivities = rawActivities.map((item) => {
+        if (item?.activity) {
+          return {
+            ...item.activity,
+            isRegistered: item.isRegistered,
+            isSuccess: item.isSuccess,
+          };
+        }
+        return item;
+      });
+
+      // Apply frontend filtering for registration status
+      if (isRegisteredChecked && !isUnregisteredChecked) {
+        // Only show registered
+        normalizedActivities = normalizedActivities.filter(item => item.isRegistered === true);
+      } else if (!isRegisteredChecked && isUnregisteredChecked) {
+        // Only show unregistered
+        normalizedActivities = normalizedActivities.filter(item => item.isRegistered === false);
+      }
+      // If both are checked or both are unchecked, show all
+
+      setActivitiesData(normalizedActivities);
       
       // Set pagination nếu có
       if (data?.totalPages !== undefined) {
@@ -70,7 +99,7 @@ export const Activities = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.size, activityName, startDate, endDate]);
+  }, [pagination.page, pagination.size, activityName, startDate, endDate, isRegisteredChecked, isUnregisteredChecked, sortBy, sortDirection]);
 
   // Fetch activities khi component mount
   useEffect(() => {
@@ -82,7 +111,7 @@ export const Activities = () => {
     if (pagination.page !== 0) {
       setPagination(prev => ({ ...prev, page: 0 }));
     }
-  }, [activityName, startDate, endDate]);
+  }, [activityName, startDate, endDate, isRegisteredChecked, isUnregisteredChecked]);
 
   // Handle search
   const handleSearch = (e) => {
@@ -107,6 +136,43 @@ export const Activities = () => {
 
   const handlePaginationSizeChange = (size) => {
     setPagination(prev => ({ ...prev, size, page: 0 }));
+  };
+
+  const handleRegister = async (activityId) => {
+    setRegisteringMap(prev => ({ ...prev, [activityId]: true }));
+    try {
+      await EmployeeService.registerActivity(activityId);
+      await fetchActivities();
+
+      // Update modal data if currently viewing this activity
+      setSelectedActivity(prev => (prev && prev.id === activityId ? { ...prev, isRegistered: true } : prev));
+    } catch (err) {
+      console.error("Failed to register activity:", err);
+      setError(err.message || "Đăng ký thất bại");
+    } finally {
+      setRegisteringMap(prev => ({ ...prev, [activityId]: false }));
+    }
+  };
+
+  const handleViewActivity = (activity) => {
+    setSelectedActivity(activity);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedActivity(null);
+  };
+
+  const handleSortColumn = (column) => {
+    if (sortBy === column) {
+      // Toggle direction if clicking same column
+      setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+    } else {
+      // Set new column and default to ASC
+      setSortBy(column);
+      setSortDirection("ASC");
+    }
   };
 
   return (
@@ -149,6 +215,28 @@ export const Activities = () => {
             />
           </div>
 
+          <div className="filter-group">
+            <span className="filter-label">Trạng thái đăng ký:</span>
+            <div className="checkbox-row">
+              <label className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={isRegisteredChecked}
+                  onChange={() => setIsRegisteredChecked(!isRegisteredChecked)}
+                />
+                Đã đăng ký
+              </label>
+              <label className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={isUnregisteredChecked}
+                  onChange={() => setIsUnregisteredChecked(!isUnregisteredChecked)}
+                />
+                Chưa đăng ký
+              </label>
+            </div>
+          </div>
+
           <button type="submit" className="search-button">
             Tìm kiếm
           </button>
@@ -159,6 +247,8 @@ export const Activities = () => {
               setActivityName("");
               setStartDate("");
               setEndDate("");
+              setIsRegisteredChecked(false);
+              setIsUnregisteredChecked(false);
               fetchActivities(0);
             }}
           >
@@ -184,11 +274,17 @@ export const Activities = () => {
                 <thead>
                   <tr>
                     <th>Tên</th>
-                    <th>Loại</th>
-                    <th>Ngày bắt đầu</th>
+                    <th 
+                      style={{ cursor: 'pointer', userSelect: 'none' }}
+                      onClick={() => handleSortColumn('startDate')}
+                      title="Bấm để sắp xếp"
+                    >
+                      Ngày bắt đầu {sortBy === 'startDate' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                    </th>
                     <th>Ngày kết thúc</th>
                     <th>Điểm thưởng</th>
                     <th>Số lượng</th>
+                    <th>Đã đăng ký</th>
                     <th>Đăng ký</th>
                     <th>Xem</th>
                   </tr>
@@ -197,16 +293,27 @@ export const Activities = () => {
                   {activitiesData.map((activity, index) => (
                     <tr key={activity.id || index} className={index % 2 === 0 ? 'even-row' : ''}>
                       <td className="name-cell">{activity.activityName || activity.name || "N/A"}</td>
-                      <td className="type-cell">{activity.activityType || activity.type || "N/A"}</td>
                       <td className="date-cell">{formatDate(activity.startDate) || "N/A"}</td>
                       <td className="date-cell">{formatDate(activity.endDate) || "N/A"}</td>
-                      <td className="point-cell">{activity.point || activity.reward || 0}</td>
-                      <td className="quantity-cell">{activity.totalSlot || activity.slots || "N/A"}</td>
+                      <td className="point-cell">{activity.points ?? activity.point ?? activity.reward ?? 0}</td>
+                      <td className="quantity-cell">{activity.count || activity.totalSlot || activity.slots || "N/A"}</td>
+                      <td className="registered-count-cell">{activity.registeredCount || 0}</td>
                       <td className="register-cell">
-                        <button className="register-button">Đăng ký</button>
+                        <button
+                          className={`register-button ${activity.isRegistered ? 'registered' : ''}`}
+                          disabled={activity.isRegistered || registeringMap[activity.id]}
+                          onClick={() => handleRegister(activity.id)}
+                        >
+                          {activity.isRegistered ? "Đã đăng ký" : registeringMap[activity.id] ? "Đang đăng ký..." : "Đăng ký"}
+                        </button>
                       </td>
                       <td className="action-cell">
-                        <a href="#" className="view-link">Xem</a>
+                        <button 
+                          className="view-link"
+                          onClick={() => handleViewActivity(activity)}
+                        >
+                          Xem
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -227,6 +334,12 @@ export const Activities = () => {
           </>
         )}
       </div>
+
+      <ActivityDetailModal 
+        activity={selectedActivity} 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };

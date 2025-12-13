@@ -10,7 +10,7 @@ import { setUser } from "../../redux";
 
 const roleRedirects = {
   ADMIN: "/admin",
-  MN: "/manager",
+  MN: "/employee/dashboard/info",
   EMP: "/employee",
   HRM: "/employee/dashboard/info",
 };

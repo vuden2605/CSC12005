@@ -7,4 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ILeaveRequestService {
 	LeaveRequestResponse createLeaveRequest(LeaveRequestCreationRequest request);
+	LeaveRequestResponse approvedLeaveRequest(Long id);
+	LeaveRequestResponse rejectedLeaveRequest(Long id);
+	LeaveRequestResponse getLeaveRequestById(Long id);
 }

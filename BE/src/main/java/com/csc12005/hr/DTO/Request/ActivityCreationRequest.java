@@ -25,4 +25,6 @@ public class ActivityCreationRequest {
 	private LocalDate endDate;
 	@NotNull(message = "REQUIRED_POINTS")
 	private Long points;
+	@NotNull(message = "REQUIRED_COUNT")
+	private Long count;
 }

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import '../style.scss';
 
-export const AttendanceModal = ({ onClose, onSuccess }) => {
+export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
   const [form, setForm] = useState({
-    workDate: "",
+    workDate: initialDate || "",
     checkInNew: "",
     checkOutNew: "",
     reason: "",
