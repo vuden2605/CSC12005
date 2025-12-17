@@ -11,8 +11,9 @@ import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalI
 import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
-import EmployeeListPage from "../pages/Employee/EmployeeListPage";
-import EmployeeDetailPage from "../pages/Employee/EmployeeDetailPage";
+import EmployeeListPage from "../pages/Employee/EmployeeListPage/EmployeeListPage.jsx";
+import EmployeeDetailPage from "../pages/Employee/EmployeeDetailPage/EmployeeDetailPage.jsx";
+
 
 export const routes = [
   {

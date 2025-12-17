@@ -1,5 +1,6 @@
-import React from 'react';
-import EmployeeDetail from '../../components/EmployeeDetail';
+// import React from 'react';
+import EmployeeDetail from "/src/components/EmployeeList/EmployeeDetail.jsx";
+
 
 const EmployeeDetailPage = () => {
 return (
