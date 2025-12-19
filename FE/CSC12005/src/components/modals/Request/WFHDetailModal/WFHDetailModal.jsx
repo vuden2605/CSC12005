@@ -77,6 +77,16 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
     }
   };
 
+  const handleDownload = async (fileKey) => {
+    try {
+      const url = await EmployeeService.downloadFile(fileKey);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      alert(err.message || "Lỗi khi tải file");
+    }
+  };
+
   const getStatusText = (status) => {
     const map = {
       PENDING: "Chờ duyệt",
@@ -152,15 +162,14 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
                 <span className="detail-label">Tệp đính kèm:</span>
                 <span className="detail-value">
                   {wfhDetail.requestAttachment ? (
-                    <a 
-                      href={wfhDetail.requestAttachment} 
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => handleDownload(wfhDetail.requestAttachment)}
                       className="attachment-link"
                       title={getFileName(wfhDetail.requestAttachment)}
+                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                     >
                       📎 {getFileName(wfhDetail.requestAttachment)}
-                    </a>
+                    </button>
                   ) : (
                     "-"
                   )}

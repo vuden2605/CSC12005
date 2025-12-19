@@ -76,6 +76,16 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
     }
   };
 
+  const handleDownload = async (fileKey) => {
+    try {
+      const url = await EmployeeService.downloadFile(fileKey);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      alert(err.message || "Lỗi khi tải file");
+    }
+  };
+
   const getStatusText = (status) => {
     const map = {
       PENDING: "Chờ duyệt",
@@ -153,15 +163,14 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
                 <span className="detail-label">Tệp đính kèm:</span>
                 <span className="detail-value">
                   {leaveDetail.requestAttachment ? (
-                    <a 
-                      href={leaveDetail.requestAttachment} 
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => handleDownload(leaveDetail.requestAttachment)}
                       className="attachment-link"
                       title={getFileName(leaveDetail.requestAttachment)}
+                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                     >
                       📎 {getFileName(leaveDetail.requestAttachment)}
-                    </a>
+                    </button>
                   ) : (
                     "-"
                   )}

@@ -249,6 +249,17 @@ export const Requests = () => {
     setPagination(prev => ({ ...prev, size, page: 0 }));
   };
 
+  // Download file handler
+  const handleDownload = async (fileKey) => {
+    try {
+      const url = await EmployeeService.downloadFile(fileKey);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      alert(err.message || "Lỗi khi tải file");
+    }
+  };
+
   return (
     <div className="leave-management">
       <div className="header-section">
@@ -387,9 +398,20 @@ export const Requests = () => {
                     <td>{item.reason || "-"}</td>
                     <td>
                       {item.attachment ? (
-                        <a href={item.attachment} target="_blank" rel="noreferrer">
+                        <button
+                          onClick={() => handleDownload(item.attachment)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#5c6bc0',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            padding: 0
+                          }}
+                        >
                           Tải xuống
-                        </a>
+                        </button>
                       ) : (
                         "-"
                       )}

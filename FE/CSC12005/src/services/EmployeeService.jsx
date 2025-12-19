@@ -1,6 +1,23 @@
 import api from "../api/axios";
 
 export const EmployeeService = {
+  // Download file from S3
+  downloadFile: async (fileKey) => {
+    try {
+      const response = await api.get(`/s3/download`, {
+        params: { key: fileKey },
+      });
+      if (response.data.code === 9999 && response.data.data) {
+        return response.data.data; // Return presigned URL
+      }
+      throw new Error("Failed to get download URL");
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error downloading file";
+      console.error("Error downloading file:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
   // getEmployees: async () => {
   //   const response = await fetch(`${API_URL}/employees`);
   //   return response.json();
