@@ -28,6 +28,7 @@ export const routes = [
       // { index: true, element: <Navigate to="/login" replace /> },
       { path: "admin", element: <Admin /> },
       { path: "manager/department", element: <Manager /> },
+      { path: "manager/requests", element: <RequestManager /> },
       {
         path: "employee",
         element: <Employee />,
@@ -59,7 +60,6 @@ export const routes = [
       { path: "hr/humans", element: <HRAdmin /> },
       { path: "manager", element: <Manager /> },
       { path: "hr/events", element: <EventPageHR /> },
-      { path: "manager/requests", element: <RequestManager /> },
     ],
   },
   {

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
+import { ManagerService } from "../../../../services/ManagerService";
 import "../style.scss";
 
-export const TimeSheetDetailModal = ({ requestId, onClose }) => {
+export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
   const [timeSheetDetail, setTimeSheetDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,7 +12,8 @@ export const TimeSheetDetailModal = ({ requestId, onClose }) => {
     const fetchTimeSheetDetail = async () => {
       try {
         setLoading(true);
-        const response = await EmployeeService.getTimeSheetRequestDetail(requestId);
+        const response =
+          await EmployeeService.getTimeSheetRequestDetail(requestId);
         setTimeSheetDetail(response);
       } catch (err) {
         console.error("Error fetching TimeSheet detail:", err);
@@ -26,25 +28,52 @@ export const TimeSheetDetailModal = ({ requestId, onClose }) => {
     }
   }, [requestId]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN");
+  // ===== ACTIONS =====
+  const handleApprove = async () => {
+    try {
+      setLoading(true);
+      await ManagerService.approveTimeSheetRequest(requestId);
+      alert("Đã duyệt yêu cầu chấm công");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Duyệt yêu cầu thất bại");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleString("vi-VN");
+  const handleReject = async () => {
+    const ok = window.confirm("Bạn chắc chắn muốn từ chối yêu cầu này?");
+    if (!ok) return;
+
+    try {
+      setLoading(true);
+      await ManagerService.rejectTimeSheetRequest(requestId);
+      alert("Đã từ chối yêu cầu chấm công");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Từ chối yêu cầu thất bại");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // ===== HELPERS =====
+  const formatDate = (dateString) =>
+    dateString ? new Date(dateString).toLocaleDateString("vi-VN") : "-";
+
+  const formatDateTime = (dateString) =>
+    dateString ? new Date(dateString).toLocaleString("vi-VN") : "-";
 
   const getStatusText = (status) => {
-    const statusMap = {
-      "PENDING": "Chờ duyệt",
-      "APPROVED": "Đã duyệt",
-      "REJECTED": "Từ chối",
+    const map = {
+      PENDING: "Chờ duyệt",
+      APPROVED: "Đã duyệt",
+      REJECTED: "Từ chối",
     };
-    return statusMap[status] || status;
+    return map[status] || status;
   };
 
   const getStatusClass = (status) => {
@@ -60,6 +89,11 @@ export const TimeSheetDetailModal = ({ requestId, onClose }) => {
     }
   };
 
+  const isFinalStatus =
+    timeSheetDetail?.status === "APPROVED" ||
+    timeSheetDetail?.status === "REJECTED";
+
+  // ===== RENDER =====
   return (
     <div className="modal-overlay">
       <div className="modal-box wfh-detail-modal">
@@ -82,76 +116,99 @@ export const TimeSheetDetailModal = ({ requestId, onClose }) => {
 
         {!loading && !error && timeSheetDetail && (
           <div className="modal-content">
-            {/* Thông tin yêu cầu */}
+
+            {/* ===== THÔNG TIN YÊU CẦU ===== */}
             <div className="detail-section">
               <h3>Thông tin yêu cầu</h3>
+
               <div className="detail-row">
                 <span className="detail-label">Loại yêu cầu:</span>
                 <span className="detail-value">Chấm công</span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Trạng thái:</span>
-                <span className={`status-badge ${getStatusClass(timeSheetDetail.status)}`}>
+                <span
+                  className={`status-badge ${getStatusClass(timeSheetDetail.status)}`}
+                >
                   {getStatusText(timeSheetDetail.status)}
                 </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
-                <span className="detail-value">{timeSheetDetail.reason || "-"}</span>
+                <span className="detail-value">
+                  {timeSheetDetail.reason || "-"}
+                </span>
               </div>
             </div>
 
-            {/* Thông tin thời gian */}
+            {/* ===== THỜI GIAN ===== */}
             <div className="detail-section">
               <h3>Thông tin thời gian</h3>
+
               <div className="detail-row">
                 <span className="detail-label">Ngày làm việc:</span>
-                <span className="detail-value">{formatDate(timeSheetDetail.workDate)}</span>
+                <span className="detail-value">
+                  {formatDate(timeSheetDetail.workDate)}
+                </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Giờ vào mới:</span>
-                <span className="detail-value">{timeSheetDetail.checkInNew || "-"}</span>
+                <span className="detail-value">
+                  {timeSheetDetail.checkInNew || "-"}
+                </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Giờ ra mới:</span>
-                <span className="detail-value">{timeSheetDetail.checkOutNew || "-"}</span>
+                <span className="detail-value">
+                  {timeSheetDetail.checkOutNew || "-"}
+                </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Ngày tạo:</span>
-                <span className="detail-value">{formatDateTime(timeSheetDetail.createdAt)}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Cập nhật lần cuối:</span>
-                <span className="detail-value">{formatDateTime(timeSheetDetail.updatedAt)}</span>
+                <span className="detail-value">
+                  {formatDateTime(timeSheetDetail.createdAt)}
+                </span>
               </div>
             </div>
 
-            {/* Thông tin nhân viên */}
+            {/* ===== THÔNG TIN NHÂN VIÊN ===== */}
             {timeSheetDetail.employee && (
               <div className="detail-section">
                 <h3>Thông tin nhân viên</h3>
+
                 <div className="detail-row">
                   <span className="detail-label">Mã nhân viên:</span>
-                  <span className="detail-value">{timeSheetDetail.employee.employeeCode}</span>
+                  <span className="detail-value">
+                    {timeSheetDetail.employee.employeeCode}
+                  </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Tên nhân viên:</span>
-                  <span className="detail-value">{timeSheetDetail.employee.fullName}</span>
+                  <span className="detail-value">
+                    {timeSheetDetail.employee.fullName}
+                  </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Email:</span>
-                  <span className="detail-value">{timeSheetDetail.employee.email}</span>
+                  <span className="detail-value">
+                    {timeSheetDetail.employee.email}
+                  </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Điện thoại:</span>
-                  <span className="detail-value">{timeSheetDetail.employee.phone}</span>
-                </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Phòng ban:</span>
                   <span className="detail-value">
                     {timeSheetDetail.employee.department?.departmentName || "-"}
                   </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Chức vụ:</span>
                   <span className="detail-value">
@@ -161,28 +218,24 @@ export const TimeSheetDetailModal = ({ requestId, onClose }) => {
               </div>
             )}
 
-            {/* File đính kèm */}
-            {timeSheetDetail.requestAttachment && (
-              <div className="detail-section">
-                <h3>File đính kèm</h3>
-                <div className="attachment-container">
-                  <a
-                    href={timeSheetDetail.requestAttachment}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="attachment-link"
-                  >
-                    📎 {timeSheetDetail.requestAttachment.split('/').pop()}
-                  </a>
-                </div>
-              </div>
-            )}
-
+            {/* ===== FOOTER ===== */}
             <div className="modal-footer">
               <button className="btn cancel" onClick={onClose}>
                 Đóng
               </button>
+
+              {isManager && !isFinalStatus && (
+                <>
+                  <button className="btn danger" onClick={handleReject}>
+                    Từ chối
+                  </button>
+                  <button className="btn primary" onClick={handleApprove}>
+                    Duyệt
+                  </button>
+                </>
+              )}
             </div>
+
           </div>
         )}
       </div>
