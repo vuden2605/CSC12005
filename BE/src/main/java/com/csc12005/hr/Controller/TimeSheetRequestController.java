@@ -23,7 +23,7 @@ public class TimeSheetRequestController {
 				.data(timeSheetRequestService.createTimeSheetRequest(timeSheetRequest))
 				.build();
 	}
-	@PreAuthorize("@timeSheetRequestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
+	@PreAuthorize("@requestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
 	@PutMapping("/timesheet-requests/{id}/approve")
 	public ApiResponse<TimeSheetRequestResponse> approveTimesheetRequest(@PathVariable Long id) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()
@@ -31,7 +31,7 @@ public class TimeSheetRequestController {
 				.data(timeSheetRequestService.approvedTimeSheetRequest(id))
 				.build();
 	}
-	@PreAuthorize("@timeSheetRequestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
+	@PreAuthorize("@requestAuthService.canApproveOrRejectRequest(#id, authentication.getName())")
 	@PutMapping("/timesheet-requests/{id}/reject")
 	public ApiResponse<TimeSheetRequestResponse> rejectTimesheetRequest(@PathVariable Long id) {
 		return ApiResponse.<TimeSheetRequestResponse>builder()

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RequestController {
 	private final RequestService requestService;
-	@GetMapping("/requests")
+	@GetMapping("/requests/by-manager")
 	public ApiResponse<Page<RequestResponse>> getRequests (
 			PageRequestDTO pageRequest,
 			RequestFilter requestFilter) {
