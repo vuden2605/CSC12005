@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
 
 import { ModalLeave } from "../../../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
+import { WFHDetailModal } from "../../../../components/modals/Request/WFHDetailModal/WFHDetailModal";
+import { TimeSheetDetailModal } from "../../../../components/modals/Request/TimeSheetDetailModal/TimeSheetDetailModal";
+import { LeaveDetailModal } from "../../../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
+import { EmployeeService } from "../../../../services/EmployeeService";
+import { Pagination } from "../../../../components/Pagination";
 
 export const Requests = () => {
   const [leaveType, setLeaveType] = useState("Tất cả");
@@ -19,70 +24,150 @@ export const Requests = () => {
   // Modal control
   const [showChooseTypeModal, setShowChooseTypeModal] = useState(false);
   const [selectedRequestType, setSelectedRequestType] = useState(null);
+  const [selectedWFHRequestId, setSelectedWFHRequestId] = useState(null);
+  const [selectedTimeSheetRequestId, setSelectedTimeSheetRequestId] = useState(null);
+  const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState(null);
 
-  const requestData = [
-    {
-      id: 1,
-      name: "Nguyễn Quang Vũ",
-      duration: 1,
-      startDate: "2022-04-22",
-      endDate: "2022-04-28",
-      status: "pending",
-      statusText: "Chờ duyệt",
-      reason: "Cá nhân",
-      paid: true,
-      type: "Nghỉ phép",
-    },
-    {
-      id: 2,
-      name: "Nguyễn Quang Vũ",
-      duration: 7,
-      startDate: "2022-04-22",
-      endDate: "2022-04-30",
-      status: "approved",
-      statusText: "Đã duyệt",
-      reason: "Thi IELTS",
-      paid: false,
-      type: "Làm việc tại nhà",
-    },
-    {
-      id: 3,
-      name: "Nguyễn Quang Vũ",
-      duration: 1,
-      startDate: "2022-04-22",
-      endDate: "2022-06-28",
-      status: "rejected",
-      statusText: "Từ chối",
-      reason: "Chăm sóc con",
-      paid: true,
-      type: "Chấm công",
-    },
-    {
-      id: 4,
-      name: "Nguyễn Quang Vũ",
-      duration: 5,
-      startDate: "2022-04-22",
-      endDate: "2022-04-28",
-      status: "approved",
-      statusText: "Đã duyệt",
-      reason: "Cá nhân",
-      paid: true,
-      type: "Nghỉ phép",
-    },
-    {
-      id: 5,
-      name: "Nguyễn Quang Vũ",
-      duration: 5,
-      startDate: "2022-04-22",
-      endDate: "2022-04-28",
-      status: "approved",
-      statusText: "Đã duyệt",
-      reason: "Cá nhân",
-      paid: true,
-      type: "Làm việc tại nhà",
-    },
-  ];
+  // API data states
+  const [requestData, setRequestData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: 10,
+    totalPages: 0,
+    totalElements: 0,
+  });
 
+  // Map requestType từ API sang tên hiển thị
+  const mapRequestType = (requestType) => {
+    const typeMap = {
+      "WorkFromHome": "Làm việc tại nhà",
+      "Leave": "Nghỉ phép",
+      "Attendance": "Chấm công",
+      "TimeSheet": "Chấm công",
+    };
+    return typeMap[requestType] || requestType;
+  };
+
+  // Map tên hiển thị sang requestType API
+  const mapDisplayTypeToApiType = (displayType) => {
+    const typeMap = {
+      "Làm việc tại nhà": "WorkFromHome",
+      "Nghỉ phép": "Leave",
+      "Chấm công": "TimeSheet", // Hoặc "Attendance" tùy API
+    };
+    return typeMap[displayType] || null;
+  };
+
+  // Map status từ API sang format component
+  const mapStatus = (status) => {
+    const statusMap = {
+      "PENDING": { status: "pending", statusText: "Chờ duyệt" },
+      "APPROVED": { status: "approved", statusText: "Đã duyệt" },
+      "REJECTED": { status: "rejected", statusText: "Từ chối" },
+    };
+    return statusMap[status] || { status: status.toLowerCase(), statusText: status };
+  };
+
+  // Format date từ ISO string sang YYYY-MM-DD
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0];
+  };
+
+  // Fetch requests từ API
+  const fetchRequests = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Build query params
+      const params = {
+        page: pagination.page,
+        size: pagination.size,
+        direction: "ASC",
+        sortBy: "id",
+      };
+
+      // Thêm date filters nếu có
+      if (startDate) {
+        params.startDate = `${startDate}T00:00:00`;
+      }
+      if (endDate) {
+        params.endDate = `${endDate}T23:59:59`;
+      }
+
+      // Thêm requestType filter nếu không phải "Tất cả"
+      if (leaveType !== "Tất cả") {
+        const apiRequestType = mapDisplayTypeToApiType(leaveType);
+        if (apiRequestType) {
+          params.requestType = apiRequestType;
+        }
+      }
+
+      // Thêm requeststatus filter nếu chỉ có 1 status được chọn
+      const selectedStatuses = Object.entries(statusFilter)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([status]) => status);
+      
+      if (selectedStatuses.length === 1) {
+        // Map status từ UI sang API format
+        const statusMap = {
+          "pending": "PENDING",
+          "approved": "APPROVED",
+          "rejected": "REJECTED",
+        };
+        params.requeststatus = statusMap[selectedStatuses[0]] || selectedStatuses[0].toUpperCase();
+      }
+
+      const response = await EmployeeService.getRequests(params);
+
+      // Map dữ liệu từ API sang format component
+      const mappedData = response.content.map((item) => {
+        const statusMapped = mapStatus(item.status);
+
+        return {
+          id: item.id,
+          type: mapRequestType(item.requestType),
+          requestType: item.requestType,
+          createdAt: formatDate(item.createdAt),
+          status: statusMapped.status,
+          statusText: statusMapped.statusText,
+          reason: item.reason || "",
+          attachment: item.requestAttachment || "",
+        };
+      });
+
+      setRequestData(mappedData);
+      setPagination({
+        page: response.number || 0,
+        size: response.size || 10,
+        totalPages: response.totalPages || 0,
+        totalElements: response.totalElements || 0,
+      });
+    } catch (err) {
+      console.error("Error fetching requests:", err);
+      setError(err.message || "Không thể tải danh sách yêu cầu");
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.page, pagination.size, startDate, endDate, leaveType, statusFilter]);
+
+  // Fetch data khi component mount và khi dependencies thay đổi
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
+  // Reset page về 0 khi filters thay đổi
+  useEffect(() => {
+    if (pagination.page !== 0) {
+      setPagination(prev => ({ ...prev, page: 0 }));
+    }
+  }, [startDate, endDate, leaveType, statusFilter]);
+
+  // Filter data theo type và status (date filter đã được xử lý ở API level)
   const filteredData = requestData.filter((item) => {
     const typeMatch = leaveType === "Tất cả" || item.type === leaveType;
 
@@ -91,11 +176,7 @@ export const Requests = () => {
       (statusFilter.approved && item.status === "approved") ||
       (statusFilter.rejected && item.status === "rejected");
 
-    const dateMatch =
-      (!startDate || item.startDate >= startDate) &&
-      (!endDate || item.endDate <= endDate);
-
-    return typeMatch && statusMatch && dateMatch;
+    return typeMatch && statusMatch;
   });
 
   const getStatusClass = (status) => {
@@ -111,11 +192,10 @@ export const Requests = () => {
     }
   };
 
-  const totalDays = filteredData.reduce((sum, item) => sum + item.duration, 0);
-  const paidDays = filteredData
-    .filter((item) => item.paid)
-    .reduce((sum, item) => sum + item.duration, 0);
-  const unpaidDays = totalDays - paidDays;
+  const totalRequests = filteredData.length;
+  const pendingCount = filteredData.filter((item) => item.status === "pending").length;
+  const approvedCount = filteredData.filter((item) => item.status === "approved").length;
+  const rejectedCount = filteredData.filter((item) => item.status === "rejected").length;
 
   const handleStatusChange = (statusKey) => {
     setStatusFilter(prev => ({
@@ -131,6 +211,43 @@ export const Requests = () => {
   };
 
   const closeModal = () => setSelectedRequestType(null);
+
+  const closeWFHDetailModal = () => setSelectedWFHRequestId(null);
+
+  const openWFHDetailModal = (requestId) => {
+    setSelectedWFHRequestId(requestId);
+  };
+
+  const closeTimeSheetDetailModal = () => setSelectedTimeSheetRequestId(null);
+
+  const openTimeSheetDetailModal = (requestId) => {
+    setSelectedTimeSheetRequestId(requestId);
+  };
+
+  const closeLeaveDetailModal = () => setSelectedLeaveRequestId(null);
+
+  const openLeaveDetailModal = (requestId) => {
+    setSelectedLeaveRequestId(requestId);
+  };
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      setPagination(prev => ({ ...prev, page: newPage }));
+    }
+  };
+
+  const handleSizeChange = (newSize) => {
+    setPagination(prev => ({ ...prev, size: parseInt(newSize), page: 0 }));
+  };
+
+  const handlePaginationPageChange = (page) => {
+    setPagination(prev => ({ ...prev, page }));
+  };
+
+  const handlePaginationSizeChange = (size) => {
+    setPagination(prev => ({ ...prev, size, page: 0 }));
+  };
 
   return (
     <div className="leave-management">
@@ -200,13 +317,16 @@ export const Requests = () => {
 
         <div className="summary-card">
           <div className="summary-item">
-            Tổng số ngày yêu cầu: <strong>{totalDays}</strong>
+            Tổng yêu cầu: <strong>{totalRequests}</strong>
           </div>
           <div className="summary-item">
-            Nghỉ có lương: <strong>{paidDays}</strong>
+            Chờ duyệt: <strong>{pendingCount}</strong>
           </div>
           <div className="summary-item">
-            Nghỉ không lương: <strong>{unpaidDays}</strong>
+            Đã duyệt: <strong>{approvedCount}</strong>
+          </div>
+          <div className="summary-item">
+            Từ chối: <strong>{rejectedCount}</strong>
           </div>
         </div>
       </div>
@@ -216,41 +336,112 @@ export const Requests = () => {
       {/* Table */}
       <div className="table-section">
         <h3 className="section-title">Danh sách các yêu cầu</h3>
-        <table className="leave-table">
-          <thead>
-            <tr>
-              <th>Họ tên</th>
-              <th>Thời gian</th>
-              <th>Ngày bắt đầu</th>
-              <th>Ngày kết thúc</th>
-              <th>Trạng thái</th>
-              <th>Lí do</th>
-              <th>Loại nghỉ</th>
-              <th>Loại yêu cầu</th>
-            </tr>
-          </thead>
+        
+        {loading && (
+          <div style={{ padding: "2rem", textAlign: "center" }}>
+            <p>Đang tải dữ liệu...</p>
+          </div>
+        )}
 
-          <tbody>
-            {filteredData.map((item) => (
-              <tr key={item.id}>
-                <td>{item.name}</td>
-                <td>{item.duration}</td>
-                <td>{item.startDate}</td>
-                <td>{item.endDate}</td>
-                <td>
-                  <span
-                    className={`status-badge ${getStatusClass(item.status)}`}
-                  >
-                    {item.statusText}
-                  </span>
-                </td>
-                <td>{item.reason}</td>
-                <td>{item.paid ? "Có lương" : "Không lương"}</td>
-                <td>{item.type}</td>
+        {error && (
+          <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
+            <p>Lỗi: {error}</p>
+            <button onClick={fetchRequests} style={{ marginTop: "10px" }}>
+              Thử lại
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <table className="leave-table">
+            <thead>
+              <tr>
+                <th>Loại yêu cầu</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Lý do</th>
+                <th>Tệp đính kèm</th>
+                <th>Hành động</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
+                    Không có dữ liệu
+                  </td>
+                </tr>
+              ) : (
+                filteredData.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.type}</td>
+                    <td>{item.createdAt}</td>
+                    <td>
+                      <span
+                        className={`status-badge ${getStatusClass(item.status)}`}
+                      >
+                        {item.statusText}
+                      </span>
+                    </td>
+                    <td>{item.reason || "-"}</td>
+                    <td>
+                      {item.attachment ? (
+                        <a href={item.attachment} target="_blank" rel="noreferrer">
+                          Tải xuống
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td>
+                      {item.requestType === "WorkFromHome" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openWFHDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                      {item.requestType === "TimeSheet" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openTimeSheetDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                      {item.requestType === "Leave" && (
+                        <button
+                          className="btn-view-detail"
+                          onClick={() => openLeaveDetailModal(item.id)}
+                          title="Xem chi tiết"
+                        >
+                          Xem chi tiết
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+
+        {/* Pagination */}
+        {!loading && !error && pagination.totalPages > 0 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            pageSize={pagination.size}
+            totalElements={pagination.totalElements}
+            onPageChange={handlePaginationPageChange}
+            onPageSizeChange={handlePaginationSizeChange}
+            loading={loading}
+          />
+        )}
       </div>
 
       {/* Sidebar */}
@@ -306,13 +497,37 @@ export const Requests = () => {
 
       {/* Render modal tương ứng */}
       {selectedRequestType === "Nghỉ phép" && (
-        <ModalLeave onClose={closeModal} />
+        <ModalLeave onClose={closeModal} onSuccess={fetchRequests} />
       )}
       {selectedRequestType === "Làm việc tại nhà" && (
-        <ModalWFH onClose={closeModal} />
+        <ModalWFH onClose={closeModal} onSuccess={fetchRequests} />
       )}
       {selectedRequestType === "Chấm công" && (
-        <AttendanceModal onClose={closeModal} />
+        <AttendanceModal onClose={closeModal} onSuccess={fetchRequests} />
+      )}
+
+      {/* Modal chi tiết WFH request */}
+      {selectedWFHRequestId && (
+        <WFHDetailModal
+          requestId={selectedWFHRequestId}
+          onClose={closeWFHDetailModal}
+        />
+      )}
+
+      {/* Modal chi tiết TimeSheet request */}
+      {selectedTimeSheetRequestId && (
+        <TimeSheetDetailModal
+          requestId={selectedTimeSheetRequestId}
+          onClose={closeTimeSheetDetailModal}
+        />
+      )}
+
+      {/* Modal chi tiết Leave request */}
+      {selectedLeaveRequestId && (
+        <LeaveDetailModal
+          requestId={selectedLeaveRequestId}
+          onClose={closeLeaveDetailModal}
+        />
       )}
     </div>
   );

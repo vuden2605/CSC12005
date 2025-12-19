@@ -1,9 +1,7 @@
 package com.csc12005.hr.Controller;
 
-import com.csc12005.hr.DTO.Request.ActivityCreationRequest;
-import com.csc12005.hr.DTO.Request.ActivityDetailFilterRequest;
-import com.csc12005.hr.DTO.Request.ActivityFilterRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.*;
+import com.csc12005.hr.DTO.Response.ActivityDetailHRResponse;
 import com.csc12005.hr.DTO.Response.ActivityDetailResponse;
 import com.csc12005.hr.DTO.Response.ActivityResponse;
 import com.csc12005.hr.DTO.Response.ApiResponse;
@@ -29,18 +27,44 @@ public class ActivityController {
 				.build();
 	}
 	@GetMapping
-	public ApiResponse<Page<ActivityResponse>> filterActivity(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO) {
-		return ApiResponse.<Page<ActivityResponse>>builder()
-				.message("Success")
-				.data(activityService.filterActivities(activityFilterRequest, pageRequestDTO))
-				.build();
-	}
-	@GetMapping("/me")
-	public ApiResponse<Page<ActivityDetailResponse>> myActivities(ActivityDetailFilterRequest activityDetailFilterRequest, PageRequestDTO pageRequestDTO) {
+	public ApiResponse<Page<ActivityDetailResponse>> getActivities(PageRequestDTO pageRequestDTO, ActivityFilterRequest activityFilterRequest) {
 		return ApiResponse.<Page<ActivityDetailResponse>>builder()
-				.message("Success")
-				.data(activityDetailService.myActivities(activityDetailFilterRequest, pageRequestDTO))
+				.message("Get activities successfully")
+				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
 				.build();
 	}
+	@PostMapping("/{activityId}/details")
+	public ApiResponse<Void> createActivityDetail(@PathVariable Long activityId) {
+        activityDetailService.createActivityDetail(activityId);
+        return ApiResponse.<Void>builder()
+                .message("Create activity detail successfully")
+                .build();
+    }
+    @PatchMapping("/{activityId}")
+    public ApiResponse<ActivityResponse> UpdateActivity(@RequestBody @Valid ActivityUpdateRequest request,@PathVariable Long activityId){
+        return ApiResponse.<ActivityResponse>builder()
+                .data(activityService.updateActivity(request,activityId))
+                .message("update success")
+                .build();
+    }
+    @GetMapping("/{activityId}")
+    public ApiResponse<Page<ActivityDetailHRResponse>> getActivityParticipants(
+            @PathVariable Long activityId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Boolean status,
+            PageRequestDTO pageRequestDTO
+    ) {
+        return ApiResponse.<Page<ActivityDetailHRResponse>>builder()
+                .message("Get activity participants successfully")
+                .data(
+                        activityService.getActivityParticipants(
+                                activityId,
+                                name,
+                                status,
+                                pageRequestDTO
+                        )
+                )
+                .build();
+    }
 
 }

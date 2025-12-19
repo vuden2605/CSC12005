@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 	private final EmployeeService employeeService;
 	@PostMapping
-	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")
+//	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")
 	public ApiResponse<EmployeeResponse> createEmployee(@RequestBody @Valid EmployeeCreationRequest employeeCreationRequest) {
 		return ApiResponse.<EmployeeResponse>builder()
 				.message("Employee created successfully")
@@ -68,6 +70,21 @@ public class EmployeeController {
         return ApiResponse.<EmployeeResponse> builder()
                 .message("HR update employee success")
                 .data(employeeService.hrUpdateEmployee(request,id))
+                .build();
+    }
+    @PatchMapping("/status/{id}")
+    public ApiResponse<EmployeeResponse> updateStatus(@PathVariable Long id){
+        return ApiResponse.<EmployeeResponse> builder()
+                .message("Disable success")
+                .data(employeeService.updateStatus(id))
+                .build();
+
+    }
+    @GetMapping()
+    public ApiResponse<List<EmployeeResponse>> getAllEmp() {
+        return ApiResponse.<List<EmployeeResponse>>builder()
+                .message("get all emp")
+                .data(employeeService.getAll())
                 .build();
     }
 

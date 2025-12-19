@@ -24,12 +24,29 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
       AND (:requestType IS NULL OR r.requestType = :requestType)
       AND (:startDate IS NULL OR r.createdAt >= :startDate)
       AND (:endDate IS NULL OR r.createdAt < :endDate)
+      AND (r.employee.manager.id = :employeeId)
 """)
-	Page<Request> getRequest(Pageable pageable,
+	Page<Request> getRequestByManager(Pageable pageable,
 	                         @Param("status") String status,
 	                         @Param("requestType") RequestType requestType,
 	                         @Param("startDate") LocalDateTime startDate,
-	                         @Param("endDate") LocalDateTime endDate);
+	                         @Param("endDate") LocalDateTime endDate,
+	                         @Param("employeeId") Long employeeId);
+	@Query("""
+    SELECT r
+    FROM Request r
+    WHERE (:status IS NULL OR r.status = :status)
+      AND (:requestType IS NULL OR r.requestType = :requestType)
+      AND (:startDate IS NULL OR r.createdAt >= :startDate)
+      AND (:endDate IS NULL OR r.createdAt < :endDate)
+      AND r.employee.id = :employeeId
+""")
+	Page<Request> myRequests(Pageable pageable,
+	                         @Param("status") String status,
+	                         @Param("requestType") RequestType requestType,
+	                         @Param("startDate") LocalDateTime startDate,
+	                         @Param("endDate") LocalDateTime endDate,
+	                         @Param("employeeId") Long employeeId);
 	@Query("SELECT r FROM Request r " +
 			"JOIN FETCH r.employee e " +
 			"JOIN FETCH e.manager m " +

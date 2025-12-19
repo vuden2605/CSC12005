@@ -31,7 +31,13 @@ public class S3Service implements IS3Service {
 	private String bucketName;
 
 	@Override
-	public String uploadFile(MultipartFile file, String folder) {
+	public String uploadFile(MultipartFile file) {
+		String folder = file.getContentType() == null ? "others"
+				: file.getContentType().startsWith("image/") ? "images"
+				: file.getContentType().startsWith("video/") ? "videos"
+				: file.getContentType().startsWith("audio/") ? "audios"
+				: file.getContentType().startsWith("application/pdf") ? "documents"
+				: "others";
 		try {
 			String key = folder + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 			String contentType = file.getContentType() != null ? file.getContentType() : "application/octet-stream";

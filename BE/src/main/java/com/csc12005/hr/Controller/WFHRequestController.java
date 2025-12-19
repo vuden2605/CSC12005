@@ -5,6 +5,7 @@ import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.WFHResponse;
 import com.csc12005.hr.Service.WFHRequestService.Impl.WFHRequestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WFHRequestController {
 	private final WFHRequestService wfhRequestService;
-	@PostMapping("/wfh-requests")
-	public ApiResponse<WFHResponse> createWFHRequest(@RequestBody WFHCreationRequest wfhCreationRequest) {
+	@PostMapping(
+		value = "/wfh-requests",
+		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ApiResponse<WFHResponse> createWFHRequest(@ModelAttribute WFHCreationRequest wfhCreationRequest) {
 		return ApiResponse.<WFHResponse>builder()
 				.message("WFH request created successfully")
 				.data(wfhRequestService.createWFHRequest(wfhCreationRequest))
@@ -42,6 +45,13 @@ public class WFHRequestController {
 		return ApiResponse.<WFHResponse>builder()
 				.message("WFH request rejected successfully")
 				.data(wfhRequestService.rejectWFHRequest(id))
+				.build();
+	}
+	@GetMapping("/wfh-requests/{id}")
+	public ApiResponse<WFHResponse> getWFHRequestById(@PathVariable Long id) {
+		return ApiResponse.<WFHResponse>builder()
+				.message("WFH request fetched successfully")
+				.data(wfhRequestService.getWFHRequestById(id))
 				.build();
 	}
 }

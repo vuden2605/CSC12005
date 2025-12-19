@@ -9,6 +9,8 @@ import com.csc12005.hr.Service.PositionService.IPositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PositionService implements IPositionService {
@@ -18,4 +20,8 @@ public class PositionService implements IPositionService {
 		Position position = positionMapper.toPosition(positionCreationRequest);
 		return positionMapper.toPositionResponse(positionRepository.save(position));
 	}
+    public List<PositionResponse> getPositionByDepartment(Long DepartmentID){
+        List<Position> list= positionRepository.findByDepartmentId(DepartmentID);
+        return list.stream().map(positionMapper::toPositionResponse).toList();
+    };
 }

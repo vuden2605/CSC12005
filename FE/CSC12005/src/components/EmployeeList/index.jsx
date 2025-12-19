@@ -1,110 +1,96 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.scss";
 import EmployeeFormUpdateModel from "./EmployeeFormUpdateModal";
 import EmployeeFormCreateModal from "./EmployeeFormCreateModal";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-function EmployeeList() {
-  // Dữ liệu mẫu
-  const employees = [
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 3,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 5,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 6,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-    {
-      id: 7,
-      name: "Nguyễn Văn A",
-      department: "Phòng IT",
-      position: "Backend Dev",
-      status: "active",
-    },
-    {
-      id: 8,
-      name: "Trần Thị B",
-      department: "Phòng Nhân sự",
-      position: "HR Manager",
-      status: "inactive",
-    },
-    {
-      id: 9,
-      name: "Lê Văn C",
-      department: "Phòng Marketing",
-      position: "Designer",
-      status: "active",
-    },
-  ];
+import { EmployeeService } from "../../services/EmployeeService";
+import { HRService } from "../../services/HRService";
 
-  // State filter
+function EmployeeList() {
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // state cho alert message
+  const [alert, setAlert] = useState({
+    show: false,
+    type: "success",
+    message: "",
+  });
+
+  useEffect(() => {
+    const fetchAllEmployees = async () => {
+      try {
+        setLoading(true);
+        const data = await HRService.getAllEmp();
+        console.log(data);
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.log(error);
+        showAlert("error", "Không thể tải danh sách nhân viên");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllEmployees();
+  }, []);
+
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Lọc dữ liệu
+  // filter
   const filteredEmployees = employees.filter((emp) => {
-    const matchName = emp.name.toLowerCase().includes(search.toLowerCase());
+    const matchName = emp.fullName.toLowerCase().includes(search.toLowerCase());
     const matchDept =
-      departmentFilter === "all" || emp.department === departmentFilter;
-    const matchStatus = statusFilter === "all" || emp.status === statusFilter;
+      departmentFilter === "all" ||
+      emp.department?.departmentName === departmentFilter;
+    const matchStatus = statusFilter === "all" || emp.status == statusFilter;
     return matchName && matchDept && matchStatus;
   });
 
-  const departments = ["Phòng IT", "Phòng Nhân sự", "Phòng Marketing"];
-  // State cho phân trang
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // số nhân viên mỗi trang
+  const departments = [
+    "Human Resources",
+    "Finance",
+    "Information Technology",
+    "Sales",
+    "Marketing",
+    "Manufacturing",
+  ];
 
-  // Tính toán phân trang
+  //  phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedEmployees = filteredEmployees.slice(startIndex, endIndex);
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
-  // Khi đổi trang
+  //  đổi trang
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  const handleDisable = (id) => {
-    console.log("Vô hiệu hóa nhân viên có ID:", id);
-  };
+const handleUpdateStatus = async (id) => {
+  try {
+    const updatedEmployee = await HRService.UpdateStatusEmp(id);
+    
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((emp) =>
+        emp.id === id ? updatedEmployee : emp
+      )
+    );
+    
+    showAlert(
+      "success", 
+      updatedEmployee.status ? "Kích hoạt nhân viên thành công" : "Vô hiệu hóa nhân viên thành công"
+    );
+  } catch (error) {
+    showAlert("error", error.message);
+  }
+};
+
   // modal update
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -114,29 +100,129 @@ function EmployeeList() {
     setSelectedEmployee(employee);
     setShowModalUpdate(true);
   };
+
+  const handleUpdateEmployee = (updatedEmployee) => {
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((emp) =>
+        emp.id === updatedEmployee.id ? updatedEmployee : emp
+      )
+    );
+    showAlert("success", "Cập nhật nhân viên thành công!");
+  };
+
   // modal create
   const [showModalCreate, setShowModalCreate] = useState(false);
 
-  const handleCreate = () => {
+  const handleOpenCreateModal = () => {
     setShowModalCreate(true);
   };
-  //test message:
+
+
+  const handleCreateEmployee = async (employeeData) => {
+    try {
+      setLoading(true);
+
+      const requestData = {
+        fullName: employeeData.fullName,
+        email: employeeData.email,
+        phone: employeeData.phone,
+        birthDate: employeeData.birthDate,
+        nationalCode: employeeData.nationalCode,
+        taxCode: employeeData.taxCode,
+        bankName: employeeData.bankName,
+        bankAccount: employeeData.bankAccount,
+        address: employeeData.address,
+        baseSalary: employeeData.baseSalary,
+        departmentId: employeeData.departmentId,
+        positionId: employeeData.positionId,
+        avatarUrl: employeeData.avatarUrl || null,
+      };
+
+      const newEmployee = await HRService.createEmp(requestData);
+
+      setEmployees((prevEmployees) => [newEmployee, ...prevEmployees]);
+      setShowModalCreate(false);
+
+      showAlert(
+        "success",
+        `Thêm nhân viên ${newEmployee.fullName} thành công!`
+      );
+
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error creating employee:", error);
+
+    //show err
+      setShowModalCreate(false);
+      let errorMessage = error.message;
+      if (errorMessage.includes("Email already exists"))
+        errorMessage =
+          "Email này đã được sử dụng. Vui lòng sử dụng email khác. ";
+      showAlert("error", errorMessage);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // thông báo
+  const showAlert = (type, message) => {
+    setAlert({
+      show: true,
+      type: type,
+      message: message,
+    });
+
+    setTimeout(() => {
+      setAlert({ show: false, type: "success", message: "" });
+    }, 5000);
+  };
+
+  // close đóng thông báo
+  const handleCloseAlert = () => {
+    setAlert({ show: false, type: "success", message: "" });
+  };
 
   return (
     <div className="employee-list">
+      {/* Alert Message */}
+      {alert.show && (
+        <div className="alert-container">
+          <Alert severity={alert.type} onClose={handleCloseAlert}>
+            <AlertTitle>
+              {alert.type === "success" && "Thành công"}
+              {alert.type === "error" && "Lỗi"}
+              {alert.type === "warning" && "Cảnh báo"}
+              {alert.type === "info" && "Thông tin"}
+            </AlertTitle>
+            {alert.message}
+          </Alert>
+        </div>
+      )}
+
       <EmployeeFormUpdateModel
         visible={showModalUpdate}
         onClose={() => setShowModalUpdate(false)}
         employee={selectedEmployee}
+        onUpdate={handleUpdateEmployee}
       />
+
       <EmployeeFormCreateModal
         visible={showModalCreate}
         onClose={() => setShowModalCreate(false)}
+        onCreateEmp={handleCreateEmployee}
+        loading={loading}
       />
+
+      {/* Header */}
       <div className="header">
         <h2>Danh sách Nhân viên</h2>
         <div className="actions">
-          <button className="btn add" onClick={handleCreate}>
+          <button
+            className="btn add"
+            onClick={handleOpenCreateModal}
+            disabled={loading}
+          >
             + Thêm nhân viên mới
           </button>
           <button className="btn export">Xuất ▼</button>
@@ -156,7 +242,7 @@ function EmployeeList() {
           onChange={(e) => setDepartmentFilter(e.target.value)}
         >
           <option value="all">Tất cả phòng ban</option>
-          {departments.map((d) => (
+          {departments?.map((d) => (
             <option key={d} value={d}>
               {d}
             </option>
@@ -167,10 +253,13 @@ function EmployeeList() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="all">Tất cả trạng thái</option>
-          <option value="active">Hoạt động</option>
-          <option value="inactive">Không hoạt động</option>
+          <option value="1">Hoạt động</option>
+          <option value="0">Không hoạt động</option>
         </select>
       </div>
+
+      {/* Loading */}
+      {loading && <div className="loading">Đang xử lý...</div>}
 
       {/* Bảng nhân viên */}
       <div className="table">
@@ -182,83 +271,67 @@ function EmployeeList() {
           <div>Hành động</div>
         </div>
 
-        {paginatedEmployees.map((emp) => (
-          <div className="table-row" key={emp.id}>
-            <div>{emp.name}</div>
-            <div>{emp.department}</div>
-            <div>{emp.position}</div>
-            <div
-              className={`status ${
-                emp.status === "active" ? "active" : "inactive"
-              }`}
-            >
-              {emp.status === "active" ? "Hoạt động" : "Không hoạt động"}
-            </div>
-            <div>
-              <button className="btn edit" onClick={() => handleEdit(emp.id)}>
-                Chỉnh sửa
-              </button>
-              <button
-                className="btn disable"
-                onClick={() => handleDisable(emp.id)}
+        {paginatedEmployees.length > 0 ? (
+          paginatedEmployees.map((emp) => (
+            <div className="table-row" key={emp.id}>
+              <div>{emp.fullName}</div>
+              <div>{emp.department?.departmentName || "Chưa có"}</div>
+              <div>{emp.position?.positionName || "Chưa có"}</div>
+              <div
+                className={`status ${
+                  emp.status == "1" ? "active" : "inactive"
+                }`}
               >
-                Vô hiệu hóa
-              </button>
+                {emp.status ? "Hoạt động" : "Không hoạt động"}
+              </div>
+              <div>
+                <button className="btn edit" onClick={() => handleEdit(emp.id)}>
+                  Chỉnh sửa
+                </button>
+                <button
+                  className="btn disable"
+                  onClick={() => handleUpdateStatus(emp.id)}
+                >
+                  {emp.status ? "vô hiệu hóa" : "Kích hoạt"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="no-data">Không có dữ liệu</div>
+        )}
       </div>
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </button>
 
-        {[...Array(totalPages)].map((_, i) => (
+      {/* Pagination */}
+      {totalPages > 0 && (
+        <div className="pagination">
           <button
-            key={i + 1}
-            className={currentPage === i + 1 ? "active" : ""}
-            onClick={() => handlePageChange(i + 1)}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
           >
-            {i + 1}
+            &lt;
           </button>
-        ))}
 
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          &gt;
-        </button>
-      </div>
-      {/* test message */}
-        {/* <Alert severity="success">
-          <AlertTitle>Success</AlertTitle>
-          Thêm nhân viên thành công.
-        </Alert> */}
-    
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i + 1}
+              className={currentPage === i + 1 ? "active" : ""}
+              onClick={() => handlePageChange(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            &gt;
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-// npm install @mui/material @emotion/react @emotion/styled
-{
-  /* <Alert severity="success">
-  <AlertTitle>Success</AlertTitle>
-  This is a success Alert with an encouraging title.
-</Alert>
-<Alert severity="info">
-  <AlertTitle>Info</AlertTitle>
-  This is an info Alert with an informative title.
-</Alert>
-<Alert severity="warning">
-  <AlertTitle>Warning</AlertTitle>
-  This is a warning Alert with a cautious title.
-</Alert>
-<Alert severity="error">
-  <AlertTitle>Error</AlertTitle>
-  This is an error Alert with a scary title.
-</Alert> */
-}
+
 export default EmployeeList;

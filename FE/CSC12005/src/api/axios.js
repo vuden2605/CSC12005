@@ -12,6 +12,12 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Xử lý FormData: xóa Content-Type để axios tự động set với boundary phù hợp (không có charset)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -27,7 +33,7 @@ api.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
+          `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );

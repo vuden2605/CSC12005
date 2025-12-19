@@ -1,0 +1,110 @@
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding: 15px 0;
+  gap: 20px;
+
+  .pagination-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .size-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover:not(:disabled) {
+        border-color: #999;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .pagination-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+
+    .pagination-button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background-color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      min-width: 40px;
+
+      &:hover:not(:disabled) {
+        background-color: #f0f0f0;
+        border-color: #999;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f0f0f0;
+      }
+    }
+
+    .pagination-numbers {
+      display: flex;
+      gap: 5px;
+
+      .page-number {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s;
+        min-width: 40px;
+
+        &:hover {
+          border-color: #999;
+          background-color: #f0f0f0;
+        }
+
+        &.active {
+          background-color: #007bff;
+          color: white;
+          border-color: #007bff;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .pagination-right {
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+  }
+}

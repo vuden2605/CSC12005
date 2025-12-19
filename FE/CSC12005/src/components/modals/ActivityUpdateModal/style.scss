@@ -1,0 +1,172 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content-e {
+  background: #fff;
+  width: 900px;
+  max-width: 970px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.employee-form fieldset {
+  border: 1px solid #eee;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.employee-form legend {
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn.light {
+  background: #f1f1f1;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #2e9782;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.form-group.invalid input,
+.form-group.invalid select {
+  border-color: #e74c3c;
+}
+.form-group .error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+/* === moved from index.jsx inline styles === */
+
+.modal-content-e {
+  .modal-close-btn {
+    position: absolute;
+    top: 120px;
+    right: 270px;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    color: #092459ff;
+    background-color: #d2c8c8ff;
+    border-radius: 15px;
+  }
+
+  .modal-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .participants-filter {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    min-width: 200px;
+  }
+
+  .filter-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    min-width: 180px;
+  }
+
+  .reset-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: #f3f4f6;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .participants-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      padding: 10px;
+      background: #f9fafb;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 16px;
+    }
+  }
+}

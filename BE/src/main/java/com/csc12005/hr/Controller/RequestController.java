@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,7 +24,16 @@ public class RequestController {
 			RequestFilter requestFilter) {
 		return ApiResponse.<Page<RequestResponse>>builder()
 				.message("Get request success")
-				.data(requestService.getRequest(pageRequest, requestFilter))
+				.data(requestService.getRequestByManager(pageRequest, requestFilter))
+				.build();
+	}
+	@GetMapping("/requests/me")
+	public ApiResponse<Page<RequestResponse>> myRequests (
+			PageRequestDTO pageRequest,
+			RequestFilter requestFilter) {
+		return ApiResponse.<Page<RequestResponse>>builder()
+				.message("Get my request success")
+				.data(requestService.myRequests(pageRequest, requestFilter))
 				.build();
 	}
 }

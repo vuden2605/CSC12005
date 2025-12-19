@@ -15,18 +15,18 @@ export const Header = () => {
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
   console.log("role", user.role);
-  const role = user?.role?.toUpperCase();
+  const role = user?.position?.role?.toUpperCase();
   const menuItems = {
     ADMIN: [{ label: "Trang tổng quan", path: "/admin/dashboard" }],
     EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
-    HR: [
+    HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý Sự kiện", path: "/hr/events" },
       { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
     ],
-    MANAGER: [
+    MN: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
-      { label: "Quản lý yêu cầu", path: "/manager/requests" },
+      { label: "Quản lý yêu cầu", path: "employee/manager/requests" },
       { label: "Quản lý phòng ban", path: "/manager/department" },
     ],
   };

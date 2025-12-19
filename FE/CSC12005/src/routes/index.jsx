@@ -1,4 +1,5 @@
-import { Home } from "../pages/Home";
+import { Navigate } from "react-router-dom";
+// import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
 import { Manager } from "../pages/Manager";
@@ -11,14 +12,20 @@ import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalI
 import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
-import { EventPageHR } from "../pages/EventHR";
+import { Activities } from "../pages/Employee/Darshboard/Activities";
+
+import { Attendance } from "../pages/Employee/Darshboard/Attendance";
+
 import { RequestManager } from "../pages/RequestManager";
+import {EventPageHR} from "../pages/EventHR";
 export const routes = [
+    { path: "/", element: <Navigate to="/login" replace /> },
+
   {
     path: "/",
     element: <LayoutDefault />,
     children: [
-      { index: true, element: <Home /> },
+      // { index: true, element: <Navigate to="/login" replace /> },
       { path: "admin", element: <Admin /> },
       { path: "manager/department", element: <Manager /> },
       {
@@ -41,8 +48,9 @@ export const routes = [
                 ],
               },
               // { path: "attendance", element: <Attendance /> },
+              { path: "attendance", element: <Attendance /> },
               { path: "request", element: <Requests /> },
-              // { path: "event", element: <Event /> },
+              { path: "event", element: <Activities /> },
               // { path: "score", element: <Score /> },
             ],
           },

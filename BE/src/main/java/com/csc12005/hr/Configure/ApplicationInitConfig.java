@@ -8,16 +8,19 @@ import com.csc12005.hr.Repository.DepartmentRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ApplicationInitConfig implements CommandLineRunner {
 	private final EmployeeRepository employeeRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -26,18 +29,28 @@ public class ApplicationInitConfig implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		createDefaultUser();
 		createDefaultDepartmentAndPosition();
+		createDefaultUser();
 		createDepartmentManagers();
 	}
 	private void createDefaultUser() {
+		// ---------- ADMIN ------------
+		List<Position> positions = new ArrayList<>();
+		positions.add(Position.builder().positionName("Admin").positionCode("ADM")
+				.salaryRangeMin(18000000L).salaryRangeMax(30000000L)
+				.baseWorkTimes(8L).point(100L).role(EmployeeRole.ADMIN).build());
+		// CEO
+		positions.add(Position.builder().positionName("CEO").positionCode("CEO")
+				.salaryRangeMin(18000000L).salaryRangeMax(30000000L)
+				.baseWorkTimes(8L).point(100L).role(EmployeeRole.CEO).build());
+		positionRepository.saveAll(positions);
 		if(!employeeRepository.existsByEmployeeCode("admin")) {
 			Employee admin = Employee.builder()
 					.employeeCode("admin")
 					.fullName("Administrator")
 					.email("vuden2605@gmail.com")
 					.password(passwordEncoder.encode("admin"))
-					.role(EmployeeRole.ADMIN)
+					.position(positions.getFirst())
 					.build();
 			employeeRepository.save(admin);
 		}
@@ -47,10 +60,14 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.fullName("Chief Executive Officer")
 					.email("vuden2605@gmail.com")
 					.password(passwordEncoder.encode("CEO"))
-					.role(EmployeeRole.CEO)
+					.position(positions.get(1))
 					.build();
 			employeeRepository.save(user);
 		}
+	}
+	private void link(Department d, Position p) {
+		d.getPositions().add(p);
+		p.setDepartment(d);
 	}
 	public void createDefaultDepartmentAndPosition() {
 
@@ -59,201 +76,195 @@ public class ApplicationInitConfig implements CommandLineRunner {
 		}
 
 		// ======================= CREATE DEPARTMENTS ===========================
-		Department hr = departmentRepository.save(
-				Department.builder().departmentName("Human Resources").departmentCode("HR").build()
-		);
+		Department hr = Department.builder()
+				.departmentName("Human Resources")
+				.departmentCode("HR")
+				.build();
 
-		Department finance = departmentRepository.save(
-				Department.builder().departmentName("Finance").departmentCode("FIN").build()
-		);
+		Department finance = Department.builder()
+				.departmentName("Finance")
+				.departmentCode("FIN")
+				.build();
 
-		Department admin = departmentRepository.save(
-				Department.builder().departmentName("Administration").departmentCode("ADM").build()
-		);
+		Department it = Department.builder()
+				.departmentName("Information Technology")
+				.departmentCode("IT")
+				.build();
 
-		Department it = departmentRepository.save(
-				Department.builder().departmentName("Information Technology").departmentCode("IT").build()
-		);
+		Department sales = Department.builder()
+				.departmentName("Sales")
+				.departmentCode("SAL")
+				.build();
 
-		Department sales = departmentRepository.save(
-				Department.builder().departmentName("Sales").departmentCode("SAL").build()
-		);
+		Department marketing = Department.builder()
+				.departmentName("Marketing")
+				.departmentCode("MKT")
+				.build();
 
-		Department marketing = departmentRepository.save(
-				Department.builder().departmentName("Marketing").departmentCode("MKT").build()
-		);
-
-		Department manufacturing = departmentRepository.save(
-				Department.builder().departmentName("Manufacturing").departmentCode("MFG").build()
-		);
+		Department manufacturing = Department.builder()
+				.departmentName("Manufacturing")
+				.departmentCode("MFG")
+				.build();
 
 		// ======================= CREATE POSITIONS ===========================
-		List<Position> positions = new ArrayList<>();
+		Position p;
 
 		// ---------- HR ------------
-		positions.add(Position.builder().positionName("HR Manager").positionCode("HR-MAN")
+		p = Position.builder().positionName("HR Manager").positionCode("HR-MAN")
 				.salaryRangeMin(15000000L).salaryRangeMax(30000000L)
-				.baseWorkTimes(8L).point(100L).department(hr).build());
+				.baseWorkTimes(8L).point(100L).role(EmployeeRole.HRM).build();
+		link(hr, p);
 
-		positions.add(Position.builder().positionName("HR Executive").positionCode("HR-EXE")
+		p = Position.builder().positionName("HR Executive").positionCode("HR-EXE")
 				.salaryRangeMin(10000000L).salaryRangeMax(20000000L)
-				.baseWorkTimes(8L).point(70L).department(hr).build());
+				.baseWorkTimes(8L).point(70L).role(EmployeeRole.HR).build();
+		link(hr, p);
 
-		positions.add(Position.builder().positionName("Recruiter").positionCode("HR-REC")
+		p = Position.builder().positionName("Recruiter").positionCode("HR-REC")
 				.salaryRangeMin(9000000L).salaryRangeMax(18000000L)
-				.baseWorkTimes(8L).point(60L).department(hr).build());
+				.baseWorkTimes(8L).point(60L).role(EmployeeRole.HR).build();
+		link(hr, p);
 
-		positions.add(Position.builder().positionName("HR Business Partner").positionCode("HR-BP")
+		p = Position.builder().positionName("HR Business Partner").positionCode("HR-BP")
 				.salaryRangeMin(12000000L).salaryRangeMax(23000000L)
-				.baseWorkTimes(8L).point(80L).department(hr).build());
+				.baseWorkTimes(8L).point(80L).role(EmployeeRole.HR).build();
+		link(hr, p);
 
-		positions.add(Position.builder().positionName("C&B Specialist").positionCode("HR-CB")
+		p = Position.builder().positionName("C&B Specialist").positionCode("HR-CB")
 				.salaryRangeMin(9000000L).salaryRangeMax(17000000L)
-				.baseWorkTimes(8L).point(60L).department(hr).build());
+				.baseWorkTimes(8L).point(60L).role(EmployeeRole.HR).build();
+		link(hr, p);
 
-		positions.add(Position.builder().positionName("Training Specialist").positionCode("HR-TRN")
+		p = Position.builder().positionName("Training Specialist").positionCode("HR-TRN")
 				.salaryRangeMin(8000000L).salaryRangeMax(16000000L)
-				.baseWorkTimes(8L).point(55L).department(hr).build());
-
+				.baseWorkTimes(8L).point(55L).role(EmployeeRole.HR).build();
+		link(hr, p);
 
 		// ---------- FINANCE ------------
-		positions.add(Position.builder().positionName("CFO").positionCode("FIN-CFO")
-				.salaryRangeMin(50000000L).salaryRangeMax(90000000L)
-				.baseWorkTimes(8L).point(200L).department(finance).build());
-
-		positions.add(Position.builder().positionName("Finance Manager").positionCode("FIN-MAN")
+		p = Position.builder().positionName("Finance Manager").positionCode("FIN-MAN")
 				.salaryRangeMin(25000000L).salaryRangeMax(45000000L)
-				.baseWorkTimes(8L).point(120L).department(finance).build());
+				.baseWorkTimes(8L).point(120L).role(EmployeeRole.MN).build();
+		link(finance, p);
 
-		positions.add(Position.builder().positionName("Accountant").positionCode("FIN-ACC")
+		p = Position.builder().positionName("Accountant").positionCode("FIN-ACC")
 				.salaryRangeMin(10000000L).salaryRangeMax(20000000L)
-				.baseWorkTimes(8L).point(70L).department(finance).build());
+				.baseWorkTimes(8L).point(70L).role(EmployeeRole.EMP).build();
+		link(finance, p);
 
-		positions.add(Position.builder().positionName("Payroll Specialist").positionCode("FIN-PAY")
+		p = Position.builder().positionName("Payroll Specialist").positionCode("FIN-PAY")
 				.salaryRangeMin(9000000L).salaryRangeMax(17000000L)
-				.baseWorkTimes(8L).point(60L).department(finance).build());
+				.baseWorkTimes(8L).point(60L).role(EmployeeRole.EMP).build();
+		link(finance, p);
 
-		positions.add(Position.builder().positionName("Financial Analyst").positionCode("FIN-ANA")
+		p = Position.builder().positionName("Financial Analyst").positionCode("FIN-ANA")
 				.salaryRangeMin(12000000L).salaryRangeMax(25000000L)
-				.baseWorkTimes(8L).point(85L).department(finance).build());
-
-
-		// ---------- ADMIN ------------
-		positions.add(Position.builder().positionName("Admin Manager").positionCode("ADM-MAN")
-				.salaryRangeMin(18000000L).salaryRangeMax(30000000L)
-				.baseWorkTimes(8L).point(100L).department(admin).build());
-
-		positions.add(Position.builder().positionName("Office Admin").positionCode("ADM-OFF")
-				.salaryRangeMin(7000000L).salaryRangeMax(13000000L)
-				.baseWorkTimes(8L).point(40L).department(admin).build());
-
-		positions.add(Position.builder().positionName("Receptionist").positionCode("ADM-REC")
-				.salaryRangeMin(6000000L).salaryRangeMax(10000000L)
-				.baseWorkTimes(8L).point(30L).department(admin).build());
-
-		positions.add(Position.builder().positionName("Asset Manager").positionCode("ADM-AST")
-				.salaryRangeMin(10000000L).salaryRangeMax(20000000L)
-				.baseWorkTimes(8L).point(70L).department(admin).build());
-
+				.baseWorkTimes(8L).point(85L).role(EmployeeRole.EMP).build();
+		link(finance, p);
 
 		// ---------- IT ------------
-		positions.add(Position.builder().positionName("IT Manager").positionCode("IT-MAN")
+		p = Position.builder().positionName("IT Manager").positionCode("IT-MAN")
 				.salaryRangeMin(25000000L).salaryRangeMax(45000000L)
-				.baseWorkTimes(8L).point(120L).department(it).build());
+				.baseWorkTimes(8L).point(120L).role(EmployeeRole.MN).build();
+		link(it, p);
 
-		positions.add(Position.builder().positionName("System Admin").positionCode("IT-SYS")
-				.salaryRangeMin(15000000L).salaryRangeMax(30000000L)
-				.baseWorkTimes(8L).point(90L).department(it).build());
-
-		positions.add(Position.builder().positionName("Developer").positionCode("IT-DEV")
+		p = Position.builder().positionName("Developer").positionCode("IT-DEV")
 				.salaryRangeMin(12000000L).salaryRangeMax(25000000L)
-				.baseWorkTimes(8L).point(80L).department(it).build());
+				.baseWorkTimes(8L).point(80L).role(EmployeeRole.EMP).build();
+		link(it, p);
 
-		positions.add(Position.builder().positionName("QA/QC").positionCode("IT-QA")
+		p = Position.builder().positionName("QA/QC").positionCode("IT-QA")
 				.salaryRangeMin(10000000L).salaryRangeMax(20000000L)
-				.baseWorkTimes(8L).point(70L).department(it).build());
+				.baseWorkTimes(8L).point(70L).role(EmployeeRole.EMP).build();
+		link(it, p);
 
-		positions.add(Position.builder().positionName("Network Engineer").positionCode("IT-NET")
+		p = Position.builder().positionName("Network Engineer").positionCode("IT-NET")
 				.salaryRangeMin(13000000L).salaryRangeMax(23000000L)
-				.baseWorkTimes(8L).point(75L).department(it).build());
-
+				.baseWorkTimes(8L).point(75L).role(EmployeeRole.EMP).build();
+		link(it, p);
 
 		// ---------- SALES ------------
-		positions.add(Position.builder().positionName("Sales Director").positionCode("SAL-DIR")
-				.salaryRangeMin(30000000L).salaryRangeMax(60000000L)
-				.baseWorkTimes(8L).point(150L).department(sales).build());
-
-		positions.add(Position.builder().positionName("Sales Manager").positionCode("SAL-MAN")
+		p = Position.builder().positionName("Sales Manager").positionCode("SAL-MAN")
 				.salaryRangeMin(20000000L).salaryRangeMax(40000000L)
-				.baseWorkTimes(8L).point(110L).department(sales).build());
+				.baseWorkTimes(8L).point(110L).role(EmployeeRole.MN).build();
+		link(sales, p);
 
-		positions.add(Position.builder().positionName("Sales Executive").positionCode("SAL-EXE")
+		p = Position.builder().positionName("Sales Executive").positionCode("SAL-EXE")
 				.salaryRangeMin(8000000L).salaryRangeMax(20000000L)
-				.baseWorkTimes(8L).point(60L).department(sales).build());
+				.baseWorkTimes(8L).point(60L).role(EmployeeRole.EMP).build();
+		link(sales, p);
 
-		positions.add(Position.builder().positionName("Account Manager").positionCode("SAL-ACC")
+		p = Position.builder().positionName("Account Manager").positionCode("SAL-ACC")
 				.salaryRangeMin(12000000L).salaryRangeMax(25000000L)
-				.baseWorkTimes(8L).point(85L).department(sales).build());
-
+				.baseWorkTimes(8L).point(85L).role(EmployeeRole.EMP).build();
+		link(sales, p);
 
 		// ---------- MARKETING ------------
-		positions.add(Position.builder().positionName("Marketing Manager").positionCode("MKT-MAN")
+		p = Position.builder().positionName("Marketing Manager").positionCode("MKT-MAN")
 				.salaryRangeMin(20000000L).salaryRangeMax(40000000L)
-				.baseWorkTimes(8L).point(110L).department(marketing).build());
+				.baseWorkTimes(8L).point(110L).role(EmployeeRole.MN).build();
+		link(marketing, p);
 
-		positions.add(Position.builder().positionName("Content Creator").positionCode("MKT-CON")
+		p = Position.builder().positionName("Content Creator").positionCode("MKT-CON")
 				.salaryRangeMin(8000000L).salaryRangeMax(16000000L)
-				.baseWorkTimes(8L).point(50L).department(marketing).build());
+				.baseWorkTimes(8L).point(50L).role(EmployeeRole.EMP).build();
+		link(marketing, p);
 
-		positions.add(Position.builder().positionName("SEO Specialist").positionCode("MKT-SEO")
+		p = Position.builder().positionName("SEO Specialist").positionCode("MKT-SEO")
 				.salaryRangeMin(9000000L).salaryRangeMax(18000000L)
-				.baseWorkTimes(8L).point(60L).department(marketing).build());
+				.baseWorkTimes(8L).point(60L).role(EmployeeRole.EMP).build();
+		link(marketing, p);
 
-		positions.add(Position.builder().positionName("Graphic Designer").positionCode("MKT-DES")
+		p = Position.builder().positionName("Graphic Designer").positionCode("MKT-DES")
 				.salaryRangeMin(9000000L).salaryRangeMax(17000000L)
-				.baseWorkTimes(8L).point(55L).department(marketing).build());
-
+				.baseWorkTimes(8L).point(55L).role(EmployeeRole.EMP).build();
+		link(marketing, p);
 
 		// ---------- MANUFACTURING ------------
-		positions.add(Position.builder().positionName("Operation Manager").positionCode("MFG-MAN")
+		p = Position.builder().positionName("Operation Manager").positionCode("MFG-MAN")
 				.salaryRangeMin(20000000L).salaryRangeMax(35000000L)
-				.baseWorkTimes(8L).point(110L).department(manufacturing).build());
+				.baseWorkTimes(8L).point(110L).role(EmployeeRole.MN).build();
+		link(manufacturing, p);
 
-		positions.add(Position.builder().positionName("Supervisor").positionCode("MFG-SUP")
+		p = Position.builder().positionName("Supervisor").positionCode("MFG-SUP")
 				.salaryRangeMin(12000000L).salaryRangeMax(22000000L)
-				.baseWorkTimes(8L).point(70L).department(manufacturing).build());
+				.baseWorkTimes(8L).point(70L).role(EmployeeRole.EMP).build();
+		link(manufacturing, p);
 
-		positions.add(Position.builder().positionName("Worker").positionCode("MFG-WRK")
+		p = Position.builder().positionName("Worker").positionCode("MFG-WRK")
 				.salaryRangeMin(6000000L).salaryRangeMax(12000000L)
-				.baseWorkTimes(8L).point(30L).department(manufacturing).build());
+				.baseWorkTimes(8L).point(30L).role(EmployeeRole.EMP).build();
+		link(manufacturing, p);
 
-		positions.add(Position.builder().positionName("QC/QA Staff").positionCode("MFG-QA")
+		p = Position.builder().positionName("QC/QA Staff").positionCode("MFG-QA")
 				.salaryRangeMin(8000000L).salaryRangeMax(16000000L)
-				.baseWorkTimes(8L).point(50L).department(manufacturing).build());
+				.baseWorkTimes(8L).point(50L).role(EmployeeRole.EMP).build();
+		link(manufacturing, p);
 
-		// Save all
-		positionRepository.saveAll(positions);
+		// Lưu tất cả department — cascade = ALL sẽ tự lưu positions
+		departmentRepository.saveAll(
+				Arrays.asList(hr, finance, it, sales, marketing, manufacturing)
+		);
 	}
 	@Transactional
 	private void createDepartmentManagers() {
-		// Lấy danh sách tất cả phòng ban
+		// Lấy tất cả phòng ban
 		List<Department> departments = departmentRepository.findAll();
 
 		for (Department department : departments) {
 			if (department.getManager() != null) {
 				continue;
 			}
-			// Tạo tài khoản trưởng phòng
+			// Tạo trưởng phòng
 			String code = department.getDepartmentCode() + "-HEAD"; // ví dụ HR-HEAD, FIN-HEAD
 			String fullName = department.getDepartmentName() + " Manager";
-
+			List<Position> positions = department.getPositions();
 			Employee manager = Employee.builder()
 					.employeeCode(code)
 					.fullName(fullName)
 					.email(code.toLowerCase() + "@company.com")
-					.password(passwordEncoder.encode("123456")) // mật khẩu mặc định
-					.role(EmployeeRole.MN)
-					.department(department) // gán vào phòng ban
+					.password(passwordEncoder.encode("123456"))
+					.department(department)
+					.position(positions.getFirst())
 					.build();
 			department.setManager(manager);
 			employeeRepository.save(manager);

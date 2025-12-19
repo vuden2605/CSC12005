@@ -8,5 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface IRequestService {
-	Page<RequestResponse> getRequest (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);
+	Page<RequestResponse> getRequestByManager (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);
+	Page<RequestResponse> myRequests (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);
 }

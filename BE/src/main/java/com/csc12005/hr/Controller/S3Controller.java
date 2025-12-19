@@ -26,13 +26,8 @@ public class S3Controller {
 					.message(ErrorCode.FILE_REQUIRED.getMessage())
 					.build();
 		}
-		String folder = file.getContentType() == null ? "others"
-				: file.getContentType().startsWith("image/") ? "images"
-				: file.getContentType().startsWith("video/") ? "videos"
-				: file.getContentType().startsWith("audio/") ? "audios"
-				: file.getContentType().startsWith("application/pdf") ? "documents"
-				: "others";
-		String key = s3Service.uploadFile(file, folder);
+
+		String key = s3Service.uploadFile(file);
 		return ApiResponse.<String>builder()
 				.code(ErrorCode.SUCCESS.getCode())
 				.message(ErrorCode.SUCCESS.getMessage())

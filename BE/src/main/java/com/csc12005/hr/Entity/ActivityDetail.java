@@ -23,5 +23,6 @@ public class ActivityDetail {
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
 	private Long score;
-	private boolean isSuccess;
+	@Builder.Default
+	private Boolean isSuccess = false;
 }

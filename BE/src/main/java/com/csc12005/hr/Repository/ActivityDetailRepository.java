@@ -32,4 +32,23 @@ public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, 
 			@Param("isSuccess") boolean isSuccess,
 			Pageable pageable
 	);
+    @Query("""
+    SELECT ad
+    FROM ActivityDetail ad
+    JOIN ad.employee e
+    JOIN ad.activity a
+    WHERE a.id = :activityId
+    AND (:employeeName IS NULL 
+         OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :employeeName, '%')))
+    AND (:isSuccess IS NULL 
+         OR ad.isSuccess = :isSuccess)
+""")
+    Page<ActivityDetail> findActivity(
+            @Param("activityId") Long activityId,
+            @Param("employeeName") String employeeName,
+            @Param("isSuccess") Boolean isSuccess,
+            Pageable pageable
+    );
+
+
 }

@@ -12,4 +12,5 @@ public interface IWFHRequestService {
 	List<WFHResponse> getAllWFHRequests();
 	WFHResponse approveWFHRequest(Long requestId);
 	WFHResponse rejectWFHRequest(Long requestId);
+	WFHResponse getWFHRequestById(Long requestId);
 }

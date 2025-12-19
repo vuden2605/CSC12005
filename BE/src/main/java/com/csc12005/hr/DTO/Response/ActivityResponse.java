@@ -18,5 +18,7 @@ public class ActivityResponse {
 	private String description;
 	private LocalDate startDate;
 	private LocalDate endDate;
+    private Long count;
+    private Long registeredCount;
 	private Long points;
 }

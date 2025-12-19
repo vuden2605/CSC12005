@@ -6,9 +6,9 @@ import com.csc12005.hr.DTO.Response.PositionResponse;
 import com.csc12005.hr.Service.PositionService.Impl.PositionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,4 +21,11 @@ public class PositionController {
 				.data(positionService.createPosition(positionCreationRequest))
 				.build();
 	}
+    @GetMapping("/positions/{id}")
+    public ApiResponse<List<PositionResponse>> getPositionByDepartmentID(@PathVariable Long id){
+        return ApiResponse.<List<PositionResponse>>builder()
+                .message("get position by departmentid")
+                .data(positionService.getPositionByDepartment(id))
+                .build();
+    }
 }

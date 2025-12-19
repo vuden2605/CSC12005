@@ -5,7 +5,6 @@ import CandidateList from "../../components/CandidateList";
 
 export const HRAdmin = () => {
   const [activeTab, setActiveTab] = useState("employees");
-
   return (
     <div className="dashboard-page">
       <div className="tabs-section">
