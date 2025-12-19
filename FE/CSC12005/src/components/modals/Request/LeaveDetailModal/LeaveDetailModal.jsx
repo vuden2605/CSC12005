@@ -65,6 +65,17 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
   const formatDateTime = (dateString) =>
     dateString ? new Date(dateString).toLocaleString("vi-VN") : "-";
 
+  const getFileName = (url) => {
+    if (!url) return "";
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      return decodeURIComponent(pathname.split("/").pop() || "file");
+    } catch {
+      return url.split("/").pop() || "file";
+    }
+  };
+
   const getStatusText = (status) => {
     const map = {
       PENDING: "Chờ duyệt",
@@ -136,6 +147,25 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
                 <span className="detail-value">{leaveDetail.reason || "-"}</span>
+              </div>
+
+              <div className="detail-row">
+                <span className="detail-label">Tệp đính kèm:</span>
+                <span className="detail-value">
+                  {leaveDetail.requestAttachment ? (
+                    <a 
+                      href={leaveDetail.requestAttachment} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="attachment-link"
+                      title={getFileName(leaveDetail.requestAttachment)}
+                    >
+                      📎 {getFileName(leaveDetail.requestAttachment)}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </span>
               </div>
             </div>
 

@@ -66,6 +66,17 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
   const formatDateTime = (dateString) =>
     dateString ? new Date(dateString).toLocaleString("vi-VN") : "-";
 
+  const getFileName = (url) => {
+    if (!url) return "";
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      return decodeURIComponent(pathname.split("/").pop() || "file");
+    } catch {
+      return url.split("/").pop() || "file";
+    }
+  };
+
   const getStatusText = (status) => {
     const map = {
       PENDING: "Chờ duyệt",
@@ -135,6 +146,25 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
                 <span className="detail-value">{wfhDetail.reason || "-"}</span>
+              </div>
+
+              <div className="detail-row">
+                <span className="detail-label">Tệp đính kèm:</span>
+                <span className="detail-value">
+                  {wfhDetail.requestAttachment ? (
+                    <a 
+                      href={wfhDetail.requestAttachment} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="attachment-link"
+                      title={getFileName(wfhDetail.requestAttachment)}
+                    >
+                      📎 {getFileName(wfhDetail.requestAttachment)}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </span>
               </div>
             </div>
 

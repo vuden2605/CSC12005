@@ -18,7 +18,7 @@
     max-height: 90vh;
     overflow-y: auto;
     border-radius: 12px;
-    padding: 28px;
+    padding: 36px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.3s ease-out;
 
@@ -205,18 +205,19 @@
 
   /* ===== WFH Detail Modal ===== */
   .wfh-detail-modal {
-    max-width: 650px;
+    max-width: 750px;
+    padding: 40px;
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
       border-bottom: 2px solid #f0f0f0;
 
       h2 {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: #333;
         margin: 0;
@@ -225,36 +226,38 @@
       .close-btn {
         background: none;
         border: none;
-        font-size: 32px;
+        font-size: 36px;
         cursor: pointer;
         color: #999;
-        transition: color 0.2s;
+        transition: all 0.2s;
         padding: 0;
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 6px;
 
         &:hover {
           color: #333;
+          background: #f5f5f5;
         }
       }
     }
 
     .modal-content {
-      padding: 20px ;
+      padding: 0 8px;
     }
 
     .detail-section {
-      margin-bottom: 28px;
+      margin-bottom: 32px;
 
       h3 {
-        font-size: 16px;
+        font-size: 17px;
         font-weight: 700;
         color: #333;
-        margin-bottom: 16px;
-        padding-bottom: 10px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
         border-bottom: 2px solid #f0f0f0;
       }
     }
@@ -263,7 +266,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 12px 0;
+      padding: 16px 0;
       border-bottom: 1px solid #f5f5f5;
 
       &:last-child {
@@ -275,7 +278,8 @@
       font-weight: 600;
       color: #666;
       font-size: 14px;
-      min-width: 140px;
+      min-width: 160px;
+      padding-right: 24px;
     }
 
     .detail-value {
@@ -328,12 +332,27 @@
       }
     }
 
+    .attachment-link {
+      display: inline-block;
+      color: #5c6bc0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      word-break: break-all;
+      transition: all 0.2s;
+
+      &:hover {
+        color: #3f4e99;
+        text-decoration: underline;
+      }
+    }
+
     .modal-footer {
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      margin-top: 24px;
-      padding-top: 20px;
+      margin-top: 32px;
+      padding-top: 24px;
       border-top: 2px solid #f0f0f0;
     }
   }

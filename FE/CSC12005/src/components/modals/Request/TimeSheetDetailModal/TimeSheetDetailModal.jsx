@@ -67,6 +67,17 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
   const formatDateTime = (dateString) =>
     dateString ? new Date(dateString).toLocaleString("vi-VN") : "-";
 
+  const getFileName = (url) => {
+    if (!url) return "";
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      return decodeURIComponent(pathname.split("/").pop() || "file");
+    } catch {
+      return url.split("/").pop() || "file";
+    }
+  };
+
   const getStatusText = (status) => {
     const map = {
       PENDING: "Chờ duyệt",
@@ -139,6 +150,25 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
                 <span className="detail-label">Lý do:</span>
                 <span className="detail-value">
                   {timeSheetDetail.reason || "-"}
+                </span>
+              </div>
+
+              <div className="detail-row">
+                <span className="detail-label">Tệp đính kèm:</span>
+                <span className="detail-value">
+                  {timeSheetDetail.requestAttachment ? (
+                    <a 
+                      href={timeSheetDetail.requestAttachment} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="attachment-link"
+                      title={getFileName(timeSheetDetail.requestAttachment)}
+                    >
+                      📎 {getFileName(timeSheetDetail.requestAttachment)}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
                 </span>
               </div>
             </div>
