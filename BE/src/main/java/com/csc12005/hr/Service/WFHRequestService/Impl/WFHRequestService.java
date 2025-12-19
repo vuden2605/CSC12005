@@ -85,7 +85,7 @@ public class WFHRequestService implements IWFHRequestService {
 	public WFHResponse rejectWFHRequest(Long requestId) {
 		WFHRequest wfhRequest = wFhRequestRepository.findById(requestId)
 				.orElseThrow(() -> new AppException(ErrorCode.WFH_REQUEST_NOT_FOUND));
-		wfhRequest.setStatus(RequestStatus.APPROVED);
+		wfhRequest.setStatus(RequestStatus.REJECTED);
 		return wfhRequestMapper.toWFHResponse(wFhRequestRepository.save(wfhRequest));
 	}
 	@Override

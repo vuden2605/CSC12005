@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
-import "../style.scss";
+import '../style.scss';
 
 export const ModalWFH = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
@@ -27,14 +27,11 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
       "image/jpg",
       "image/png",
       "image/gif",
-      "image/webp",
+      "image/webp"
     ];
 
     if (!allowedTypes.includes(f.type)) {
-      setErrors({
-        ...errors,
-        file: "Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG, GIF, WEBP)",
-      });
+      setErrors({ ...errors, file: "Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG, GIF, WEBP)" });
       setFile(null);
       return;
     }
@@ -42,10 +39,7 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (f.size > maxSize) {
       const fileSizeMB = (f.size / (1024 * 1024)).toFixed(2);
-      setErrors({
-        ...errors,
-        file: `File quá lớn (${fileSizeMB}MB). Kích thước tối đa: 10MB`,
-      });
+      setErrors({ ...errors, file: `File quá lớn (${fileSizeMB}MB). Kích thước tối đa: 10MB` });
       setFile(null);
       return;
     }
@@ -56,33 +50,8 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
 
   const validate = () => {
     let newErr = {};
-
-    // Tính ngày tối thiểu (3 ngày sau ngày hiện tại)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const minDate = new Date(today);
-    minDate.setDate(today.getDate() + 3);
-
-    if (!form.startDate) {
-      newErr.startDate = "Hãy chọn ngày bắt đầu";
-    } else {
-      const startDate = new Date(form.startDate);
-      startDate.setHours(0, 0, 0, 0);
-      if (startDate < minDate) {
-        newErr.startDate = "Ngày bắt đầu phải sau ngày hiện tại ít nhất 3 ngày";
-      }
-    }
-
-    if (!form.endDate) {
-      newErr.endDate = "Hãy chọn ngày kết thúc";
-    } else {
-      const endDate = new Date(form.endDate);
-      endDate.setHours(0, 0, 0, 0);
-      if (endDate < minDate) {
-        newErr.endDate = "Ngày kết thúc phải sau ngày hiện tại ít nhất 3 ngày";
-      }
-    }
-
+    if (!form.startDate) newErr.startDate = "Hãy chọn ngày bắt đầu";
+    if (!form.endDate) newErr.endDate = "Hãy chọn ngày kết thúc";
     if (form.startDate && form.endDate && form.startDate > form.endDate) {
       newErr.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
     }
@@ -97,7 +66,7 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
 
     try {
       setLoading(true);
-
+      
       // Gọi API để tạo yêu cầu WFH với file thực tế
       await EmployeeService.createWFHRequest({
         file: file, // Gửi file object trực tiếp
@@ -110,25 +79,22 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
       if (onSuccess) {
         onSuccess();
       }
-
+      
       onClose();
     } catch (error) {
       console.error("Error creating WFH request:", error);
-
+      
       // Xử lý lỗi cụ thể từ backend
       let errorMessage = "Không thể tạo yêu cầu. Vui lòng thử lại.";
-
+      
       if (error.message) {
         errorMessage = error.message;
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
-      } else if (
-        error.response?.status === 413 ||
-        error.message.includes("Maximum upload size")
-      ) {
+      } else if (error.response?.status === 413 || error.message.includes("Maximum upload size")) {
         errorMessage = "File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.";
       }
-
+      
       setErrors({ ...errors, submit: errorMessage });
     } finally {
       setLoading(false);
@@ -166,12 +132,10 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
         />
         {errors.reason && <p className="error">{errors.reason}</p>}
 
-        <label>
-          File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)
-        </label>
-        <input
-          type="file"
-          accept="application/pdf,image/jpeg,image/jpg,image/png,image/gif,image/webp"
+        <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
+        <input 
+          type="file" 
+          accept="application/pdf,image/jpeg,image/jpg,image/png,image/gif,image/webp" 
           onChange={handleFile}
           disabled={loading}
         />
@@ -182,17 +146,21 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
         )}
         {errors.file && <p className="error">{errors.file}</p>}
 
-        {errors.submit && (
-          <p className="error" style={{ marginTop: "10px" }}>
-            {errors.submit}
-          </p>
-        )}
+        {errors.submit && <p className="error" style={{ marginTop: "10px" }}>{errors.submit}</p>}
 
         <div className="btn-row">
-          <button className="btn cancel" onClick={onClose} disabled={loading}>
+          <button 
+            className="btn cancel" 
+            onClick={onClose}
+            disabled={loading}
+          >
             Hủy
           </button>
-          <button className="btn confirm" onClick={submit} disabled={loading}>
+          <button 
+            className="btn confirm" 
+            onClick={submit}
+            disabled={loading}
+          >
             {loading ? "Đang gửi..." : "Gửi yêu cầu"}
           </button>
         </div>

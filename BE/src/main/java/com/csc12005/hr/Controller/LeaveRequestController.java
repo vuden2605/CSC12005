@@ -21,14 +21,14 @@ public class LeaveRequestController {
 				.data(leaveRequestService.createLeaveRequest(request))
 				.build();
 	}
-	@PatchMapping("/leave-requests/{id}/approve")
-	public ApiResponse<LeaveRequestResponse> approveLeaveRequest(Long id) {
+	@PutMapping("/leave-requests/{id}/approve")
+	public ApiResponse<LeaveRequestResponse> approveLeaveRequest(@PathVariable Long id) {
 		return ApiResponse.<LeaveRequestResponse>builder()
 				.data(leaveRequestService.approvedLeaveRequest(id))
 				.build();
 	}
-	@PatchMapping("/leave-requests/{id}/reject")
-	public ApiResponse<LeaveRequestResponse> rejectLeaveRequest(Long id) {
+	@PutMapping("/leave-requests/{id}/reject")
+	public ApiResponse<LeaveRequestResponse> rejectLeaveRequest(@PathVariable Long id) {
 		return ApiResponse.<LeaveRequestResponse>builder()
 				.data(leaveRequestService.rejectedLeaveRequest(id))
 				.build();

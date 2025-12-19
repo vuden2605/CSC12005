@@ -31,15 +31,16 @@ public class ActivityController {
 		return ApiResponse.<Page<ActivityDetailResponse>>builder()
 				.message("Get activities successfully")
 				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
+
 				.build();
 	}
 	@PostMapping("/{activityId}/details")
 	public ApiResponse<Void> createActivityDetail(@PathVariable Long activityId) {
-        activityDetailService.createActivityDetail(activityId);
-        return ApiResponse.<Void>builder()
-                .message("Create activity detail successfully")
-                .build();
-    }
+		activityDetailService.createActivityDetail(activityId);
+		return ApiResponse.<Void>builder()
+				.message("Create activity detail successfully")
+				.build();
+	}
     @PatchMapping("/{activityId}")
     public ApiResponse<ActivityResponse> UpdateActivity(@RequestBody @Valid ActivityUpdateRequest request,@PathVariable Long activityId){
         return ApiResponse.<ActivityResponse>builder()

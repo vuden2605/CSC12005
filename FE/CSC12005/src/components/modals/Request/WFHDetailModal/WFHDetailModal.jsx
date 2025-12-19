@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
+import { ManagerService } from "../../../../services/ManagerService";
 import "../style.scss";
 
-export const WFHDetailModal = ({ requestId, onClose }) => {
+export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
   const [wfhDetail, setWfhDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,25 +27,73 @@ export const WFHDetailModal = ({ requestId, onClose }) => {
     }
   }, [requestId]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN");
+  // ===== ACTIONS =====
+  const handleApprove = async () => {
+    try {
+      setLoading(true);
+      await ManagerService.approveWFHRequest(requestId);
+      alert("Đã duyệt yêu cầu làm việc tại nhà");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Duyệt yêu cầu thất bại");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleString("vi-VN");
+  const handleReject = async () => {
+    const ok = window.confirm("Bạn chắc chắn muốn từ chối yêu cầu này?");
+    if (!ok) return;
+
+    try {
+      setLoading(true);
+      await ManagerService.rejectWFHRequest(requestId);
+      alert("Đã từ chối yêu cầu làm việc tại nhà");
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Từ chối yêu cầu thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ===== HELPERS =====
+  const formatDate = (dateString) =>
+    dateString ? new Date(dateString).toLocaleDateString("vi-VN") : "-";
+
+  const formatDateTime = (dateString) =>
+    dateString ? new Date(dateString).toLocaleString("vi-VN") : "-";
+
+  const getFileName = (url) => {
+    if (!url) return "";
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      return decodeURIComponent(pathname.split("/").pop() || "file");
+    } catch {
+      return url.split("/").pop() || "file";
+    }
+  };
+
+  const handleDownload = async (fileKey) => {
+    try {
+      const url = await EmployeeService.downloadFile(fileKey);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      alert(err.message || "Lỗi khi tải file");
+    }
   };
 
   const getStatusText = (status) => {
-    const statusMap = {
-      "PENDING": "Chờ duyệt",
-      "APPROVED": "Đã duyệt",
-      "REJECTED": "Từ chối",
+    const map = {
+      PENDING: "Chờ duyệt",
+      APPROVED: "Đã duyệt",
+      REJECTED: "Từ chối",
     };
-    return statusMap[status] || status;
+    return map[status] || status;
   };
 
   const getStatusClass = (status) => {
@@ -60,6 +109,11 @@ export const WFHDetailModal = ({ requestId, onClose }) => {
     }
   };
 
+  const isFinalStatus =
+    wfhDetail?.status === "APPROVED" ||
+    wfhDetail?.status === "REJECTED";
+
+  // ===== RENDER =====
   return (
     <div className="modal-overlay">
       <div className="modal-box wfh-detail-modal">
@@ -82,72 +136,106 @@ export const WFHDetailModal = ({ requestId, onClose }) => {
 
         {!loading && !error && wfhDetail && (
           <div className="modal-content">
-            {/* Thông tin yêu cầu */}
+
+            {/* ===== THÔNG TIN YÊU CẦU ===== */}
             <div className="detail-section">
               <h3>Thông tin yêu cầu</h3>
+
               <div className="detail-row">
                 <span className="detail-label">Loại yêu cầu:</span>
                 <span className="detail-value">Làm việc tại nhà</span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Trạng thái:</span>
                 <span className={`status-badge ${getStatusClass(wfhDetail.status)}`}>
                   {getStatusText(wfhDetail.status)}
                 </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
                 <span className="detail-value">{wfhDetail.reason || "-"}</span>
               </div>
+
+              <div className="detail-row">
+                <span className="detail-label">Tệp đính kèm:</span>
+                <span className="detail-value">
+                  {wfhDetail.requestAttachment ? (
+                    <button
+                      onClick={() => handleDownload(wfhDetail.requestAttachment)}
+                      className="attachment-link"
+                      title={getFileName(wfhDetail.requestAttachment)}
+                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                    >
+                      📎 {getFileName(wfhDetail.requestAttachment)}
+                    </button>
+                  ) : (
+                    "-"
+                  )}
+                </span>
+              </div>
             </div>
 
-            {/* Thông tin thời gian */}
+            {/* ===== THỜI GIAN ===== */}
             <div className="detail-section">
               <h3>Thông tin thời gian</h3>
+
               <div className="detail-row">
                 <span className="detail-label">Ngày bắt đầu:</span>
-                <span className="detail-value">{formatDate(wfhDetail.startDate)}</span>
+                <span className="detail-value">
+                  {formatDate(wfhDetail.startDate)}
+                </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Ngày kết thúc:</span>
-                <span className="detail-value">{formatDate(wfhDetail.endDate)}</span>
+                <span className="detail-value">
+                  {formatDate(wfhDetail.endDate)}
+                </span>
               </div>
+
               <div className="detail-row">
                 <span className="detail-label">Ngày tạo:</span>
-                <span className="detail-value">{formatDateTime(wfhDetail.createdAt)}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Cập nhật lần cuối:</span>
-                <span className="detail-value">{formatDateTime(wfhDetail.updatedAt)}</span>
+                <span className="detail-value">
+                  {formatDateTime(wfhDetail.createdAt)}
+                </span>
               </div>
             </div>
 
-            {/* Thông tin nhân viên */}
+            {/* ===== THÔNG TIN NHÂN VIÊN ===== */}
             {wfhDetail.employee && (
               <div className="detail-section">
                 <h3>Thông tin nhân viên</h3>
+
                 <div className="detail-row">
                   <span className="detail-label">Mã nhân viên:</span>
-                  <span className="detail-value">{wfhDetail.employee.employeeCode}</span>
+                  <span className="detail-value">
+                    {wfhDetail.employee.employeeCode}
+                  </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Tên nhân viên:</span>
-                  <span className="detail-value">{wfhDetail.employee.fullName}</span>
+                  <span className="detail-value">
+                    {wfhDetail.employee.fullName}
+                  </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Email:</span>
-                  <span className="detail-value">{wfhDetail.employee.email}</span>
+                  <span className="detail-value">
+                    {wfhDetail.employee.email}
+                  </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Điện thoại:</span>
-                  <span className="detail-value">{wfhDetail.employee.phone}</span>
-                </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Phòng ban:</span>
                   <span className="detail-value">
                     {wfhDetail.employee.department?.departmentName || "-"}
                   </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Chức vụ:</span>
                   <span className="detail-value">
@@ -157,28 +245,24 @@ export const WFHDetailModal = ({ requestId, onClose }) => {
               </div>
             )}
 
-            {/* File đính kèm */}
-            {wfhDetail.requestAttachment && (
-              <div className="detail-section">
-                <h3>File đính kèm</h3>
-                <div className="attachment-container">
-                  <a
-                    href={wfhDetail.requestAttachment}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="attachment-link"
-                  >
-                    📎 {wfhDetail.requestAttachment.split('/').pop()}
-                  </a>
-                </div>
-              </div>
-            )}
-
+            {/* ===== FOOTER ===== */}
             <div className="modal-footer">
               <button className="btn cancel" onClick={onClose}>
                 Đóng
               </button>
+
+              {isManager && !isFinalStatus && (
+                <>
+                  <button className="btn danger" onClick={handleReject}>
+                    Từ chối
+                  </button>
+                  <button className="btn primary" onClick={handleApprove}>
+                    Duyệt
+                  </button>
+                </>
+              )}
             </div>
+
           </div>
         )}
       </div>

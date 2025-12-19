@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
-import "../style.scss";
+import '../style.scss';
 
 export const ModalLeave = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
@@ -39,32 +39,8 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
   const validate = () => {
     let newErr = {};
 
-    // Tính ngày tối thiểu (3 ngày sau ngày hiện tại)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const minDate = new Date(today);
-    minDate.setDate(today.getDate() + 3);
-
-    if (!form.startDate) {
-      newErr.startDate = "Vui lòng chọn ngày bắt đầu";
-    } else {
-      const startDate = new Date(form.startDate);
-      startDate.setHours(0, 0, 0, 0);
-      if (startDate < minDate) {
-        newErr.startDate = "Ngày bắt đầu phải sau ngày hiện tại ít nhất 3 ngày";
-      }
-    }
-
-    if (!form.endDate) {
-      newErr.endDate = "Vui lòng chọn ngày kết thúc";
-    } else {
-      const endDate = new Date(form.endDate);
-      endDate.setHours(0, 0, 0, 0);
-      if (endDate < minDate) {
-        newErr.endDate = "Ngày kết thúc phải sau ngày hiện tại ít nhất 3 ngày";
-      }
-    }
-
+    if (!form.startDate) newErr.startDate = "Vui lòng chọn ngày bắt đầu";
+    if (!form.endDate) newErr.endDate = "Vui lòng chọn ngày kết thúc";
     if (form.startDate && form.endDate && form.startDate > form.endDate) {
       newErr.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
     }
@@ -109,10 +85,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         errorMessage = error.message;
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
-      } else if (
-        error.response?.status === 413 ||
-        error.message.includes("Maximum upload size")
-      ) {
+      } else if (error.response?.status === 413 || error.message.includes("Maximum upload size")) {
         errorMessage = "File quá lớn. Vui lòng chọn file nhỏ hơn 20MB.";
       }
 
@@ -153,12 +126,10 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         />
         {errors.reason && <p className="error">{errors.reason}</p>}
 
-        <label>
-          File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)
-        </label>
-        <input
-          type="file"
-          accept="application/pdf"
+        <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
+        <input 
+          type="file" 
+          accept="application/pdf" 
           onChange={handleFile}
           disabled={loading}
         />
@@ -169,18 +140,18 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         )}
         {errors.file && <p className="error">{errors.file}</p>}
 
-        {errors.submit && (
-          <p className="error" style={{ marginTop: "10px" }}>
-            {errors.submit}
-          </p>
-        )}
+        {errors.submit && <p className="error" style={{ marginTop: "10px" }}>{errors.submit}</p>}
 
         <div className="btn-row">
-          <button className="btn cancel" onClick={onClose} disabled={loading}>
+          <button 
+            className="btn cancel" 
+            onClick={onClose}
+            disabled={loading}
+          >
             Hủy
           </button>
-          <button
-            className="btn confirm"
+          <button 
+            className="btn confirm" 
             onClick={handleSubmit}
             disabled={loading}
           >
