@@ -454,7 +454,7 @@ export const RequestManager = () => {
       </div>
 
       {/* Sidebar */}
-      <div className="sidebar">
+      {/* <div className="sidebar">
         <div className="remaining-leave">
           <div className="leaf-icon">🌿</div>
           <p>Ngày nghỉ có lương còn lại</p>
@@ -467,7 +467,7 @@ export const RequestManager = () => {
         >
           Tạo yêu cầu
         </button>
-      </div>
+      </div> */}
 
       {/* Modal chọn loại yêu cầu */}
       {showChooseTypeModal && (
