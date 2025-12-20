@@ -3,7 +3,7 @@ import { EmployeeService } from "../../../../services/EmployeeService";
 import { ManagerService } from "../../../../services/ManagerService";
 import "../style.scss";
 
-export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
+export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
   const [leaveDetail, setLeaveDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +32,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.approveLeaveRequest(requestId);
       alert("Đã duyệt yêu cầu nghỉ phép");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
@@ -49,6 +50,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.rejectLeaveRequest(requestId);
       alert("Đã từ chối yêu cầu nghỉ phép");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);

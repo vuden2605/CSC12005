@@ -3,7 +3,7 @@ import { EmployeeService } from "../../../../services/EmployeeService";
 import { ManagerService } from "../../../../services/ManagerService";
 import "../style.scss";
 
-export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
+export const TimeSheetDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
   const [timeSheetDetail, setTimeSheetDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,6 +34,7 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.approveTimeSheetRequest(requestId);
       alert("Đã duyệt yêu cầu chấm công");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
@@ -51,6 +52,7 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.rejectTimeSheetRequest(requestId);
       alert("Đã từ chối yêu cầu chấm công");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);

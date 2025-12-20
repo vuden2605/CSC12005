@@ -3,7 +3,7 @@ import { EmployeeService } from "../../../../services/EmployeeService";
 import { ManagerService } from "../../../../services/ManagerService";
 import "../style.scss";
 
-export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
+export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
   const [wfhDetail, setWfhDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,6 +33,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.approveWFHRequest(requestId);
       alert("Đã duyệt yêu cầu làm việc tại nhà");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
@@ -50,6 +51,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager }) => {
       setLoading(true);
       await ManagerService.rejectWFHRequest(requestId);
       alert("Đã từ chối yêu cầu làm việc tại nhà");
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error(err);

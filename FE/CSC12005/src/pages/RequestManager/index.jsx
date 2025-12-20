@@ -560,6 +560,7 @@ export const RequestManager = () => {
         <WFHDetailModal
           requestId={selectedWFHRequestId}
           onClose={closeWFHDetailModal}
+          onSuccess={fetchRequests}
           isManager={isManager}
         />
       )}
@@ -569,6 +570,7 @@ export const RequestManager = () => {
         <TimeSheetDetailModal
           requestId={selectedTimeSheetRequestId}
           onClose={closeTimeSheetDetailModal}
+          onSuccess={fetchRequests}
           isManager={isManager}
         />
       )}
@@ -578,6 +580,7 @@ export const RequestManager = () => {
         <LeaveDetailModal
           requestId={selectedLeaveRequestId}
           onClose={closeLeaveDetailModal}
+          onSuccess={fetchRequests}
           isManager={isManager}
         />
       )}
