@@ -13,7 +13,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Validate file PDF < 20MB
+  // Validate file type and size (PDF or common images, <= 10MB)
   const handleFile = (e) => {
     const f = e.target.files[0];
     if (!f) {
@@ -21,13 +21,21 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
       return;
     }
 
-    if (f.type !== "application/pdf") {
-      setErrors({ ...errors, file: "Chỉ chấp nhận PDF" });
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+
+    if (!allowedTypes.includes(f.type)) {
+      setErrors({ ...errors, file: "Chỉ chấp nhận PDF hoặc ảnh (JPG, PNG, GIF, WEBP)" });
       setFile(null);
       return;
     }
-    if (f.size > 20 * 1024 * 1024) {
-      setErrors({ ...errors, file: "Dung lượng phải nhỏ hơn 20MB" });
+    if (f.size > 10 * 1024 * 1024) {
+      setErrors({ ...errors, file: "Dung lượng phải nhỏ hơn 10MB" });
       setFile(null);
       return;
     }
@@ -86,7 +94,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.status === 413 || error.message.includes("Maximum upload size")) {
-        errorMessage = "File quá lớn. Vui lòng chọn file nhỏ hơn 20MB.";
+        errorMessage = "File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.";
       }
 
       setErrors({ ...errors, submit: errorMessage });
@@ -129,7 +137,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
         <input 
           type="file" 
-          accept="application/pdf" 
+          accept="application/pdf,image/jpeg,image/png,image/gif,image/webp" 
           onChange={handleFile}
           disabled={loading}
         />

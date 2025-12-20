@@ -8,6 +8,7 @@ import { WFHDetailModal } from "../../components/modals/Request/WFHDetailModal/W
 import { TimeSheetDetailModal } from "../../components/modals/Request/TimeSheetDetailModal/TimeSheetDetailModal";
 import { LeaveDetailModal } from "../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
 import { ManagerService } from "../../services/ManagerService";
+import { EmployeeService } from "../../services/EmployeeService";
 import { Pagination } from "../../components/Pagination";
 import { useSelector } from "react-redux";
 
@@ -254,6 +255,34 @@ export const RequestManager = () => {
     setPagination(prev => ({ ...prev, size, page: 0 }));
   };
 
+  const getFileName = (fileKey) => {
+    if (!fileKey) return "file";
+    try {
+      const urlObj = new URL(fileKey);
+      return decodeURIComponent(urlObj.pathname.split("/").pop() || "file");
+    } catch {
+      return fileKey.split("/").pop() || "file";
+    }
+  };
+
+  // Download attachment via presigned URL
+  const handleDownload = async (fileKey) => {
+    try {
+      const url = await EmployeeService.downloadFile(fileKey);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = getFileName(fileKey);
+      link.target = "_blank"; // open in new tab if browser blocks direct download
+      link.rel = "noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      alert(err.message || "Lỗi khi tải file");
+    }
+  };
+
   return (
     <div className="leave-management">
       <div className="header-section">
@@ -396,9 +425,20 @@ export const RequestManager = () => {
                     <td>{item.reason || "-"}</td>
                     <td>
                       {item.attachment ? (
-                        <a href={item.attachment} target="_blank" rel="noreferrer">
+                        <button
+                          onClick={() => handleDownload(item.attachment)}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#5c6bc0",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            padding: 0,
+                          }}
+                        >
                           Tải xuống
-                        </a>
+                        </button>
                       ) : (
                         "-"
                       )}
