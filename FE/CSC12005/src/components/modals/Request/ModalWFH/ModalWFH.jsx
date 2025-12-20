@@ -13,6 +13,12 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const getMinStartDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return d.toISOString().split("T")[0];
+  };
+
   const handleFile = (e) => {
     const f = e.target.files[0];
     if (!f) {
@@ -50,7 +56,11 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
 
   const validate = () => {
     let newErr = {};
+    const minStartDate = getMinStartDate();
     if (!form.startDate) newErr.startDate = "Hãy chọn ngày bắt đầu";
+    if (form.startDate && form.startDate < minStartDate) {
+      newErr.startDate = `Ngày bắt đầu phải sau hôm nay tối thiểu 3 ngày (${minStartDate})`;
+    }
     if (!form.endDate) newErr.endDate = "Hãy chọn ngày kết thúc";
     if (form.startDate && form.endDate && form.startDate > form.endDate) {
       newErr.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
@@ -111,6 +121,7 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
           type="date"
           value={form.startDate}
           onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+          min={getMinStartDate()}
           disabled={loading}
         />
         {errors.startDate && <p className="error">{errors.startDate}</p>}
