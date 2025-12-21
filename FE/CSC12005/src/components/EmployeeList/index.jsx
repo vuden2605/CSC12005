@@ -6,11 +6,13 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import { EmployeeService } from "../../services/EmployeeService";
 import { HRService } from "../../services/HRService";
+import EmployeeImportModal from "./EmployeeImportModal";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importResult, setImportResult] = useState(null);
   // state cho alert message
   const [alert, setAlert] = useState({
     show: false,
@@ -72,24 +74,24 @@ function EmployeeList() {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-const handleUpdateStatus = async (id) => {
-  try {
-    const updatedEmployee = await HRService.UpdateStatusEmp(id);
-    
-    setEmployees((prevEmployees) =>
-      prevEmployees.map((emp) =>
-        emp.id === id ? updatedEmployee : emp
-      )
-    );
-    
-    showAlert(
-      "success", 
-      updatedEmployee.status ? "Kích hoạt nhân viên thành công" : "Vô hiệu hóa nhân viên thành công"
-    );
-  } catch (error) {
-    showAlert("error", error.message);
-  }
-};
+  const handleUpdateStatus = async (id) => {
+    try {
+      const updatedEmployee = await HRService.UpdateStatusEmp(id);
+      
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((emp) =>
+          emp.id === id ? updatedEmployee : emp
+        )
+      );
+      
+      showAlert(
+        "success", 
+        updatedEmployee.status ? "Kích hoạt nhân viên thành công" : "Vô hiệu hóa nhân viên thành công"
+      );
+    } catch (error) {
+      showAlert("error", error.message);
+    }
+  };
 
   // modal update
   const [showModalUpdate, setShowModalUpdate] = useState(false);
@@ -164,6 +166,34 @@ const handleUpdateStatus = async (id) => {
       setLoading(false);
     }
   };
+  const handleImportEmployees = async (file) => {
+    try {
+      setLoading(true);
+  
+      const result = await HRService.importEmployees(file);
+  
+      setImportResult(result); // 👈 lưu kết quả
+      setShowImportModal(true); // giữ modal mở
+  
+      if (result.successRow > 0) {
+        showAlert(
+          "success",
+          `Import thành công ${result.successRow} nhân viên`
+        );
+  
+        // reload danh sách
+        const employees = await HRService.getAllEmp();
+        setEmployees(Array.isArray(employees) ? employees : []);
+      }
+    } catch (error) {
+      showAlert("error", error.message || "Import thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
+  
 
   // thông báo
   const showAlert = (type, message) => {
@@ -213,6 +243,17 @@ const handleUpdateStatus = async (id) => {
         onCreateEmp={handleCreateEmployee}
         loading={loading}
       />
+      <EmployeeImportModal
+        visible={showImportModal}
+        onClose={() => {
+        setShowImportModal(false);
+        setImportResult(null);
+        }}
+        onImport={handleImportEmployees}
+        loading={loading}
+        importResult={importResult}
+      />
+
 
       {/* Header */}
       <div className="header">
@@ -224,6 +265,13 @@ const handleUpdateStatus = async (id) => {
             disabled={loading}
           >
             + Thêm nhân viên mới
+          </button>
+          <button
+            className="btn add"
+            onClick={() => setShowImportModal(true)}
+            disabled={loading}
+          >
+            + Thêm nhân viên từ file
           </button>
           <button className="btn export">Xuất ▼</button>
         </div>

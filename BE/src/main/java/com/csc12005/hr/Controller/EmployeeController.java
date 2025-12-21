@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
+import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -87,5 +89,11 @@ public class EmployeeController {
                 .data(employeeService.getAll())
                 .build();
     }
-
+    @PostMapping("/import" )
+	public ApiResponse<ImportResult> importEmployees(@RequestParam ("file") MultipartFile file) {
+		return ApiResponse.<ImportResult>builder()
+				.message("Import employees successfully")
+				.data(employeeService.importExcel(file))
+				.build();
+	}
 }

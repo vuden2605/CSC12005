@@ -124,20 +124,46 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-GetParticipantsByActivity: async (activityId, params) => {
-  try {
-    const response = await api.get(
-      `/activities/${activityId}`,
-      { params }
-    );
-    return response.data.data;
-  } catch (error) {
-    const errMsg =
-      error.response?.data?.message ||
-      error.message ||
-      "Error fetching participants";
-    throw new Error(errMsg);
+  GetParticipantsByActivity: async (activityId, params) => {
+    try {
+      const response = await api.get(
+        `/activities/${activityId}`,
+        { params }
+      );
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching participants";
+      throw new Error(errMsg);
+    }
+  },
+  importEmployees: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file); 
+  
+      const response = await api.post(
+        "/employees/import",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+  
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error importing employees";
+      console.error("Error importing employees:", errMsg);
+      throw new Error(errMsg);
+    }
   }
-},
+  
 
 };
