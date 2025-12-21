@@ -201,10 +201,6 @@ public class EmployeeService implements IEmployeeService {
 				if (departmentCode == null || departmentCode.isEmpty()) continue;
 
 				try {
-					log.info("department code: {}", ExcelUtils.getString(row.getCell(16)));
-					log.info("position code: {}", ExcelUtils.getString(row.getCell(17)));
-					log.info("marial status: {}", ExcelUtils.getString(row.getCell(11)));
-					log.info("education level: {}", ExcelUtils.getString(row.getCell(12)));
 
 					Department department = departmentRepository
 							.findByDepartmentCode(ExcelUtils.getString(row.getCell(16)))

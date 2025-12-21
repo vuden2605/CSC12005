@@ -1,10 +1,7 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.*;
-import com.csc12005.hr.DTO.Response.ActivityDetailHRResponse;
-import com.csc12005.hr.DTO.Response.ActivityDetailResponse;
-import com.csc12005.hr.DTO.Response.ActivityResponse;
-import com.csc12005.hr.DTO.Response.ApiResponse;
+import com.csc12005.hr.DTO.Response.*;
 import com.csc12005.hr.Entity.ActivityDetail;
 import com.csc12005.hr.Service.ActivityDetailService.Impl.ActivityDetailService;
 import com.csc12005.hr.Service.ActivityService.Impl.ActivityService;
@@ -12,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,6 +64,13 @@ public class ActivityController {
                         )
                 )
                 .build();
+    }
+    @PostMapping("/import-result")
+    public ApiResponse<ImportResult> imPortActivityResult (@RequestParam ("file") MultipartFile file) {
+        return ApiResponse.<ImportResult>builder()
+		        .message("Import")
+		        .data(activityDetailService.importActivityResult(file))
+		        .build();
     }
 
 }
