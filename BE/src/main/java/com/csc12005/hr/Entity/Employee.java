@@ -1,6 +1,8 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.EducationLevel;
 import com.csc12005.hr.Enums.EmployeeRole;
+import com.csc12005.hr.Enums.MarialStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,8 +22,10 @@ public class Employee {
 	private Long id;
 	private String employeeCode;
 	private String fullName;
+	private String gender;
 	private String email;
 	private String phone;
+	private String emergencyContactPhone;
 	private LocalDate birthDate;
 	private String nationalCode;
 	private String taxCode;
@@ -36,6 +40,16 @@ public class Employee {
 	private String password;
     private String bankAccount;
     private String address;
+	private String permanentAddress;
+
+	@Enumerated(EnumType.STRING)
+	private MarialStatus marialStatus;
+
+	@Enumerated(EnumType.STRING)
+	private EducationLevel educationLevel;
+
+	private String major;
+	private String university;
     @ManyToOne
 	@JoinColumn(name = "department_id")
 	private Department department;

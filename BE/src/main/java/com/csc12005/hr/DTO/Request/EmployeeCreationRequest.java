@@ -3,6 +3,8 @@ package com.csc12005.hr.DTO.Request;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
+import com.csc12005.hr.Enums.EducationLevel;
+import com.csc12005.hr.Enums.MarialStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -42,4 +44,12 @@ public class EmployeeCreationRequest {
 	@NotNull(message = "REQUIRED_POSITION_ID")
 	private Long positionId;
 	private String avatarUrl;
+	private String permanentAddress;
+	private MarialStatus marialStatus;
+	private EducationLevel educationLevel;
+	private String major;
+	private String university;
+	private String gender;
+	private String emergencyContactPhone;
+
 }

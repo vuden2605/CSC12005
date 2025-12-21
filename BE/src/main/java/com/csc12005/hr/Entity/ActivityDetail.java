@@ -22,7 +22,7 @@ public class ActivityDetail {
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
-	private Long score;
+	private Long activityRank;
 	@Builder.Default
 	private Boolean isSuccess = false;
 }

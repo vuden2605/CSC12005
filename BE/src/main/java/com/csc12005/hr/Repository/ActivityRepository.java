@@ -28,7 +28,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
         ),
         CAST((CASE WHEN ad.id IS NULL THEN 0 ELSE 1 END) AS boolean),
 		CAST((CASE WHEN ad.isSuccess IS NULL THEN 0 ELSE ad.isSuccess END) AS boolean),
-        ad.score
+        ad.activityRank
     )
     FROM Activity a
     LEFT JOIN ActivityDetail ad ON ad.activity = a

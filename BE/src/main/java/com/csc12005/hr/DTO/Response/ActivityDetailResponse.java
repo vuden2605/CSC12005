@@ -15,5 +15,5 @@ public class ActivityDetailResponse {
 	private ActivityResponse activity;
 	private Boolean isRegistered;
 	private Boolean isSuccess;
-	private Long score;
+	private Long activityRank;
 }

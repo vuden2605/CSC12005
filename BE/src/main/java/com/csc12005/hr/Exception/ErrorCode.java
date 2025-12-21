@@ -83,6 +83,10 @@ public enum ErrorCode {
 	FILE_INVALID_FORMAT(7002,"File has invalid format", HttpStatus.BAD_REQUEST),
 	TYPE_MISMATCH(40013,"Type mismatch error", HttpStatus.BAD_REQUEST),
 	ACTIVITY_NOT_FOUND(40010,"Activity not found", HttpStatus.NOT_FOUND),
+	IMPORT_EMPLOYEE_FAIL(40011,"Import employee fail", HttpStatus.BAD_REQUEST),
+	INVALID_DATE_FORMAT(40012,"Invalid date format", HttpStatus.BAD_REQUEST),
+	INVALID_ENUM_VALUE(40013,"Invalid enum value", HttpStatus.BAD_REQUEST),
+	INVALID_NUMBER_FORMAT(40014,"Invalid number format", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;

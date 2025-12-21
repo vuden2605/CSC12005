@@ -1,7 +1,9 @@
 package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Enums.EducationLevel;
 import com.csc12005.hr.Enums.EmployeeRole;
+import com.csc12005.hr.Enums.MarialStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -35,4 +37,10 @@ public class EmployeeResponse {
 	private Long managerId;
 	private String avatarUrl;
 	private EmployeeRole role;
+	private String permanentAddress;
+	private MarialStatus marialStatus;
+	private EducationLevel educationLevel;
+	private String major;
+	private String university;
+	private String gender;
 }
