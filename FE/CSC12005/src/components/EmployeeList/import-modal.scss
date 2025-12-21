@@ -1,0 +1,71 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal {
+    background: #fff;
+    padding: 20px;
+    width: 420px;
+    border-radius: 8px;
+  }
+  
+  .error {
+    color: red;
+    margin-top: 8px;
+  }
+  
+  .import-summary {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  
+  .import-errors {
+    margin-top: 12px;
+    background: #fff5f5;
+    border: 1px solid #ffb3b3;
+    border-radius: 6px;
+    padding: 10px;
+  
+    h4 {
+      color: #d63031;
+      margin-bottom: 6px;
+    }
+  
+    ul {
+      padding-left: 18px;
+    }
+  
+    li {
+      color: #c0392b;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn.cancel {
+    background: #ddd;
+  }
+  
+  .btn.submit {
+    background: #0984e3;
+    color: white;
+  }
+  
