@@ -5,6 +5,7 @@ import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux";
 import { AuthService } from "../../services/AuthService";
+import { stompService } from "../../services/StompService";
 
 export const Header = () => {
   const location = useLocation();
@@ -48,6 +49,7 @@ export const Header = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("persist:root");
       dispatch(clearUser());
+      stompService.disconnect();
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
