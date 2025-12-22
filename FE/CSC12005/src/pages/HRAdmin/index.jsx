@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./style.scss";
 import EmployeeList from "../../components/EmployeeList";
 import CandidateList from "../../components/CandidateList";
+import DisableEmployee from "./DisableEmployee";
 
 export const HRAdmin = () => {
   const [activeTab, setActiveTab] = useState("employees");
@@ -28,11 +29,10 @@ export const HRAdmin = () => {
 
       <div className="dashboard-content">
         {activeTab === "employees" ? (
-          <EmployeeList/>
+          <DisableEmployee />
         ) : (
-          <CandidateList/>
+          <CandidateList />
         )}
-        
       </div>
     </div>
   );

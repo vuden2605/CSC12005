@@ -1,0 +1,27 @@
+.cm-backdrop {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,.4);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 999;
+}
+.cm-modal {
+width: min(420px, 92vw);
+background: #fff;
+border-radius: 12px;
+padding: 16px;
+}
+.cm-title { margin: 0 0 8px; }
+.cm-message { margin: 0 0 16px; color: #444; }
+.cm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.cm-btn {
+padding: 8px 12px;
+border-radius: 8px;
+border: 1px solid #ddd;
+cursor: pointer;
+}
+.cm-cancel { background: #fff; }
+.cm-confirm { background: #111; color: #fff; border-color: #111; }
+.cm-btn:disabled { opacity: .6; cursor: not-allowed; }

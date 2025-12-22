@@ -1,0 +1,44 @@
+.er-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.er-name { font-weight: 600; }
+.er-meta { font-size: 13px; color: #666; display: flex; gap: 8px; align-items: center; }
+.dot { opacity: .6; }
+
+.er-right { display: flex; gap: 10px; align-items: center; }
+
+.er-badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+}
+.er-badge.active { background: #f3fff3; border-color: #bfe7bf; }
+.er-badge.disabled { background: #fff3f3; border-color: #f0bcbc; }
+
+.er-btn {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #111;
+    background: #111;
+    color: #fff;
+    cursor: pointer;
+}
+.er-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    border-color: #999;
+    background: #999;
+}
+
+.er-row.is-disabled {
+    opacity: .85;
+}
