@@ -1,10 +1,12 @@
 package com.csc12005.hr.Mapper;
 
 import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
+import com.csc12005.hr.DTO.Response.EmployeeListItemResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ViewSubEmployeeBasicResponse;
 import com.csc12005.hr.Entity.Employee;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 // import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
@@ -18,4 +20,12 @@ public interface EmployeeMapper {
 
     // Map từ Entity (Employee) sang DTO trả về thông tin nhân viên dưới quyền (ViewSubEmployeeBasicResponse)
     ViewSubEmployeeBasicResponse toViewSubEmployeeBasicResponse(Employee employee);
+
+    //Vô hiệu hóa
+    @Mapping(source = "employeeId", target = "employeeId")
+    @Mapping(source = "fullName", target = "fullName")
+    @Mapping(source = "department.departmentName", target = "departmentName")
+    @Mapping(source = "position.positionName", target = "positionName")
+    @Mapping(source = "status", target = "status")
+    EmployeeListItemResponse toEmployeeListItemResponse(Employee employee);
 }

@@ -10,6 +10,7 @@ public class AppException extends RuntimeException {
         super(message);
         this.errorCode = errorCode;
     }
+    
 
     public ErrorCode getErrorCode() {
         return errorCode;
@@ -17,5 +18,9 @@ public class AppException extends RuntimeException {
 
     public HttpStatus getHttpStatus() {
         return errorCode.getHttpStatus();
+    }
+    public AppException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 }

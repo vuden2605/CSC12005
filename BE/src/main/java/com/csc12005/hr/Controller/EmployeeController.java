@@ -4,7 +4,8 @@ import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
 import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
-import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
+import com.csc12005.hr.DTO.Response.EmployeeListItemResponse;
+import com.csc12005.hr.DTO.Request.DeactivateEmployeeRequest;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +42,28 @@ public class EmployeeController {
         return ApiResponse.<EmployeeResponse>builder()
                 .message("Employee update successfully")
                 .data(employeeService.updateUser(request))
+                .build();
+    }
+    @GetMapping
+    @PreAuthorize("hasRole('HR')") 
+    public ApiResponse<List<EmployeeListItemResponse>> getEmployeesForHr(
+            @RequestParam(value = "status", required = false) Boolean status
+    ) {
+        return ApiResponse.<List<EmployeeListItemResponse>>builder()
+                .message("Get employees successfully")
+                .data(employeeService.getEmployeesForHr(status))
+                .build();
+    }
+
+
+    // HR ADMIN - VÔ HIỆU HÓA NHÂN VIÊN
+
+    @PutMapping("/deactivate")
+    @PreAuthorize("hasRole('HR')")
+    public ApiResponse<Void> deactivateEmployee(@RequestBody @Valid DeactivateEmployeeRequest request) {
+        employeeService.deactivateEmployeeForHr(request.employeeId);
+        return ApiResponse.<Void>builder()
+                .message("Employee deactivated successfully")
                 .build();
     }
 

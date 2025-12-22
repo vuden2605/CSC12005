@@ -37,4 +37,6 @@ Optional<Employee> findByEmployeeCode(String employeeCode);
                 WHERE d.id = :departmentId
 """)
 List<Employee> findByDepartmentIdWithDepartmentAndPosition(@Param("departmentId") Long departmentId);
+//nghiệp vụ vô hiệu hóa HR
+    List<Employee> findByStatus(Boolean status);
 }

@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 	
+
 	//Success
 	SUCCESS(9999, "Success", HttpStatus.OK),
 	//Employee
 	EMPLOYEE_NOT_FOUND(1001, "Employee not found", HttpStatus.NOT_FOUND),
 	EMAIL_ALREADY_EXISTS(1002, "Email already exists", HttpStatus.BAD_REQUEST),
+	EMPLOYEE_ALREADY_INACTIVE(1003, "Employee is already inactive", HttpStatus.BAD_REQUEST),
 	//Department
 	DEPARTMENT_NOT_FOUND(2001, "Department not found", HttpStatus.NOT_FOUND),
 	DEPARTMENT_CODE_ALREADY_EXISTS(2002, "Department code already exists", HttpStatus.BAD_REQUEST),
