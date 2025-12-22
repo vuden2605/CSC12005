@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Repository
 public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, Long> {
@@ -49,6 +50,6 @@ public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, 
             @Param("isSuccess") Boolean isSuccess,
             Pageable pageable
     );
-
-
+	boolean existsByActivity_IdAndEmployee_Id(Long activityId, Long employeeId);
+	Optional<ActivityDetail> findByActivity_IdAndEmployee_EmployeeCode(Long activityId, String EmployeeCode);
 }

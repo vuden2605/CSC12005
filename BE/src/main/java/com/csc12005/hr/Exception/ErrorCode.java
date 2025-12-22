@@ -87,6 +87,7 @@ public enum ErrorCode {
 	INVALID_DATE_FORMAT(40012,"Invalid date format", HttpStatus.BAD_REQUEST),
 	INVALID_ENUM_VALUE(40013,"Invalid enum value", HttpStatus.BAD_REQUEST),
 	INVALID_NUMBER_FORMAT(40014,"Invalid number format", HttpStatus.BAD_REQUEST),
+	ACTIVITY_DETAIL_NOT_FOUND(40015, "Activity Detail Not Found", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;
