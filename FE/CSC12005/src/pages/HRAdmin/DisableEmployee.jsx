@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import EmployeeList from "../../components/EmployeeManagement";
+import EmployeeList from "../../components/EmployeeManagement/EmployeeList.jsx";
 import "./disableEmployee.scss";
 
 
