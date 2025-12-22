@@ -43,8 +43,6 @@ function EmployeeImportModal({
         <input type="file" accept=".xlsx" onChange={handleFileChange} />
 
         {error && <p className="error">{error}</p>}
-
-        {/* KẾT QUẢ IMPORT */}
         {importResult && (
           <div className="import-summary">
             <p>✅ Thành công: {importResult.successRow}</p>
@@ -52,7 +50,6 @@ function EmployeeImportModal({
           </div>
         )}
 
-        {/* DANH SÁCH LỖI */}
         {importResult?.importErrors?.length > 0 && (
           <div className="import-errors">
             <h4>❌ Danh sách lỗi</h4>
