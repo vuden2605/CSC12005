@@ -18,4 +18,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     WHERE n.userId = :userId OR n.type = 'ACTIVITY'
 """)
 	Page<Notification> getNotifications(@Param("userId") Long userId, Pageable pageable);
+	@Query("""
+	SELECT COUNT(n) FROM Notification n
+	WHERE (n.userId = :userId OR n.type = 'ACTIVITY') AND n.isRead = false"""
+	)
+	int countNotificationsUnread(@Param("userId") Long userId);
 }

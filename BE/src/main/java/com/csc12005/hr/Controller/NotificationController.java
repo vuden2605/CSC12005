@@ -29,4 +29,11 @@ public class NotificationController {
 				.message("Notification marked as read successfully")
 				.build();
 	}
+	@GetMapping("/unread/count")
+	public ApiResponse<Integer> countUnreadNotifications() {
+		return ApiResponse.<Integer>builder()
+				.message("Unread notifications count retrieved successfully")
+				.data(notificationService.countUnreadNotifications())
+				.build();
+	}
 }

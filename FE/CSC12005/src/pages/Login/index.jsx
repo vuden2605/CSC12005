@@ -7,7 +7,6 @@ import { EmployeeService } from "../../services/EmployeeService";
 import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux";
-import { stompService } from "../../services/StompService";
 const roleRedirects = {
   ADMIN: "/admin",
   MN: "/employee/dashboard/info",
@@ -59,7 +58,6 @@ export const Login = () => {
       console.log("Current User after login:", userRes);
 
       dispatch(setUser(userRes)); // lưu user vào Redux
-      stompService.connect(accessToken);
       setStatus("success");
       console.log("role", userRes.role);
       const redirectPath = roleRedirects[userRes.position.role] || "/";

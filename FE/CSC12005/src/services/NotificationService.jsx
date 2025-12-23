@@ -20,4 +20,12 @@ export const NotificationService = {
             console.log(error);
         }
     },
+    unreadCount: async () => {
+        try {
+            const response = await api.get('/notifications/unread/count');
+            return response.data.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 };

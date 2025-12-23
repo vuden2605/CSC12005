@@ -1,7 +1,7 @@
 package com.csc12005.hr.Service.NotificationService.Impl;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.RequestCreated;
+import com.csc12005.hr.DTO.Request.LeaveRequestCreated;
 import com.csc12005.hr.Entity.Notification;
 import com.csc12005.hr.Enums.NotificationType;
 import com.csc12005.hr.Repository.NotificationRepository;
@@ -25,17 +25,17 @@ public class NotificationService implements INotificationService {
 	@Override
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	public void handleRequestCreated(RequestCreated requestCreated) {
+	public void handleLeaveRequestCreated(LeaveRequestCreated leaveRequestCreated) {
 
 		Notification notification = Notification.builder()
-				.userId(requestCreated.getManagerId())
-				.title("Yêu cầu nghỉ phép mới")
-				.content(String.format("Nhân viên %s đã tạo một yêu cầu nghỉ phép mới", requestCreated.getEmployeeName()))
+				.userId(leaveRequestCreated.getManagerId())
+				.title("Đơn nghỉ phép")
+				.content(String.format("Nhân viên %s đã tạo một đơn nghỉ phép mới", leaveRequestCreated.getEmployeeName()))
 				.type(NotificationType.REQUEST)
-				.referenceId(requestCreated.getRequestId())
+				.referenceId(leaveRequestCreated.getRequestId())
 				.build();
 		Notification savedNotification = notificationRepository.save(notification);
-		webSocketService.sendToUser(requestCreated.getManagerId(), savedNotification);
+		webSocketService.sendToUser(leaveRequestCreated.getManagerId(), savedNotification);
 	}
 
 	@Override
@@ -51,6 +51,12 @@ public class NotificationService implements INotificationService {
 				.orElseThrow(() -> new RuntimeException("Notification not found"));
 		notification.setIsRead(true);
 		notificationRepository.save(notification);
+	}
+
+	@Override
+	public int countUnreadNotifications() {
+		Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+		return notificationRepository.countNotificationsUnread(userId);
 	}
 
 }

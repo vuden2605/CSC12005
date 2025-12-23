@@ -1,7 +1,7 @@
 package com.csc12005.hr.Service.LeaveRequestService.Impl;
 
 import com.csc12005.hr.DTO.Request.LeaveRequestCreationRequest;
-import com.csc12005.hr.DTO.Request.RequestCreated;
+import com.csc12005.hr.DTO.Request.LeaveRequestCreated;
 import com.csc12005.hr.DTO.Response.LeaveRequestResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.LeaveRequest;
@@ -41,7 +41,7 @@ public class LeaveRequestService implements ILeaveRequestService {
 		leaveRequest.setEmployee(employee);
 		leaveRequest.setRequestType(RequestType.Leave);
 		LeaveRequest savedRequest = leaveRequestRepository.save(leaveRequest);
-		eventPublisher.publishEvent(RequestCreated.builder()
+		eventPublisher.publishEvent(LeaveRequestCreated.builder()
 				.requestId(savedRequest.getId())
 				.employeeName(employee.getFullName())
 				.managerId(employee.getManager().getId())
