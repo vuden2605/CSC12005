@@ -1,4 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+const getNotificationRoute = (type, referenceId) => {
+  switch (type) {
+    case "REQUEST":
+      return `/manager/requests`;     
+
+    case "TIMESHEET":
+      return `/timesheets`;                 
+
+    case "SALARY":
+      return `/salary`;                       
+
+    case "REVIEW":
+      return `/reviews/${referenceId}`;       
+
+    case "ACTIVITY":
+      return `/employee/dashboard/event`;    
+
+    default:
+      return null;
+  }
+};
+
 import { 
   Bell, 
   FileText, 
@@ -17,6 +41,7 @@ export const Notifications = ({ unreadCount: propUnreadCount }) => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
@@ -116,20 +141,25 @@ export const Notifications = ({ unreadCount: propUnreadCount }) => {
     fetchNotifications(nextPage);
   };
 
-  const handleNotificationClick = async (id, isRead) => {
+  const handleNotificationClick = async (notification) => {
+    const { id, read, type, referenceId } = notification;
+  
     try {
-      // Nếu chưa đọc thì mới call API và update
-      if (!isRead) {
-        // Gọi API mark as read
+      if (!read) {
         await NotificationService.markAsRead(id);
-        
-        // Dispatch action để update Redux
         dispatch(markAsRead(id));
       }
+      const route = getNotificationRoute(type, referenceId);
+      if (route) {
+        navigate(route);
+        setOpen(false);
+      }
+  
     } catch (error) {
-      console.error("Mark as read failed:", error);
+      console.error("Handle notification click failed:", error);
     }
   };
+  
 
   // Format time ago
   const formatTimeAgo = (timestamp) => {
@@ -182,7 +212,7 @@ export const Notifications = ({ unreadCount: propUnreadCount }) => {
                     <div
                       key={n.id}
                       className={`notification-item ${n.read ? "read" : "unread"}`}
-                      onClick={() => handleNotificationClick(n.id, n.read)}
+                      onClick={() => handleNotificationClick(n)}
                     >
                       <div 
                         className="notification-icon"

@@ -17,6 +17,12 @@ public class WebSocketService {
 				payload
 		);
 	}
+	public void sendToAll(Object payload) {
+		messagingTemplate.convertAndSend(
+				"/topic/notifications",
+				payload
+		);
+	}
 
 }
 

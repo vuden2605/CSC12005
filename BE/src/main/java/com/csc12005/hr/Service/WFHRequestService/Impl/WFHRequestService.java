@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.WFHRequestService.Impl;
 
 import com.csc12005.hr.DTO.Request.WFHCreationRequest;
+import com.csc12005.hr.DTO.Request.WFHRequestCreated;
 import com.csc12005.hr.DTO.Response.WFHResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.TimeSheet;
@@ -18,6 +19,7 @@ import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.WFHRequestService.IWFHRequestService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,8 @@ public class WFHRequestService implements IWFHRequestService {
 	private final EmployeeRepository employeeRepository;
 	private final TimeSheetRepository timeSheetRepository;
 	private final S3Service s3Service;
+	private final ApplicationEventPublisher eventPublisher;
+	@Transactional
 	@Override
 	public WFHResponse createWFHRequest(WFHCreationRequest wfhCreationRequest) {
 		String filePath = s3Service.uploadFile(wfhCreationRequest.getFile());
@@ -46,6 +50,11 @@ public class WFHRequestService implements IWFHRequestService {
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		wfhRequest.setEmployee(employee);
 		WFHRequest savedWFHRequest = wFhRequestRepository.save(wfhRequest);
+		eventPublisher.publishEvent(WFHRequestCreated.builder()
+				.requestId(savedWFHRequest.getId())
+				.managerId(employee.getManager().getId())
+				.employeeName(employee.getFullName())
+				.build());
 		return wfhRequestMapper.toWFHResponse(savedWFHRequest);
 	}
 

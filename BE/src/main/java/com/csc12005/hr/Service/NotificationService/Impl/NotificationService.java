@@ -1,7 +1,6 @@
 package com.csc12005.hr.Service.NotificationService.Impl;
 
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.LeaveRequestCreated;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.Entity.Notification;
 import com.csc12005.hr.Enums.NotificationType;
 import com.csc12005.hr.Repository.NotificationRepository;
@@ -30,12 +29,55 @@ public class NotificationService implements INotificationService {
 		Notification notification = Notification.builder()
 				.userId(leaveRequestCreated.getManagerId())
 				.title("Đơn nghỉ phép")
-				.content(String.format("Nhân viên %s đã tạo một đơn nghỉ phép mới", leaveRequestCreated.getEmployeeName()))
+				.content(String.format("Nhân viên %s đã gửi đơn xin nghỉ phép. Vui lòng kiểm tra và phê duyệt.", leaveRequestCreated.getEmployeeName()))
 				.type(NotificationType.REQUEST)
 				.referenceId(leaveRequestCreated.getRequestId())
 				.build();
 		Notification savedNotification = notificationRepository.save(notification);
 		webSocketService.sendToUser(leaveRequestCreated.getManagerId(), savedNotification);
+	}
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleWFHRequestCreated(WFHRequestCreated wfhRequestCreated) {
+
+		Notification notification = Notification.builder()
+				.userId(wfhRequestCreated.getManagerId())
+				.title("Đơn làm việc tại nhà")
+				.content(String.format("Nhân viên %s đã gửi đơn xin làm việc tại nhà. Vui lòng kiểm tra và phê duyệt.", wfhRequestCreated.getEmployeeName()))
+				.type(NotificationType.REQUEST)
+				.referenceId(wfhRequestCreated.getRequestId())
+				.build();
+		Notification savedNotification = notificationRepository.save(notification);
+		webSocketService.sendToUser(wfhRequestCreated.getManagerId(), savedNotification);
+	}
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleTimeSheetRequestCreated(TimeSheetRequestCreated timeSheetRequestCreated) {
+
+		Notification notification = Notification.builder()
+				.userId(timeSheetRequestCreated.getManagerId())
+				.title("Đơn sửa bảng chấm công")
+				.content(String.format("Nhân viên %s đã gửi đơn xin điều chỉnh bảng chấm công. Vui lòng kiểm tra và phê duyệt.", timeSheetRequestCreated.getEmployeeName()))
+				.type(NotificationType.REQUEST)
+				.referenceId(timeSheetRequestCreated.getRequestId())
+				.build();
+		Notification savedNotification = notificationRepository.save(notification);
+		webSocketService.sendToUser(timeSheetRequestCreated.getManagerId(), savedNotification);
+	}
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleActivityCreated(ActivityCreated activityCreated) {
+		Notification notification = Notification.builder()
+				.title("Sự kiện")
+				.content("Có sự kiện mới đang chuẩn bị diễn ra, hãy kiểm tra ngay!")
+				.type(NotificationType.ACTIVITY)
+				.referenceId(activityCreated.getActivityId())
+				.build();
+		Notification savedNotification = notificationRepository.save(notification);
+		webSocketService.sendToAll(savedNotification);
 	}
 
 	@Override

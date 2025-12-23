@@ -40,6 +40,21 @@ class StompService {
             })
           );
         });
+        this.client.subscribe("/topic/notifications", (msg) => {
+          const data = JSON.parse(msg.body);
+      
+          store.dispatch(
+            addNotification({
+              id: data.id ?? Date.now(),
+              title: data.title,
+              content: data.content,
+              type: data.type,
+              read: false,
+              referenceId: data.referenceId,
+              timestamp: data.createdAt,
+            })
+          );
+        });
       },
   
       onWebSocketClose: () => {

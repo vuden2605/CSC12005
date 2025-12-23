@@ -1,5 +1,6 @@
 package com.csc12005.hr.Service.TimeSheetRequestService.Impl;
 
+import com.csc12005.hr.DTO.Request.TimeSheetRequestCreated;
 import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
 import com.csc12005.hr.DTO.Response.TimeSheetRequestResponse;
 import com.csc12005.hr.Entity.Employee;
@@ -16,6 +17,7 @@ import com.csc12005.hr.Repository.TimeSheetRequestRepository;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.TimeSheetRequestService.ITimeSheetRequestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 	private final EmployeeRepository employeeRepository;
 	private final TimeSheetRepository timeSheetRepository;
 	private final S3Service s3Service;
+	private final ApplicationEventPublisher applicationEventPublisher;
 	@Transactional
 	public TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
 		var context = SecurityContextHolder.getContext();
@@ -41,6 +44,11 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 		timeSheetRequest.setRequestAttachment(requestAttachmentUrl);
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);
 		timeSheetRequest.setEmployee(employee);
+		applicationEventPublisher.publishEvent(TimeSheetRequestCreated.builder()
+				.requestId(timeSheetRequest.getId())
+				.managerId(employee.getManager().getId())
+				.employeeName(employee.getFullName())
+				.build());
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
 	@Transactional

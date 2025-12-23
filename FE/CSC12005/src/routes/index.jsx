@@ -30,6 +30,7 @@ export const routes = [
       { path: "admin", element: <Admin /> },
       { path: "manager/department", element: <Manager /> },
       { path: "manager/requests", element: <RequestManager /> },
+      { path: "manager/requests/:id", element: <RequestManager /> },
       {
         path: "employee",
         element: <Employee />,

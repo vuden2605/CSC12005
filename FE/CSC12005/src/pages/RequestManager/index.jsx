@@ -91,8 +91,8 @@ export const RequestManager = () => {
       const params = {
         page: pagination.page,
         size: pagination.size,
-        direction: "ASC",
-        sortBy: "id",
+        direction: "DESC",
+        sortBy: "createdAt",
       };
 
       // Thêm date filters nếu có
