@@ -1,21 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation, Link, Navigate, useNavigate } from "react-router-dom";
-import { Bell, User, LogOut } from "lucide-react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { User, LogOut } from "lucide-react";
 import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux";
 import { AuthService } from "../../services/AuthService";
+import { stompService } from "../../services/StompService";
+import { Notifications } from "../Notification/Notifications";
+import { NotificationService } from "../../services/NotificationService";
+import { addNotifications, setUnreadCount } from "../../redux/slices/notificationSlice";
 
 export const Header = () => {
   const location = useLocation();
-  const [openDropdown, setOpenDropdown] = useState(false);
-  const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.currentUser);
-  const dispatch = useDispatch();
-  console.log("role", user.role);
+  const notifications = useSelector((state) => state.notifications.list);
+  const unreadCount = useSelector((state) => state.notifications.unreadCount);
   const role = user?.position?.role?.toUpperCase();
+
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const hasFetchedRef = useRef(false);
+
   const menuItems = {
     ADMIN: [{ label: "Trang tổng quan", path: "/admin/dashboard" }],
     EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
@@ -31,7 +39,56 @@ export const Header = () => {
     ],
   };
 
-  // Click outside để đóng dropdown
+  // Fetch unread count và initial notifications
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      // Chỉ fetch một lần duy nhất
+      if (hasFetchedRef.current) {
+        return;
+      }
+      hasFetchedRef.current = true;
+
+      try {
+        // Fetch unread count từ API
+        const count = await NotificationService.unreadCount();
+        if (count !== undefined && count !== null) {
+          dispatch(setUnreadCount(count));
+        }
+
+        // Fetch initial notifications
+        const response = await NotificationService.getNotifications(
+          0,
+          5,
+          "createdAt",
+          "DESC"
+        );
+
+        const data = response?.data?.content || response?.content || response;
+        
+        if (Array.isArray(data) && data.length > 0) {
+          // Map data sang format của Redux
+          const formattedNotifications = data.map((n) => ({
+            id: n.id,
+            type: n.type,
+            title: n.title,
+            content: n.content,
+            read: n.isRead,
+            timestamp: n.createdAt,
+            referenceId: n.referenceId,
+          }));
+
+          // Dispatch addNotifications (không tăng unreadCount)
+          dispatch(addNotifications(formattedNotifications));
+        }
+      } catch (error) {
+        console.error("Fetch initial data failed:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, [dispatch]); // Chỉ chạy một lần khi component mount
+
+  // Click outside avatar dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -48,11 +105,13 @@ export const Header = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("persist:root");
       dispatch(clearUser());
+      stompService.disconnect();
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
+
   const isActiveMenu = (menuPath) => {
     if (menuPath === "/" && location.pathname === "/") return true;
     return location.pathname.startsWith(menuPath);
@@ -61,44 +120,29 @@ export const Header = () => {
   return (
     <header className="header">
       <nav className="header-nav">
-        {menuItems[role]?.map((item) => {
-          const isActive = isActiveMenu(item.path);
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={isActive ? "active" : ""}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+        {menuItems[role]?.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={isActiveMenu(item.path) ? "active" : ""}
+          >
+            {item.label}
+          </Link>
+        ))}
       </nav>
 
       <div className="header-right">
-        <button className="icon-button notification-button">
-          <Bell size={20} />
-          <span className="notification-badge">5</span>
-        </button>
+        <Notifications unreadCount={unreadCount} />
 
         <div className="avatar-wrapper" ref={dropdownRef}>
           <button
             className="icon-button profile-button"
             onClick={() => setOpenDropdown(!openDropdown)}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "20px",
-              }}
-            >
-              <div className="avatar">
-                <User size={20} />
-              </div>
-              <div className="UserName">{user.fullName}</div>
+            <div className="avatar">
+              <User size={20} />
             </div>
+            <div className="UserName">{user?.fullName}</div>
           </button>
 
           {openDropdown && (

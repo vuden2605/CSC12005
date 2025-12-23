@@ -7,7 +7,6 @@ import { EmployeeService } from "../../services/EmployeeService";
 import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux";
-
 const roleRedirects = {
   ADMIN: "/admin",
   MN: "/employee/dashboard/info",

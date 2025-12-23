@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.LeaveRequestService.Impl;
 
 import com.csc12005.hr.DTO.Request.LeaveRequestCreationRequest;
+import com.csc12005.hr.DTO.Request.LeaveRequestCreated;
 import com.csc12005.hr.DTO.Response.LeaveRequestResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.LeaveRequest;
@@ -14,6 +15,7 @@ import com.csc12005.hr.Repository.LeaveRequestRepository;
 import com.csc12005.hr.Service.LeaveRequestService.ILeaveRequestService;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class LeaveRequestService implements ILeaveRequestService {
 	private final LeaveRequestMapper leaveRequestMapper;
 	private final EmployeeRepository employeeRepository;
 	private final S3Service s3Service;
+	private final ApplicationEventPublisher eventPublisher;
 	@Transactional
 	@Override
 	public LeaveRequestResponse createLeaveRequest(LeaveRequestCreationRequest request) {
@@ -37,7 +40,13 @@ public class LeaveRequestService implements ILeaveRequestService {
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		leaveRequest.setEmployee(employee);
 		leaveRequest.setRequestType(RequestType.Leave);
-		return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
+		LeaveRequest savedRequest = leaveRequestRepository.save(leaveRequest);
+		eventPublisher.publishEvent(LeaveRequestCreated.builder()
+				.requestId(savedRequest.getId())
+				.employeeName(employee.getFullName())
+				.managerId(employee.getManager().getId())
+				.build());
+		return leaveRequestMapper.toLeaveRequestResponse(savedRequest);
 	}
 	public LeaveRequestResponse approvedLeaveRequest(Long id) {
 		LeaveRequest leaveRequest = leaveRequestRepository.findById(id)
