@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux";
 import { AuthService } from "../../services/AuthService";
 import { stompService } from "../../services/StompService";
+import { Notifications } from "../Notification/Notifications";
 
 export const Header = () => {
   const location = useLocation();
@@ -78,10 +79,7 @@ export const Header = () => {
       </nav>
 
       <div className="header-right">
-        <button className="icon-button notification-button">
-          <Bell size={20} />
-          <span className="notification-badge">5</span>
-        </button>
+        <Notifications />
 
         <div className="avatar-wrapper" ref={dropdownRef}>
           <button

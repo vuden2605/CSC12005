@@ -1,5 +1,8 @@
+// stompService.js
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
+import { store } from "../redux";
+import { addNotification } from "../redux/slices/notificationSlice";
 
 class StompService {
   client = null;
@@ -19,11 +22,22 @@ class StompService {
       onConnect: () => {
         console.log("✅ STOMP connected");
 
-        // 🔥 SUBSCRIBE USER QUEUE
+        // 🔥 Subscribe notification cá nhân
         this.client.subscribe("/user/queue/notifications", (msg) => {
           const data = JSON.parse(msg.body);
-          console.log("📩 Notification:", data);
-          // dispatch redux / toast / badge count
+          console.log("📩 Personal Notification:", data);
+          store.dispatch(
+            addNotification({ id: Date.now(), type: "personal", ...data })
+          );
+        });
+
+        // 🔥 Subscribe notification chung
+        this.client.subscribe("/topic/notifications", (msg) => {
+          const data = JSON.parse(msg.body);
+          console.log("📢 Broadcast Notification:", data);
+          store.dispatch(
+            addNotification({ id: Date.now(), type: "broadcast", ...data })
+          );
         });
       },
 
