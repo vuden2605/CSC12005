@@ -16,6 +16,7 @@ import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Repository.TimeSheetRequestRepository;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.TimeSheetRequestService.ITimeSheetRequestService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,10 +32,10 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 	private final TimeSheetRepository timeSheetRepository;
 	private final S3Service s3Service;
 	private final ApplicationEventPublisher applicationEventPublisher;
+	private final SecurityUtils securityUtils;
 	@Transactional
 	public TimeSheetRequestResponse createTimeSheetRequest(TimeSheetRequestCreationRequest timeSheetRequestCreationRequest) {
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Long employeeId = securityUtils.getCurrentUserId();
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employeeId, timeSheetRequestCreationRequest.getWorkDate())
@@ -44,12 +45,13 @@ public class TimeSheetRequestService implements ITimeSheetRequestService {
 		timeSheetRequest.setRequestAttachment(requestAttachmentUrl);
 		timeSheetRequest.setRequestType(RequestType.TimeSheet);
 		timeSheetRequest.setEmployee(employee);
+		TimeSheetRequest saved = timeSheetRequestRepository.save(timeSheetRequest);
 		applicationEventPublisher.publishEvent(TimeSheetRequestCreated.builder()
 				.requestId(timeSheetRequest.getId())
 				.managerId(employee.getManager().getId())
 				.employeeName(employee.getFullName())
 				.build());
-		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
+		return timeSheetRequestMapper.toTimeSheetRequestResponse(saved);
 	}
 	@Transactional
 	public TimeSheetRequestResponse approvedTimeSheetRequest (Long id) {

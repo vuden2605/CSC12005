@@ -17,6 +17,7 @@ import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Repository.WFhRequestRepository;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Service.WFHRequestService.IWFHRequestService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,6 +38,7 @@ public class WFHRequestService implements IWFHRequestService {
 	private final TimeSheetRepository timeSheetRepository;
 	private final S3Service s3Service;
 	private final ApplicationEventPublisher eventPublisher;
+	private final SecurityUtils securityUtils;
 	@Transactional
 	@Override
 	public WFHResponse createWFHRequest(WFHCreationRequest wfhCreationRequest) {
@@ -44,8 +46,7 @@ public class WFHRequestService implements IWFHRequestService {
 		WFHRequest wfhRequest = wfhRequestMapper.toWFHRequest(wfhCreationRequest);
 		wfhRequest.setRequestType(RequestType.WorkFromHome);
 		wfhRequest.setRequestAttachment(filePath);
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Long employeeId = securityUtils.getCurrentUserId();
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		wfhRequest.setEmployee(employee);

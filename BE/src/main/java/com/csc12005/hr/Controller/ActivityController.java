@@ -5,15 +5,20 @@ import com.csc12005.hr.DTO.Response.*;
 import com.csc12005.hr.Entity.ActivityDetail;
 import com.csc12005.hr.Service.ActivityDetailService.Impl.ActivityDetailService;
 import com.csc12005.hr.Service.ActivityService.Impl.ActivityService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/activities")
+@Slf4j
 public class ActivityController {
 	private final ActivityService activityService;
 	private final ActivityDetailService activityDetailService;
