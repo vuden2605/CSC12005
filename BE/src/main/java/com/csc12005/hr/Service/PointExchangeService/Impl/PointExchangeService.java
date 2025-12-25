@@ -1,5 +1,7 @@
 package com.csc12005.hr.Service.PointExchangeService.Impl;
 
+import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.PointExchangeFilterRequest;
 import com.csc12005.hr.DTO.Request.PointExchangeRequest;
 import com.csc12005.hr.DTO.Request.UpdatePointExchangeStatusRequest;
 import com.csc12005.hr.DTO.Response.PointExchangeResponse;
@@ -15,6 +17,8 @@ import com.csc12005.hr.Service.PointExchangeService.IPointExchangeService;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -96,5 +100,33 @@ public class PointExchangeService implements IPointExchangeService {
 			throw new AppException(ErrorCode.INVALID_STATUS_TRANSITION);
 		}
 	}
+	public Page<PointExchangeResponse> myPointExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest) {
+		Long employeeId = securityUtils.getCurrentUserId();
+		Pageable pageable = pageRequestDTO.buildPageable();
+		Page<PointExchange> pointExchanges = pointExchangeRepository.filterPointExchanges(
+				employeeId,
+				pointExchangeFilterRequest.getEmployeeName(),
+				pointExchangeFilterRequest.getEmployeeCode(),
+				pointExchangeFilterRequest.getStatus(),
+				pointExchangeFilterRequest.getStartDate(),
+				pointExchangeFilterRequest.getEndDate(),
+				pageable
+		);
+		return pointExchanges.map(pointExchangeMapper::toPointExchangeResponse);
+	}
 
+	@Override
+	public Page<PointExchangeResponse> getAllExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest) {
+		Pageable pageable = pageRequestDTO.buildPageable();
+		Page<PointExchange> pointExchanges = pointExchangeRepository.filterPointExchanges(
+				null,
+				pointExchangeFilterRequest.getEmployeeName(),
+				pointExchangeFilterRequest.getEmployeeCode(),
+				pointExchangeFilterRequest.getStatus(),
+				pointExchangeFilterRequest.getStartDate(),
+				pointExchangeFilterRequest.getEndDate(),
+				pageable
+		);
+		return pointExchanges.map(pointExchangeMapper::toPointExchangeResponse);
+	}
 }
