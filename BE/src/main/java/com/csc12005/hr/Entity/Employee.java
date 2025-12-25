@@ -37,6 +37,8 @@ public class Employee {
 	private Long baseSalary;
 	@Builder.Default
 	private Long totalPoints = 0L;
+	@Builder.Default
+	private Long allocatePoints = 0L;
 	private String password;
     private String bankAccount;
     private String address;
