@@ -18,7 +18,8 @@ import { Attendance } from "../pages/Employee/Darshboard/Attendance";
 import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
 
 import { RequestManager } from "../pages/RequestManager";
-import {EventPageHR} from "../pages/EventHR";
+import { EventPageHR } from "../pages/EventHR";
+import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
 
 export const routes = [
     { path: "/", element: <Navigate to="/login" replace /> },
@@ -64,6 +65,7 @@ export const routes = [
       { path: "hr/humans", element: <HRAdmin /> },
       { path: "manager", element: <Manager /> },
       { path: "hr/events", element: <EventPageHR /> },
+      { path: "hr/bonus-points", element: <BonusPointsAdmin /> },
     ],
   },
   {

@@ -31,6 +31,7 @@ export const Header = () => {
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý Sự kiện", path: "/hr/events" },
       { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
+      { label: "Quản lý điểm", path: "/hr/bonus-points" },
     ],
     MN: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },

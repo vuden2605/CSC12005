@@ -163,7 +163,111 @@ export const HRService = {
       console.error("Error importing employees:", errMsg);
       throw new Error(errMsg);
     }
+  },
+  getMonthlyCandidatesPoints: async () => {
+    try {
+      const response = await api.get(
+        `/point-histories/monthly-candidates`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching monthly candidates points";
+      console.error("Error fetching monthly candidates points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  grantMonthlyPoints: async (candidateIds) => {
+    try {
+      const response = await api.post(
+        `/point-histories/monthly-grant`,
+        { candidateIds },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error granting monthly points";
+      console.error("Error granting monthly points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  getPointExchangeRequests: async () => {
+    try {
+      const response = await api.get(
+        `/point-exchange-requests`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching point exchange requests";
+      console.error("Error fetching point exchange requests:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  approvePointExchangeRequest: async (requestId) => {
+    try {
+      const response = await api.patch(
+        `/point-exchange-requests/${requestId}/approve`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error approving request";
+      console.error("Error approving request:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  rejectPointExchangeRequest: async (requestId) => {
+    try {
+      const response = await api.patch(
+        `/point-exchange-requests/${requestId}/reject`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error rejecting request";
+      console.error("Error rejecting request:", errMsg);
+      throw new Error(errMsg);
+    }
   }
+
   
 
 };
