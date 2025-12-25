@@ -1,6 +1,8 @@
-package com.csc12005.hr.Entity;
+package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Enums.PointExchangeStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,37 +12,21 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "point_exchanges")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class PointExchange {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PointExchangeResponse {
 	private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "employee_id", nullable = false)
-	private Employee employee;
-
-	private Long pointUsed;
-
+	private String employeeName;
+	private String employeeCode;
+	private Integer pointUsed;
 	private Long exchangeValue;
-
-	@Enumerated(EnumType.STRING)
 	private PointExchangeStatus status;
-
-	@Version
-	private Long version;
-
 	private String note;
-	@CreationTimestamp
 	private LocalDateTime requestedAt;
 	private LocalDateTime approvedAt;
 	private LocalDateTime completedAt;
 	private LocalDateTime rejectedAt;
 }
-

@@ -88,6 +88,13 @@ public enum ErrorCode {
 	INVALID_ENUM_VALUE(40013,"Invalid enum value", HttpStatus.BAD_REQUEST),
 	INVALID_NUMBER_FORMAT(40014,"Invalid number format", HttpStatus.BAD_REQUEST),
 	ACTIVITY_DETAIL_NOT_FOUND(40015, "Activity Detail Not Found", HttpStatus.BAD_REQUEST),
+	POINT_EXCHANGE_NOT_FOUND(40016, "Point exchange request not found", HttpStatus.NOT_FOUND),
+	INSUFFICIENT_POINTS(40017, "Insufficient points for exchange", HttpStatus.BAD_REQUEST),
+	INVALID_STATUS_TRANSITION(40018, "Invalid status transition", HttpStatus.BAD_REQUEST),
+	POINT_EXCHANGE_FINAL_STATE(40019, "Point exchange request is in a final state and cannot be modified", HttpStatus.BAD_REQUEST),
+	INVALID_STATUS(40020, "Invalid status provided", HttpStatus.BAD_REQUEST),
+	//Point History
+
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;

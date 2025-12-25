@@ -2,6 +2,7 @@ package com.csc12005.hr.Repository;
 
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.PointHistory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +30,5 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 			@Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate
 	);
+	List<PointHistory> findByEmployeeId(Long employeeId, Pageable pageable);
 }
