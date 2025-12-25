@@ -15,6 +15,7 @@ import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
 
 import { Attendance } from "../pages/Employee/Darshboard/Attendance";
+import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
 
 import { RequestManager } from "../pages/RequestManager";
 import {EventPageHR} from "../pages/EventHR";
@@ -54,6 +55,7 @@ export const routes = [
               { path: "attendance", element: <Attendance /> },
               { path: "request", element: <Requests /> },
               { path: "event", element: <Activities /> },
+              { path: "bonus-points", element: <BonusPoints /> },
               // { path: "score", element: <Score /> },
             ],
           },

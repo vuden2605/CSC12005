@@ -14,6 +14,7 @@ export const Dashboard = () => {
     { id: "attendance", label: "Lịch sử chấm công", path: "/employee/dashboard/attendance" },
     { id: "request", label: "Yêu cầu", path: "/employee/dashboard/request" },
     { id: "event", label: "Sự kiện", path: "/employee/dashboard/event" },
+    { id: "bonus-points", label: "Điểm Thưởng", path: "/employee/dashboard/bonus-points" },
     // { id: "score", label: "Điểm", path: "/employee/dashboard/score" },
   ];
 
