@@ -6,7 +6,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +24,9 @@ public class RequestResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private EmployeeResponse employee;
+	private LocalTime checkInNew;
+	private LocalTime checkOutNew;
+	private LocalDate workDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 }
