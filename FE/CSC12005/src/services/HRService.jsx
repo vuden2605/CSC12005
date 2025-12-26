@@ -205,11 +205,12 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  getPointExchangeRequests: async () => {
+  getPointExchangeRequests: async (params = {}) => {
     try {
       const response = await api.get(
-        `/point-exchange-requests`,
+        `/point-exchanges/all`,
         {
+          params,
           headers: {
             "Content-Type": "application/json",
           },

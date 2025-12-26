@@ -6,26 +6,52 @@ const PointExchangeRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: 10,
+    totalElements: 0,
+    totalPages: 0,
+  });
   const [filters, setFilters] = useState({
     employeeName: "",
     status: "",
+    direction: "ASC",
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchExchangeRequests();
-  }, []);
+  }, [pagination.page, pagination.size]);
 
   const fetchExchangeRequests = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await HRService.getPointExchangeRequests();
       
-      // Normalize dữ liệu từ API
-      const data = Array.isArray(response) ? response : response?.data || response || [];
-      setRequests(data);
+      const params = {
+        page: pagination.page,
+        size: pagination.size,
+        direction: filters.direction,
+        ...(filters.status && { status: filters.status }),
+        ...(filters.employeeName && { employeeName: filters.employeeName }),
+      };
+      
+      const response = await HRService.getPointExchangeRequests(params);
+      
+      // Xử lý response có pagination
+      if (response?.content && Array.isArray(response.content)) {
+        setRequests(response.content);
+        setPagination(prev => ({
+          ...prev,
+          totalElements: response.totalElements || 0,
+          totalPages: response.totalPages || 0,
+        }));
+      } else {
+        // Fallback cho response không có pagination
+        const data = Array.isArray(response) ? response : response?.data || [];
+        setRequests(data);
+      }
     } catch (error) {
       console.error("Error fetching exchange requests:", error);
       setError(error.message || "Không thể tải dữ liệu yêu cầu đổi điểm");
@@ -42,20 +68,22 @@ const PointExchangeRequests = () => {
     }));
   };
 
-  const applyFilters = () => {
-    let filtered = requests;
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, page: 0 }));
+    fetchExchangeRequests();
+  };
 
-    if (filters.employeeName) {
-      filtered = filtered.filter((item) =>
-        item.employeeName?.toLowerCase().includes(filters.employeeName.toLowerCase())
-      );
-    }
+  const handleReset = () => {
+    setFilters({
+      employeeName: "",
+      status: "",
+      direction: "ASC",
+    });
+    setPagination(prev => ({ ...prev, page: 0 }));
+  };
 
-    if (filters.status) {
-      filtered = filtered.filter((item) => item.status === filters.status);
-    }
-
-    return filtered;
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
   };
 
   const handleApprove = async (requestId) => {
@@ -93,15 +121,6 @@ const PointExchangeRequests = () => {
       setProcessingId(null);
     }
   };
-
-  const handleReset = () => {
-    setFilters({
-      employeeName: "",
-      status: "",
-    });
-  };
-
-  const filteredData = applyFilters();
 
   const getStatusBadge = (status) => {
     const statusMap = {
@@ -142,7 +161,7 @@ const PointExchangeRequests = () => {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-search" onClick={fetchExchangeRequests}>
+            <button type="button" className="btn-search" onClick={handleSearch}>
               Tìm kiếm
             </button>
             <button type="button" className="btn-reset" onClick={handleReset}>
@@ -153,12 +172,12 @@ const PointExchangeRequests = () => {
       </div>
 
       <div className="table-section">
-        <h3>Danh sách yêu cầu đổi điểm ({filteredData.length})</h3>
+        <h3>Danh sách yêu cầu đổi điểm ({pagination.totalElements})</h3>
         {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
         {loading ? (
           <div className="loading">Đang tải dữ liệu...</div>
-        ) : filteredData.length === 0 ? (
+        ) : requests.length === 0 ? (
           <div className="empty-state">Không có dữ liệu</div>
         ) : (
           <table className="exchange-requests-table">
@@ -175,9 +194,9 @@ const PointExchangeRequests = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((request, index) => (
+              {requests.map((request, index) => (
                 <tr key={request.id}>
-                  <td>{index + 1}</td>
+                  <td>{pagination.page * pagination.size + index + 1}</td>
                   <td>{request.employeeName || "N/A"}</td>
                   <td>{request.email || "N/A"}</td>
                   <td className="points-cell">{request.pointsRequired || 0}</td>
@@ -212,6 +231,29 @@ const PointExchangeRequests = () => {
               ))}
             </tbody>
           </table>
+        )}
+        
+        {/* Pagination Controls */}
+        {pagination.totalPages > 1 && (
+          <div className="pagination-controls">
+            <button 
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 0}
+              className="btn-page"
+            >
+              Trước
+            </button>
+            <span className="page-info">
+              Trang {pagination.page + 1} / {pagination.totalPages}
+            </span>
+            <button 
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages - 1}
+              className="btn-page"
+            >
+              Sau
+            </button>
+          </div>
         )}
       </div>
     </div>
