@@ -23,6 +23,7 @@ public interface PointExchangeRepository extends JpaRepository<PointExchange, Lo
 			AND (:startDate IS NULL OR pe.requestedAt >= :startDate)
 			AND (:endDate IS NULL OR pe.requestedAt <= :endDate)
 			AND (:employeeId IS NULL OR e.id = :employeeId)
+			AND pe.status <> 'REJECTED'
 			""")
 	Page<PointExchange> filterPointExchanges(
 			@Param("employeeId") Long employeeId,
