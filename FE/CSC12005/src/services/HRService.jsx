@@ -228,9 +228,9 @@ export const HRService = {
   },
   approvePointExchangeRequest: async (requestId) => {
     try {
-      const response = await api.patch(
-        `/point-exchange-requests/${requestId}/approve`,
-        {},
+      const response = await api.put(
+        `/point-exchanges/${requestId}/status`,
+        { status: "APPROVED" },
         {
           headers: {
             "Content-Type": "application/json",
@@ -247,11 +247,32 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
+  completePointExchangeRequest: async (requestId) => {
+    try {
+      const response = await api.put(
+        `/point-exchanges/${requestId}/status`,
+        { status: "COMPLETED" },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error completing request";
+      console.error("Error completing request:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
   rejectPointExchangeRequest: async (requestId) => {
     try {
-      const response = await api.patch(
-        `/point-exchange-requests/${requestId}/reject`,
-        {},
+      const response = await api.put(
+        `/point-exchanges/${requestId}/status`,
+        { status: "REJECTED" },
         {
           headers: {
             "Content-Type": "application/json",

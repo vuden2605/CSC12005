@@ -295,5 +295,31 @@ export const EmployeeService = {
       console.error("Error fetching Leave request detail:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  getMyPointHistories: async (params = {}) => {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params.page !== undefined) queryParams.append("page", params.page);
+      if (params.size !== undefined) queryParams.append("size", params.size);
+      if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+      if (params.direction) queryParams.append("direction", params.direction);
+
+      const queryString = queryParams.toString();
+      const url = `/point-histories/me${queryString ? `?${queryString}` : ""}`;
+
+      const response = await api.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching point histories";
+      console.error("Error fetching point histories:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };
