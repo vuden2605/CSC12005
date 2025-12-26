@@ -8,11 +8,12 @@ import com.csc12005.hr.DTO.Response.PointExchangeResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface IPointExchangeService {
 	PointExchangeResponse requestExchangePoints(PointExchangeRequest request);
-	PointExchangeResponse updatePointExchangeStatus(
-			Long exchangeId,
+	List<PointExchangeResponse> updatePointExchangeStatus(
 			UpdatePointExchangeStatusRequest request
 	);
 	Page<PointExchangeResponse> myPointExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest);

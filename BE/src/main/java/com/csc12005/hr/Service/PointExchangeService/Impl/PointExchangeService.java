@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,46 +47,50 @@ public class PointExchangeService implements IPointExchangeService {
 		return pointExchangeMapper.toPointExchangeResponse(savedPointExchange);
 	}
 	@Transactional
-	public PointExchangeResponse updatePointExchangeStatus(
-			Long exchangeId,
+	public List<PointExchangeResponse> updatePointExchangeStatus(
 			UpdatePointExchangeStatusRequest request
 	) {
-		PointExchange exchange = pointExchangeRepository.findById(exchangeId)
-				.orElseThrow(() -> new AppException(ErrorCode.POINT_EXCHANGE_NOT_FOUND));
+		List<PointExchange> exchanges= pointExchangeRepository.findAllById(request.getPointExchangeIds());
+		if (exchanges.size() != request.getPointExchangeIds().size()) {
+			throw new AppException(ErrorCode.POINT_EXCHANGE_NOT_FOUND);
+		}
+		for (PointExchange exchange : exchanges) {
+			PointExchangeStatus currentStatus = exchange.getStatus();
+			PointExchangeStatus newStatus = request.getStatus();
+			validateStatusTransition(currentStatus, newStatus);
 
-		PointExchangeStatus currentStatus = exchange.getStatus();
-		PointExchangeStatus newStatus = request.getStatus();
-		validateStatusTransition(currentStatus, newStatus);
-
-		switch (newStatus) {
-			case APPROVED -> {
-				exchange.setApprovedAt(LocalDateTime.now());
-			}
-
-			case COMPLETED -> {
-				Employee employee = exchange.getEmployee();
-				Long pointUsed = exchange.getPointUsed();
-
-				if (employee.getTotalPoints() < pointUsed) {
-					throw new AppException(ErrorCode.INSUFFICIENT_POINTS);
+			switch (newStatus) {
+				case APPROVED -> {
+					exchange.setApprovedAt(LocalDateTime.now());
 				}
 
-				employee.setTotalPoints(employee.getTotalPoints() - pointUsed);
-				exchange.setCompletedAt(LocalDateTime.now());
-				employeeRepository.save(employee);
+				case COMPLETED -> {
+					Employee employee = exchange.getEmployee();
+					Long pointUsed = exchange.getPointUsed();
+
+					if (employee.getTotalPoints() < pointUsed) {
+						throw new AppException(ErrorCode.INSUFFICIENT_POINTS);
+					}
+
+					employee.setTotalPoints(employee.getTotalPoints() - pointUsed);
+					exchange.setCompletedAt(LocalDateTime.now());
+					employeeRepository.save(employee);
+				}
+
+				case REJECTED -> {
+					exchange.setRejectedAt(LocalDateTime.now());
+				}
+
+				default -> throw new AppException(ErrorCode.INVALID_STATUS);
 			}
 
-			case REJECTED -> {
-				exchange.setRejectedAt(LocalDateTime.now());
-			}
-
-			default -> throw new AppException(ErrorCode.INVALID_STATUS);
+			exchange.setStatus(newStatus);
 		}
 
-		exchange.setStatus(newStatus);
-		return pointExchangeMapper.toPointExchangeResponse(
-				pointExchangeRepository.save(exchange)
-		);
+		List<PointExchange> updatedExchanges = pointExchangeRepository.saveAll(exchanges);
+		return updatedExchanges.stream()
+				.map(pointExchangeMapper::toPointExchangeResponse)
+				.toList();
 	}
 	private void validateStatusTransition(
 			PointExchangeStatus currentStatus,

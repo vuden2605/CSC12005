@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/point-exchanges")
@@ -41,16 +43,14 @@ public class PointExchangeController {
 				.data(pointExchangeService.requestExchangePoints(request))
 				.build();
 	}
-	@PutMapping("/{exchangeId}/status")
-	public ApiResponse<PointExchangeResponse> updatePointExchangeStatus(
-			@PathVariable Long exchangeId,
+	@PutMapping("/status")
+	public ApiResponse<List<PointExchangeResponse>> updatePointExchangeStatus(
 			@RequestBody UpdatePointExchangeStatusRequest statusRequest
 			) {
-		PointExchangeResponse response = pointExchangeService.updatePointExchangeStatus(
-				exchangeId,
+		List<PointExchangeResponse> response = pointExchangeService.updatePointExchangeStatus(
 				statusRequest
 		);
-		return ApiResponse.<PointExchangeResponse>builder()
+		return ApiResponse.<List<PointExchangeResponse>>builder()
 				.message("Point exchange status updated successfully.")
 				.data(response)
 				.build();
