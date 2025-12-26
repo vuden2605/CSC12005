@@ -93,6 +93,12 @@ public enum ErrorCode {
 	INVALID_STATUS_TRANSITION(40018, "Invalid status transition", HttpStatus.BAD_REQUEST),
 	POINT_EXCHANGE_FINAL_STATE(40019, "Point exchange request is in a final state and cannot be modified", HttpStatus.BAD_REQUEST),
 	INVALID_STATUS(40020, "Invalid status provided", HttpStatus.BAD_REQUEST),
+	INVALID_POINT_AMOUNT(40021, "Invalid point amount", HttpStatus.BAD_REQUEST),
+	INVALID_DATE_RANGE(40022, "Invalid date range", HttpStatus.BAD_REQUEST),
+	CANNOT_REQUEST_PAST_DATE(40023, "Cannot request for past dates", HttpStatus.BAD_REQUEST),
+	CANNOT_REQUEST_FUTURE_DATE(40024, "Cannot request for future dates", HttpStatus.BAD_REQUEST),
+	WORK_DATE_TOO_OLD(40025, "Work date is too old", HttpStatus.BAD_REQUEST),
+
 	//Point History
 
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);

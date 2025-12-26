@@ -1,12 +1,16 @@
 package com.csc12005.hr.Service.RequestService.Impl;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.RequestFilter;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Entity.Request;
+import com.csc12005.hr.Enums.RequestType;
 import com.csc12005.hr.Mapper.RequestMapper;
 import com.csc12005.hr.Repository.RequestRepository;
 import com.csc12005.hr.Service.RequestService.IRequestService;
+import com.csc12005.hr.Service.RequestService.Provider.IRequestProvider;
+import com.csc12005.hr.Service.RequestService.Provider.RequestProviderFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +22,31 @@ import org.springframework.stereotype.Service;
 public class RequestService implements IRequestService {
 	private final RequestRepository requestRepository;
 	private final RequestMapper requestMapper;
+	private final RequestProviderFactory requestProviderFactory;
+
+	@Override
+	public RequestResponse createRequest(RequestCreationRequest request) {
+		IRequestProvider provider = requestProviderFactory.getProvider(request.getRequestType());
+		return provider.createRequest(request);
+	}
+
+	public RequestResponse approveRequest(Long requestId, RequestType requestType) {
+		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
+		return provider.approveRequest(requestId);
+	}
+
+	public RequestResponse rejectRequest(Long requestId, RequestType requestType) {
+
+		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
+		return provider.rejectRequest(requestId);
+	}
+
+	@Override
+	public RequestResponse getRequestById(Long requestId, RequestType requestType) {
+		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
+		return provider.getRequestById(requestId);
+	}
+
 	@Override
 	public Page<RequestResponse> getRequestByManager(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
 		Pageable pageable = pageRequestDTO.buildPageable();
