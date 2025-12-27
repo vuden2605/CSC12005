@@ -239,5 +239,48 @@ export const EmployeeService = {
       console.error("Error fetching point histories:", errMsg);
       throw new Error(errMsg);
     }
+  },
+  // Lấy yêu cầu đổi điểm của nhân viên (giống HR nhưng không dùng /all)
+  getMyPointExchangeRequests: async (params = {}) => {
+    try {
+      const response = await api.get(
+        `/point-exchanges`,
+        {
+          params,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching my point exchange requests";
+      console.error("Error fetching my point exchange requests:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  // Tạo yêu cầu đổi điểm
+  createPointExchangeRequest: async (points, note) => {
+    try {
+      const payload = { points };
+      if (note) payload.note = note;
+      const response = await api.post(
+        "/point-exchanges",
+        payload,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error creating point exchange request";
+      console.error("Error creating point exchange request:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 };

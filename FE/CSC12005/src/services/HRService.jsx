@@ -226,11 +226,14 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  approvePointExchangeRequest: async (requestId) => {
+  approvePointExchangeRequest: async (requestIds) => {
     try {
       const response = await api.put(
-        `/point-exchanges/${requestId}/status`,
-        { status: "APPROVED" },
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "APPROVED"
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -247,11 +250,14 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  completePointExchangeRequest: async (requestId) => {
+  completePointExchangeRequest: async (requestIds) => {
     try {
       const response = await api.put(
-        `/point-exchanges/${requestId}/status`,
-        { status: "COMPLETED" },
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "COMPLETED"
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -268,11 +274,14 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  rejectPointExchangeRequest: async (requestId) => {
+  rejectPointExchangeRequest: async (requestIds) => {
     try {
       const response = await api.put(
-        `/point-exchanges/${requestId}/status`,
-        { status: "REJECTED" },
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "REJECTED"
+        },
         {
           headers: {
             "Content-Type": "application/json",
