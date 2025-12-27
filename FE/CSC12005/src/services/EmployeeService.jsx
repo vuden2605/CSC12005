@@ -52,7 +52,12 @@ export const EmployeeService = {
       });
       return response.data.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching current user";
+      const status = error.response?.status;
+      let errMsg = error.response?.data?.message || error.message || "Error fetching current user";
+      // Ẩn thông tin backend nội bộ và hiển thị thông điệp thân thiện
+      if ((status && status >= 500) || /redis/i.test(errMsg)) {
+        errMsg = "Máy chủ đang gặp sự cố, vui lòng thử lại sau.";
+      }
       console.error("Error fetching current user:", errMsg);
       throw new Error(errMsg);
     }
@@ -237,6 +242,45 @@ export const EmployeeService = {
     } catch (error) {
       const errMsg = error.response?.data?.message || error.message || "Error fetching point histories";
       console.error("Error fetching point histories:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  // Tổng điểm hiện tại của tôi
+  getMyTotalPoints: async () => {
+    try {
+      const response = await api.get(`/point-histories/me/total-points`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching total points";
+      console.error("Error fetching total points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  // Tổng điểm nhận trong tháng hiện tại
+  getMyTotalReceivedMonth: async () => {
+    try {
+      const response = await api.get(`/point-histories/me/total-received/month`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching monthly received points";
+      console.error("Error fetching monthly received points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  // Tổng điểm nhận trong năm hiện tại
+  getMyTotalReceivedYear: async () => {
+    try {
+      const response = await api.get(`/point-histories/me/total-received/year`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg = error.response?.data?.message || error.message || "Error fetching yearly received points";
+      console.error("Error fetching yearly received points:", errMsg);
       throw new Error(errMsg);
     }
   },
