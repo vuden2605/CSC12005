@@ -17,9 +17,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestCreationRequest {
-	@NotBlank(message = "REQUIRED_REQUEST_TYPE")
-	private RequestType requestType;
-
 	@NotNull(message = "REQUIRED_REQUEST_ATTACHMENT")
 	private MultipartFile file;
 	@NotBlank(message = "REQUIRED_REASON")
@@ -36,12 +33,4 @@ public class RequestCreationRequest {
 	private LocalTime checkOutNew;
 
 	private LocalDate workDate;
-	@AssertTrue(message = "START_DATE_MUST_BE_BEFORE_END_DATE")
-	private boolean isStartDateBeforeEndDate() {
-		if (startDate == null || endDate == null) {
-			return true;
-		}
-		return startDate.isBefore(endDate);
-
-	}
 }

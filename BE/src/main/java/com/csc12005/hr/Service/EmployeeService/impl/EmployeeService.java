@@ -53,15 +53,15 @@ public class EmployeeService implements IEmployeeService {
 	private final PasswordEncoder passwordEncoder;
 	private final S3Service s3Service;
 
-	private String generateEmployeeCode(Department department, Position position) {
+	private String generateEmployeeCode(Department department) {
 		// Generate employee code logic
 		int year = LocalDate.now().getYear();
 		log.info("year: {}", year);
-		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId(), position.getId());
+		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId());
 		log.info("count: {}", count);
 		long sequence = count + 1;
 		String sequenceFormatted = String.format("%03d", sequence);
-		return year + "-" + department.getDepartmentCode() + "_" + position.getPositionCode() + "_" + sequenceFormatted;
+		return year + "_" + department.getDepartmentCode() + "_" + sequenceFormatted;
 	}
 
 	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
@@ -72,7 +72,7 @@ public class EmployeeService implements IEmployeeService {
 				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
 		Position position = positionRepository.findById(employeeCreationRequest.getPositionId())
 				.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
-		String employeeCode = generateEmployeeCode(department, position);
+		String employeeCode = generateEmployeeCode(department);
 		Employee employee = employeeMapper.toEmployee(employeeCreationRequest);
 		employee.setDepartment(department);
 		employee.setPosition(position);
@@ -210,7 +210,7 @@ public class EmployeeService implements IEmployeeService {
 							.findByPositionCode(ExcelUtils.getString(row.getCell(17)))
 							.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
 
-					String employeeCode = generateEmployeeCode(department, position);
+					String employeeCode = generateEmployeeCode(department);
 
 					String email = ExcelUtils.getString(row.getCell(1));
 					if(employeeRepository.existsByEmail(email)) {

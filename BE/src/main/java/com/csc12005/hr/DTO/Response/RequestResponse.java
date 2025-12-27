@@ -1,6 +1,8 @@
 package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Entity.Request;
 import com.csc12005.hr.Enums.RequestStatus;
+import com.csc12005.hr.Enums.RequestType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,7 +19,7 @@ import java.time.LocalTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestResponse {
 	private Long id;
-	private String requestType;
+	private RequestType requestType;
 	private RequestStatus status;
 	private String requestAttachment;
 	private String reason;
