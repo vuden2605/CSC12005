@@ -29,6 +29,9 @@ import org.apache.catalina.Manager;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mapstruct.Mapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -94,7 +97,7 @@ public class EmployeeService implements IEmployeeService {
 		}
 		return employeeResponse;
 	}
-
+	@Cacheable(value = "employeeCache", key = "'myInfo_'+#root.methodName")
 	public EmployeeResponse getMyInfo() {
 		var context = SecurityContextHolder.getContext();
 		String employeeId = context.getAuthentication().getName();
@@ -266,5 +269,22 @@ public class EmployeeService implements IEmployeeService {
 				.isSuccess(true)
 				.build();
 	}
+	@Cacheable(value = "employeeCache", key = "#id")
+	public EmployeeResponse getById(Long id) {
+		return employeeRepository.findById(id)
+				.map(employeeMapper::toEmployeeResponse)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+	}
+	@CachePut(value = "employeeCache", key = "#employee.id")
+	public EmployeeResponse updateEmployee(Employee employee) {
+		Employee updatedEmployee = employeeRepository.save(employee);
+		return employeeMapper.toEmployeeResponse(updatedEmployee);
+	}
+
+	@CacheEvict(value = "employeeCache", key = "#id")
+	public void deleteEmployee(Long id) {
+		employeeRepository.deleteById(id);
+	}
+
 }
 
