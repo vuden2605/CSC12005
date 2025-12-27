@@ -78,12 +78,14 @@ export const ModalWFH = ({ onClose, onSuccess }) => {
       setLoading(true);
       
       // Gọi API để tạo yêu cầu WFH với file thực tế
-      await EmployeeService.createWFHRequest({
+      await EmployeeService.createRequest({
         file: file, // Gửi file object trực tiếp
         reason: form.reason,
-        startDate: form.startDate,
-        endDate: form.endDate,
-      });
+        startDate: `${form.startDate}T00:00:00`,
+        endDate: `${form.endDate}T23:59:59`,
+      }
+      , "WorkFromHome"
+      );
 
       // Gọi callback onSuccess nếu có để refresh danh sách
       if (onSuccess) {

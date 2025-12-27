@@ -25,8 +25,8 @@ public class RequestService implements IRequestService {
 	private final RequestProviderFactory requestProviderFactory;
 
 	@Override
-	public RequestResponse createRequest(RequestCreationRequest request) {
-		IRequestProvider provider = requestProviderFactory.getProvider(request.getRequestType());
+	public RequestResponse createRequest(RequestCreationRequest request, RequestType requestType) {
+		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.createRequest(request);
 	}
 

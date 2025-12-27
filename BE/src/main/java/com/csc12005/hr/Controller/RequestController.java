@@ -1,18 +1,15 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.RequestActionRequest;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.RequestFilter;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.RequestResponse;
-import com.csc12005.hr.Entity.Request;
+import com.csc12005.hr.Enums.RequestType;
 import com.csc12005.hr.Service.RequestService.Impl.RequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,34 +37,39 @@ public class RequestController {
 	}
 	@PostMapping
 	public ApiResponse<RequestResponse> createRequest (
-			@ModelAttribute RequestCreationRequest request) {
+			@ModelAttribute @Valid RequestCreationRequest request,
+			@RequestParam RequestType requestType
+			) {
 		return ApiResponse.<RequestResponse>builder()
 				.message("Create request success")
-				.data(requestService.createRequest(request))
+				.data(requestService.createRequest(request, requestType))
 				.build();
 	}
 	@PutMapping("/{requestId}/approve")
 	public ApiResponse<RequestResponse> approveRequest (
-			@PathVariable Long requestId, @Valid RequestActionRequest requestActionRequest) {
+			@PathVariable Long requestId,
+			@RequestParam RequestType requestType) {
 		return ApiResponse.<RequestResponse>builder()
 				.message("Approve request success")
-				.data(requestService.approveRequest(requestId, requestActionRequest.getRequestType()))
+				.data(requestService.approveRequest(requestId, requestType))
 				.build();
 	}
 	@PutMapping("/{requestId}/reject")
 	public ApiResponse<RequestResponse> rejectRequest (
-			@PathVariable Long requestId, @Valid RequestActionRequest requestActionRequest) {
+			@PathVariable Long requestId,
+			@RequestParam RequestType requestType) {
 		return ApiResponse.<RequestResponse>builder()
 				.message("Reject request success")
-				.data(requestService.rejectRequest(requestId, requestActionRequest.getRequestType()))
+				.data(requestService.rejectRequest(requestId, requestType))
 				.build();
 	}
 	@GetMapping("/{requestId}")
 	public ApiResponse<RequestResponse> getRequestById (
-			@PathVariable Long requestId, @Valid RequestActionRequest requestActionRequest) {
+			@PathVariable Long requestId,
+			@RequestParam RequestType requestType) {
 		return ApiResponse.<RequestResponse>builder()
 				.message("Get request by id success")
-				.data(requestService.getRequestById(requestId, requestActionRequest.getRequestType()))
+				.data(requestService.getRequestById(requestId, requestType))
 				.build();
 	}
 }

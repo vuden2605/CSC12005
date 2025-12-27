@@ -11,7 +11,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
     const fetchLeaveDetail = async () => {
       try {
         setLoading(true);
-        const response = await EmployeeService.getLeaveRequestDetail(requestId);
+        const response = await EmployeeService.getRequestDetail(requestId, "Leave");
         setLeaveDetail(response);
       } catch (err) {
         console.error("Error fetching Leave detail:", err);
@@ -30,7 +30,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
   const handleApprove = async () => {
     try {
       setLoading(true);
-      await ManagerService.approveLeaveRequest(requestId);
+      await ManagerService.approveRequest(requestId, "Leave");
       alert("Đã duyệt yêu cầu nghỉ phép");
       if (onSuccess) onSuccess();
       onClose();
@@ -48,7 +48,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
 
     try {
       setLoading(true);
-      await ManagerService.rejectLeaveRequest(requestId);
+      await ManagerService.rejectRequest(requestId, "Leave");
       alert("Đã từ chối yêu cầu nghỉ phép");
       if (onSuccess) onSuccess();
       onClose();

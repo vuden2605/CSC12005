@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface IRequestService {
-	RequestResponse createRequest (RequestCreationRequest request);
+	RequestResponse createRequest (RequestCreationRequest request, RequestType requestType);
 	RequestResponse approveRequest (Long requestId, RequestType requestType);
 	Page<RequestResponse> getRequestByManager (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);
 	Page<RequestResponse> myRequests (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);

@@ -73,30 +73,21 @@ export const EmployeeService = {
     }
   },
 
-  createWFHRequest: async (wfhData) => {
-    try {
-      // Tạo FormData để gửi file multipart
-      const formData = new FormData();
-      
-      // Thêm file nếu có
-      if (wfhData.file) {
-        formData.append("file", wfhData.file);
+  createRequest: async (requestData, requestType) => {
+    const formData = new FormData();
+    formData.append("requestType", requestType);
+  
+    Object.entries(requestData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
       }
-      
-      // Thêm các trường khác
-      formData.append("reason", wfhData.reason || "");
-      formData.append("startDate", wfhData.startDate || "");
-      formData.append("endDate", wfhData.endDate || "");
-
-      // Không truyền headers config - axios sẽ tự động detect FormData và set Content-Type với boundary phù hợp
-      const response = await api.post(`/wfh-requests`, formData);
-      return response.data.data || response.data;
-    } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating WFH request";
-      console.error("Error creating WFH request:", errMsg);
-      throw new Error(errMsg);
-    }
+    });
+  
+    const response = await api.post("/requests", formData);
+    return response.data.data;
   },
+  
+  
 
   getRequests: async (params = {}) => {
     try {
@@ -133,48 +124,6 @@ export const EmployeeService = {
     } catch (error) {
       const errMsg = error.response?.data?.message || error.message || "Error fetching requests";
       console.error("Error fetching requests:", errMsg);
-      throw new Error(errMsg);
-    }
-  },
-
-  createTimesheetRequest: async (timesheetData) => {
-    try {
-      // Nếu timesheetData là FormData, gửi trực tiếp (axios sẽ tự động xử lý)
-      // Nếu không, wrap vào FormData
-      let requestData = timesheetData;
-      if (!(timesheetData instanceof FormData)) {
-        requestData = new FormData();
-        Object.keys(timesheetData).forEach(key => {
-          requestData.append(key, timesheetData[key]);
-        });
-      }
-
-      const response = await api.post(`/timesheet-requests`, requestData);
-      return response.data.data || response.data;
-    } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating timesheet request";
-      console.error("Error creating timesheet request:", errMsg);
-      throw new Error(errMsg);
-    }
-  },
-
-  createLeaveRequest: async (leaveData) => {
-    try {
-      // Nếu leaveData là FormData, gửi trực tiếp
-      // Nếu không, wrap vào FormData
-      let requestData = leaveData;
-      if (!(leaveData instanceof FormData)) {
-        requestData = new FormData();
-        Object.keys(leaveData).forEach(key => {
-          requestData.append(key, leaveData[key]);
-        });
-      }
-
-      const response = await api.post(`/leave-requests`, requestData);
-      return response.data.data || response.data;
-    } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating leave request";
-      console.error("Error creating leave request:", errMsg);
       throw new Error(errMsg);
     }
   },
@@ -252,48 +201,17 @@ export const EmployeeService = {
     }
   },
 
-  getWFHRequestDetail: async (requestId) => {
+  getRequestDetail: async (requestId, requestType) => {
     try {
-      const response = await api.get(`/wfh-requests/${requestId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.get(`/requests/${requestId}`, {
+        params: { requestType }
       });
-      return response.data.data || response.data;
+      return response.data.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching WFH request detail";
-      console.error("Error fetching WFH request detail:", errMsg);
-      throw new Error(errMsg);
-    }
-  },
-
-  getTimeSheetRequestDetail: async (requestId) => {
-    try {
-      const response = await api.get(`/timesheet-requests/${requestId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      return response.data.data || response.data;
-    } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching TimeSheet request detail";
-      console.error("Error fetching TimeSheet request detail:", errMsg);
-      throw new Error(errMsg);
-    }
-  },
-
-  getLeaveRequestDetail: async (requestId) => {
-    try {
-      const response = await api.get(`/leave-requests/${requestId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      return response.data.data || response.data;
-    } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching Leave request detail";
-      console.error("Error fetching Leave request detail:", errMsg);
-      throw new Error(errMsg);
+      throw new Error(
+        error.response?.data?.message ||
+        "Error fetching request detail"
+      );
     }
   },
 

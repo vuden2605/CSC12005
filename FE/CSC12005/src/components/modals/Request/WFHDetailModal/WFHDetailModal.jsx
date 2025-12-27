@@ -49,7 +49,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
 
     try {
       setLoading(true);
-      await ManagerService.rejectWFHRequest(requestId);
+      await ManagerService.rejectRequest(requestId, "WorkFromHome");
       alert("Đã từ chối yêu cầu làm việc tại nhà");
       if (onSuccess) onSuccess();
       onClose();

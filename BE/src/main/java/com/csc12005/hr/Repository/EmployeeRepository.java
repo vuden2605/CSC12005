@@ -19,11 +19,9 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 			SELECT COUNT(e) FROM Employee e
 			WHERE YEAR(e.hireDate) = :year
 			AND e.department.id = :department
-			AND e.position.id = :position
 	""")
 	long countByYearAndDepartmentAndPosition(@Param("year")int year,
-	                                         @Param("department") Long department,
-	                                         @Param("position") Long position);
+	                                         @Param("department") Long department);
 	boolean existsByEmployeeCode(String employeeCode);
 	Optional<Employee> findByEmployeeCode(String employeeCode);
 	Page<Employee> findByManagerId(Long managerId, Pageable pageable);

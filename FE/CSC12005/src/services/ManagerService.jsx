@@ -36,51 +36,22 @@ export const ManagerService = {
             throw new Error(errMsg);
         }
     },
-    approveLeaveRequest: async (requestId) => {
-        try {
-            const response = await api.put(
-                `/leave-requests/${requestId}/approve`
-            );
-            return response.data.data;
-        } catch (error) {
-            const errMsg = error.response?.data?.message || error.message;
-            throw new Error(errMsg);
-        }
-    },
-    rejectLeaveRequest: async (requestId) => {
-        try {
-            const response = await api.put(
-                `/leave-requests/${requestId}/reject`
-            );
-            return response.data.data;
-        } catch (error) {
-            const errMsg = error.response?.data?.message || error.message;
-            throw new Error(errMsg);
-        }
-    },
-    approveWFHRequest: async (requestId) => {
-        try {
-            const response = await api.put(
-                `/wfh-requests/${requestId}/approve`
-            );
-            return response.data.data;
-        }
+    approveRequest: async (requestId, requestType) => {
+        const response = await api.put(
+          `/requests/${requestId}/approve`,
+          null,
+          { params: { requestType } }
+        );
+        return response.data.data;
+      },
+      
+      rejectRequest: async (requestId, requestType) => {
+        const response = await api.put(
+          `/requests/${requestId}/reject`,
+          null,
+          { params: { requestType } }
+        );
+        return response.data.data;
     
-        catch (error) {
-            const errMsg = error.response?.data?.message || error.message;
-            throw new Error(errMsg);
-        }
-    },
-    rejectWFHRequest: async (requestId) => {
-        try {
-            const response = await api.put(
-                `/wfh-requests/${requestId}/reject`
-            );
-            return response.data.data;
-        } catch (error) {
-            const errMsg = error.response?.data?.message || error.message;
-            throw new Error(errMsg);
-        }
-    },
-    
+    }      
 };
