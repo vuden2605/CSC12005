@@ -18,13 +18,15 @@ export const BonusPoints = () => {
   const [filterEnd, setFilterEnd] = useState("");
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [reloadExKey, setReloadExKey] = useState(0);
+  const [totals, setTotals] = useState({ current: 0, thisMonth: 0, thisYear: 0 });
+  const [loadingTotals, setLoadingTotals] = useState(false);
 
   const REASON_LABELS = {
     MONTHLY_GRANT: "Cấp điểm hàng tháng",
     EXCHANGE: "Đổi điểm",
     ACTIVITY_BONUS: "Thưởng hoạt động",
     ACTIVITY_PENALTY: "Phạt hoạt động",
-    ADMIN_ADJUSTMENT: "Điều chỉnh từ quản trị",
+    ADMIN_ADJUSTMENT: "Điều chỉnh bởi quản trị",
   };
 
   const getReasonLabel = (reason) => {
@@ -82,6 +84,35 @@ export const BonusPoints = () => {
       }
     };
     fetchHistories();
+  }, []);
+
+  // Fetch totals (current points, received month, received year)
+  useEffect(() => {
+    const fetchTotals = async () => {
+      try {
+        setLoadingTotals(true);
+        const [cur, mon, yr] = await Promise.all([
+          EmployeeService.getMyTotalPoints(),
+          EmployeeService.getMyTotalReceivedMonth(),
+          EmployeeService.getMyTotalReceivedYear(),
+        ]);
+        const toNum = (v) => {
+          if (typeof v === 'number') return v;
+          // service returns response.data.data || response.data
+          return Number(v) || 0;
+        };
+        setTotals({
+          current: toNum(cur),
+          thisMonth: toNum(mon),
+          thisYear: toNum(yr),
+        });
+      } catch (e) {
+        // giữ nguyên totals mặc định nếu lỗi
+      } finally {
+        setLoadingTotals(false);
+      }
+    };
+    fetchTotals();
   }, []);
 
   // Fetch exchange requests khi filter thay đổi
@@ -204,15 +235,15 @@ export const BonusPoints = () => {
           <div className="bonus-stats">
             <div className="stat-card">
               <span className="stat-label">Điểm thưởng hiện tại</span>
-              <span className="stat-value">{stats.current}</span>
+              <span className="stat-value">{totals.current}</span>
             </div>
             <div className="stat-card">
               <span className="stat-label">Điểm thưởng tháng này</span>
-              <span className="stat-value">{stats.thisMonth}</span>
+              <span className="stat-value">{totals.thisMonth}</span>
             </div>
             <div className="stat-card">
               <span className="stat-label">Tổng điểm thưởng năm nay</span>
-              <span className="stat-value">{stats.thisYear}</span>
+              <span className="stat-value">{totals.thisYear}</span>
             </div>
           </div>
 
