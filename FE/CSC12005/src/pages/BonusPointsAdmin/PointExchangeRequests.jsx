@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./exchange-requests.scss";
 import { HRService } from "../../services/HRService";
 import { Pagination } from "../../components/Pagination";
@@ -27,6 +27,7 @@ const PointExchangeRequests = () => {
   const [processingId, setProcessingId] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
     fetchExchangeRequests();
@@ -140,6 +141,48 @@ const PointExchangeRequests = () => {
     return filters.direction === 'ASC' ? '↑' : '↓';
   };
 
+  const getActionsForStatus = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return ['approve', 'reject'];
+      case 'APPROVED':
+        return ['complete'];
+      default:
+        return [];
+    }
+  };
+
+  const bulkActions = useMemo(() => {
+    if (selectedIds.length === 0) return [];
+    const selected = requests.filter(r => selectedIds.includes(r.id));
+    if (selected.length === 0) return [];
+    let common = new Set(getActionsForStatus(selected[0].status));
+    for (let i = 1; i < selected.length; i++) {
+      const actions = new Set(getActionsForStatus(selected[i].status));
+      common = new Set([...common].filter(a => actions.has(a)));
+      if (common.size === 0) break;
+    }
+    return [...common];
+  }, [selectedIds, requests]);
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(requests.map(req => req.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id) => {
+    setSelectedIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
   const handleViewDetail = (request) => {
     setSelectedRequest(request);
     setShowDetailModal(true);
@@ -189,6 +232,28 @@ const PointExchangeRequests = () => {
     }
   };
 
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    
+    if (!window.confirm(`Bạn có chắc muốn phê duyệt ${selectedIds.length} yêu cầu đã chọn?`)) {
+      return;
+    }
+
+    try {
+      setError("");
+      await HRService.approvePointExchangeRequest(selectedIds);
+      setSuccessMessage(`Đã phê duyệt ${selectedIds.length} yêu cầu thành công!`);
+      setSelectedIds([]);
+      
+      setTimeout(() => {
+        fetchExchangeRequests();
+        setSuccessMessage("");
+      }, 2000);
+    } catch (err) {
+      setError(err.message || "Lỗi khi phê duyệt hàng loạt");
+    }
+  };
+
   const handleComplete = async (requestId) => {
     try {
       setProcessingId(requestId);
@@ -207,6 +272,28 @@ const PointExchangeRequests = () => {
     }
   };
 
+  const handleBulkComplete = async () => {
+    if (selectedIds.length === 0) return;
+    
+    if (!window.confirm(`Bạn có chắc muốn đánh dấu đã chuyển khoản cho ${selectedIds.length} yêu cầu?`)) {
+      return;
+    }
+
+    try {
+      setError("");
+      await HRService.completePointExchangeRequest(selectedIds);
+      setSuccessMessage(`Đã cập nhật ${selectedIds.length} yêu cầu thành công!`);
+      setSelectedIds([]);
+      
+      setTimeout(() => {
+        fetchExchangeRequests();
+        setSuccessMessage("");
+      }, 2000);
+    } catch (err) {
+      setError(err.message || "Lỗi khi cập nhật hàng loạt");
+    }
+  };
+
   const handleReject = async (requestId) => {
     try {
       setProcessingId(requestId);
@@ -222,6 +309,28 @@ const PointExchangeRequests = () => {
       setError(err.message || "Lỗi khi từ chối yêu cầu");
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.length === 0) return;
+    
+    if (!window.confirm(`Bạn có chắc muốn từ chối ${selectedIds.length} yêu cầu đã chọn?`)) {
+      return;
+    }
+
+    try {
+      setError("");
+      await HRService.rejectPointExchangeRequest(selectedIds);
+      setSuccessMessage(`Đã từ chối ${selectedIds.length} yêu cầu!`);
+      setSelectedIds([]);
+      
+      setTimeout(() => {
+        fetchExchangeRequests();
+        setSuccessMessage("");
+      }, 2000);
+    } catch (err) {
+      setError(err.message || "Lỗi khi từ chối hàng loạt");
     }
   };
 
@@ -274,7 +383,6 @@ const PointExchangeRequests = () => {
                 <option value="PENDING">Chờ duyệt</option>
                 <option value="APPROVED">Đã duyệt</option>
                 <option value="COMPLETED">Đã chuyển khoản</option>
-                <option value="REJECTED">Đã từ chối</option>
               </select>
             </div>
 
@@ -311,7 +419,40 @@ const PointExchangeRequests = () => {
       </div>
 
       <div className="table-section">
-        <h3>Danh sách yêu cầu đổi điểm ({pagination.totalElements})</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3>Danh sách yêu cầu đổi điểm ({pagination.totalElements})</h3>
+          {selectedIds.length > 0 && bulkActions.length > 0 && (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {bulkActions.includes('approve') && (
+                <button 
+                  className="btn-approve" 
+                  onClick={handleBulkApprove}
+                  style={{ padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  ✓ Phê duyệt ({selectedIds.length})
+                </button>
+              )}
+              {bulkActions.includes('complete') && (
+                <button 
+                  className="btn-complete" 
+                  onClick={handleBulkComplete}
+                  style={{ padding: '8px 16px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  💰 Đã chuyển khoản ({selectedIds.length})
+                </button>
+              )}
+              {bulkActions.includes('reject') && (
+                <button 
+                  className="btn-reject" 
+                  onClick={handleBulkReject}
+                  style={{ padding: '8px 16px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  ✗ Từ chối ({selectedIds.length})
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         {error && <div className="error-message">{error}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
         {loading ? (
@@ -322,6 +463,14 @@ const PointExchangeRequests = () => {
           <table className="exchange-requests-table">
             <thead>
               <tr>
+                <th style={{ width: '50px' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedIds.length === requests.length && requests.length > 0}
+                    onChange={handleSelectAll}
+                    style={{ cursor: 'pointer' }}
+                  />
+                </th>
                 <th>STT</th>
                 <th>Tên nhân viên</th>
                 <th>Mã NV</th>
@@ -342,6 +491,14 @@ const PointExchangeRequests = () => {
             <tbody>
               {requests.map((request, index) => (
                 <tr key={request.id}>
+                  <td>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedIds.includes(request.id)}
+                      onChange={() => handleSelectOne(request.id)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </td>
                   <td>{pagination.page * pagination.size + index + 1}</td>
                   <td>{request.employeeName || "N/A"}</td>
                   <td>{request.employeeCode || "N/A"}</td>
@@ -364,9 +521,62 @@ const PointExchangeRequests = () => {
                     <button
                       className="btn-view"
                       onClick={() => handleViewDetail(request)}
+                      style={{ marginRight: '5px' }}
                     >
                       Xem chi tiết
                     </button>
+                    {request.status === "PENDING" && (
+                      <>
+                        <button
+                          className="btn-approve"
+                          onClick={() => handleApprove(request.id)}
+                          disabled={processingId === request.id}
+                          style={{ 
+                            marginRight: '5px', 
+                            padding: '6px 12px', 
+                            backgroundColor: '#28a745', 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '4px', 
+                            cursor: 'pointer' 
+                          }}
+                        >
+                          {processingId === request.id ? "..." : "✓ Duyệt"}
+                        </button>
+                        <button
+                          className="btn-reject"
+                          onClick={() => handleReject(request.id)}
+                          disabled={processingId === request.id}
+                          style={{ 
+                            padding: '6px 12px', 
+                            backgroundColor: '#dc3545', 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '4px', 
+                            cursor: 'pointer' 
+                          }}
+                        >
+                          {processingId === request.id ? "..." : "✗ Từ chối"}
+                        </button>
+                      </>
+                    )}
+                    {request.status === "APPROVED" && (
+                      <button
+                        className="btn-complete"
+                        onClick={() => handleComplete(request.id)}
+                        disabled={processingId === request.id}
+                        style={{ 
+                          padding: '6px 12px', 
+                          backgroundColor: '#007bff', 
+                          color: 'white', 
+                          border: 'none', 
+                          borderRadius: '4px', 
+                          cursor: 'pointer' 
+                        }}
+                      >
+                        {processingId === request.id ? "..." : "💰 Chuyển khoản"}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
