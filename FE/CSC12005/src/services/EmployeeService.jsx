@@ -12,7 +12,10 @@ export const EmployeeService = {
       }
       throw new Error("Failed to get download URL");
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error downloading file";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error downloading file";
       console.error("Error downloading file:", errMsg);
       throw new Error(errMsg);
     }
@@ -52,7 +55,10 @@ export const EmployeeService = {
       });
       return response.data.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching current user";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching current user";
       console.error("Error fetching current user:", errMsg);
       throw new Error(errMsg);
     }
@@ -67,7 +73,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error updating profile";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error updating profile";
       console.error("Error updating profile:", errMsg);
       throw new Error(errMsg);
     }
@@ -77,12 +86,12 @@ export const EmployeeService = {
     try {
       // Tạo FormData để gửi file multipart
       const formData = new FormData();
-      
+
       // Thêm file nếu có
       if (wfhData.file) {
         formData.append("file", wfhData.file);
       }
-      
+
       // Thêm các trường khác
       formData.append("reason", wfhData.reason || "");
       formData.append("startDate", wfhData.startDate || "");
@@ -92,7 +101,10 @@ export const EmployeeService = {
       const response = await api.post(`/wfh-requests`, formData);
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating WFH request";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error creating WFH request";
       console.error("Error creating WFH request:", errMsg);
       throw new Error(errMsg);
     }
@@ -102,24 +114,26 @@ export const EmployeeService = {
     try {
       // Build query parameters
       const queryParams = new URLSearchParams();
-      
+
       // Pagination
       if (params.page !== undefined) queryParams.append("page", params.page);
       if (params.size !== undefined) queryParams.append("size", params.size);
-      
+
       // Sorting
       if (params.direction) queryParams.append("direction", params.direction);
       if (params.sortBy) queryParams.append("sortBy", params.sortBy);
-      
+
       // Date filters
       if (params.startDate) queryParams.append("startDate", params.startDate);
       if (params.endDate) queryParams.append("endDate", params.endDate);
-      
+
       // Request type filter
-      if (params.requestType) queryParams.append("requestType", params.requestType);
-      
+      if (params.requestType)
+        queryParams.append("requestType", params.requestType);
+
       // Request status filter
-      if (params.requeststatus) queryParams.append("requeststatus", params.requeststatus);
+      if (params.requeststatus)
+        queryParams.append("requeststatus", params.requeststatus);
 
       const queryString = queryParams.toString();
       const url = `/requests/me${queryString ? `?${queryString}` : ""}`;
@@ -131,7 +145,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching requests";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching requests";
       console.error("Error fetching requests:", errMsg);
       throw new Error(errMsg);
     }
@@ -144,7 +161,7 @@ export const EmployeeService = {
       let requestData = timesheetData;
       if (!(timesheetData instanceof FormData)) {
         requestData = new FormData();
-        Object.keys(timesheetData).forEach(key => {
+        Object.keys(timesheetData).forEach((key) => {
           requestData.append(key, timesheetData[key]);
         });
       }
@@ -152,7 +169,10 @@ export const EmployeeService = {
       const response = await api.post(`/timesheet-requests`, requestData);
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating timesheet request";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error creating timesheet request";
       console.error("Error creating timesheet request:", errMsg);
       throw new Error(errMsg);
     }
@@ -165,7 +185,7 @@ export const EmployeeService = {
       let requestData = leaveData;
       if (!(leaveData instanceof FormData)) {
         requestData = new FormData();
-        Object.keys(leaveData).forEach(key => {
+        Object.keys(leaveData).forEach((key) => {
           requestData.append(key, leaveData[key]);
         });
       }
@@ -173,7 +193,10 @@ export const EmployeeService = {
       const response = await api.post(`/leave-requests`, requestData);
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error creating leave request";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error creating leave request";
       console.error("Error creating leave request:", errMsg);
       throw new Error(errMsg);
     }
@@ -183,18 +206,19 @@ export const EmployeeService = {
     try {
       // Build query parameters
       const queryParams = new URLSearchParams();
-      
+
       // Activity name filter
-      if (params.activityName) queryParams.append("activityName", params.activityName);
-      
+      if (params.activityName)
+        queryParams.append("activityName", params.activityName);
+
       // Date filters
       if (params.startDate) queryParams.append("startDate", params.startDate);
       if (params.endDate) queryParams.append("endDate", params.endDate);
-      
+
       // Pagination
       if (params.page !== undefined) queryParams.append("page", params.page);
       if (params.size !== undefined) queryParams.append("size", params.size);
-      
+
       // Sorting
       if (params.sortBy) queryParams.append("sortBy", params.sortBy);
       if (params.direction) queryParams.append("direction", params.direction);
@@ -209,7 +233,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching activities";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching activities";
       console.error("Error fetching activities:", errMsg);
       throw new Error(errMsg);
     }
@@ -220,7 +247,23 @@ export const EmployeeService = {
       const response = await api.post(`/activities/${activityId}/details`, {});
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error registering activity";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error registering activity";
+      console.error("Error registering activity:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  cancelActivity: async (activityId) => {
+    try {
+      const response = await api.patch(`/activities/cancel/${activityId}`, {});
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error cancel activity";
       console.error("Error registering activity:", errMsg);
       throw new Error(errMsg);
     }
@@ -246,7 +289,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching attendance history";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching attendance history";
       console.error("Error fetching attendance history:", errMsg);
       throw new Error(errMsg);
     }
@@ -261,7 +307,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching WFH request detail";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching WFH request detail";
       console.error("Error fetching WFH request detail:", errMsg);
       throw new Error(errMsg);
     }
@@ -276,7 +325,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching TimeSheet request detail";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching TimeSheet request detail";
       console.error("Error fetching TimeSheet request detail:", errMsg);
       throw new Error(errMsg);
     }
@@ -291,9 +343,31 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching Leave request detail";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching Leave request detail";
       console.error("Error fetching Leave request detail:", errMsg);
       throw new Error(errMsg);
     }
-  }
+  },
+  getMySalaries: async (filter, params) => {
+    try {
+      const response = await api.post(`/salaries/my`, filter, {
+        params,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("salaries:",response.data.data);
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching salaries";
+      console.error("Error fetching salaries:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
 };

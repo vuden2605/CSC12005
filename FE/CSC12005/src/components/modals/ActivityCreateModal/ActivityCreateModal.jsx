@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { HRService } from "../../../services/HRService";
+import { useAlert } from "../../../context/AlertContext";
 
 export const ActivityCreateModal = ({ isOpen, onClose, onCreate }) => {
   if (!isOpen) return null;
@@ -57,7 +58,7 @@ export const ActivityCreateModal = ({ isOpen, onClose, onCreate }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  const { showAlert } = useAlert();
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -75,8 +76,10 @@ export const ActivityCreateModal = ({ isOpen, onClose, onCreate }) => {
       const data = await HRService.createActivity(requestData);
       if (onCreate) onCreate(data);
       onClose();
+      showAlert("success", "Thêm sự kiện thành công!");
     } catch (error) {
-      alert(error.message);
+
+      showAlert("error", error.message);
     }
   };
 

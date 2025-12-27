@@ -27,6 +27,7 @@ public class AuthenticationService implements IAuthenticationService {
 		if(!passwordEncoder.matches(loginRequest.getPassword(), employee.getPassword())) {
 			throw new AppException(ErrorCode.INVALID_PASSWORD);
 		}
+        if(!employee.getStatus()) throw new AppException(ErrorCode.USER_DISABLED);
 		String accessToken = jwtService.generateAccessToken(employee);
 		String refreshToken = jwtService.generateRefreshToken(employee);
 		return AuthenticationResponse.builder()

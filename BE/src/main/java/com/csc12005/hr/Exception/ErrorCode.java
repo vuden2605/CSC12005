@@ -42,7 +42,15 @@ public enum ErrorCode {
 	UNAUTHENTICATED(5004, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 	FORBIDDEN(5005, "Unauthorized", HttpStatus.FORBIDDEN),
 	INVALID_REFRESH_TOKEN(5006, "Invalid refresh token", HttpStatus.UNAUTHORIZED),
-	//Timesheet
+    USER_DISABLED(5007,"This user account has been disabled.",HttpStatus.BAD_REQUEST),
+    //Activity
+    START_DATE_TOO_RECENT(4050,"Start date must be earlier than 7 days before today",HttpStatus.BAD_REQUEST),
+    REGISTRATION_TOO_LATE(4051,"Registration is no longer allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),
+    ACTIVITY_FULL(4052,"This activity is fully booked.",HttpStatus.BAD_REQUEST),
+    CANCELLATION_TOO_LATE(4053,"Cancellation is not allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),
+    UPDATE_TOO_LATE(4054,"Update is not allowed within 7 days of the start date.",HttpStatus.BAD_REQUEST),
+
+    //Timesheet
 	TIMESHEET_NOT_FOUND(4001, "Timesheet not found", HttpStatus.NOT_FOUND),
 	CHECK_TIME_REQUIRED(4002,"Check-in and check-out time are required", HttpStatus.BAD_REQUEST),
 	WORK_DURATION_TOO_LONG(4003,"Work duration cannot exceed 24 hours", HttpStatus.BAD_REQUEST),
@@ -67,6 +75,11 @@ public enum ErrorCode {
 	REQUIRED_PROJECT_CODE(8006, "Project code is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_PROJECT_START_DATE(8007, "Project start date is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_PROJECT_END_DATE(8008, "Project end date is required", HttpStatus.BAD_REQUEST),
+    //Salary
+    PAYROLL_NOT_PAYMENT_DAY(6500,"Today is not payday (the 15th)",HttpStatus.BAD_REQUEST),
+    PAYROLL_ALREADY_GENERATED(6501,"This month's payroll has already been exported",HttpStatus.BAD_REQUEST),
+    PAYROLL_NOT_GENERATED(6502,"This month's payroll hasn't been released yet.",HttpStatus.BAD_REQUEST),
+    PAYROLL_ALREADY_PAID(6502,"This month's salary has been paid",HttpStatus.BAD_REQUEST),
 	//Task
 	TASK_NOT_FOUND(9001, "Task not found", HttpStatus.NOT_FOUND),
 	REQUIRED_TASK_NAME(9002, "Task name is required", HttpStatus.BAD_REQUEST),

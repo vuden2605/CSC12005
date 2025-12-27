@@ -73,4 +73,12 @@ public class ActivityController {
 		        .build();
     }
 
+    @PatchMapping("/cancel/{activityId}")
+    public ApiResponse<Void> deleteActivityDetail(@PathVariable Long activityId){
+        activityDetailService.deleteActivityDetail(activityId);
+        return ApiResponse.<Void>builder()
+                .message("delete success")
+                .build();
+    }
+
 }

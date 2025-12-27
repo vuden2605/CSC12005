@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,15 @@ public class ActivityDetailService implements IActivityDetailService {
 	public void createActivityDetail(Long activityId) {
 		Activity activity = activityRepository.findById(activityId)
 				.orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+        LocalDate startDate = activity.getStartDate();
+        LocalDate threeDaysAgo = startDate.minusDays(3);
+
+        if (!LocalDate.now().isBefore(threeDaysAgo)) {
+            throw new AppException(ErrorCode.REGISTRATION_TOO_LATE);
+        }
+        if (activity.getRegisteredCount() >= activity.getCount()) {
+            throw new AppException(ErrorCode.ACTIVITY_FULL);
+        }
 		var context = SecurityContextHolder.getContext();
 		long employeeId = Long.parseLong(context.getAuthentication().getName());
 		Employee employee = employeeRepository.findById(employeeId)
@@ -55,6 +65,26 @@ public class ActivityDetailService implements IActivityDetailService {
 		activity.setRegisteredCount((activity.getRegisteredCount() + 1));
 		activityRepository.save(activity);
 	}
+    @Transactional
+    @Override
+    public void deleteActivityDetail(Long activityId) {
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+        LocalDate startDate = activity.getStartDate();
+        LocalDate threeDaysAgo = startDate.minusDays(3);
+
+        if (!LocalDate.now().isBefore(threeDaysAgo)) {
+            throw new AppException(ErrorCode.CANCELLATION_TOO_LATE);
+        }
+
+        var context = SecurityContextHolder.getContext();
+        long employeeId = Long.parseLong(context.getAuthentication().getName());
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        activityDetailRepository.deleteByActivity_IdAndEmployee_Id(activityId,employeeId);
+        activity.setRegisteredCount((activity.getRegisteredCount() - 1));
+        activityRepository.save(activity);
+    }
 	public ImportResult importActivityResult (MultipartFile file) {
 		int successCount = 0;
 		List<ImportError> importErrors = new ArrayList<>();

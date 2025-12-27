@@ -9,4 +9,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IActivityDetailService {
 	void createActivityDetail(Long activityId);
+    void deleteActivityDetail(Long activityID);
 }

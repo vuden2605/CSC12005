@@ -204,13 +204,17 @@
                   }
 
                   &.registered {
-                    background-color: #4CAF50;
+                    background-color: #e44709;
+                    &:hover {
+                    background-color: #e40909;
                   }
+                  }
+                  
 
-                  &.registered:disabled {
-                    background-color: #4CAF50;
-                    opacity: 0.9;
-                  }
+                  
+                  
+
+                 
                 }
               }
 

@@ -256,7 +256,7 @@ function EmployeeList() {
 
 
       {/* Header */}
-      <div className="header">
+      <div className="header-list">
         <h2>Danh sách Nhân viên</h2>
         <div className="actions">
           <button

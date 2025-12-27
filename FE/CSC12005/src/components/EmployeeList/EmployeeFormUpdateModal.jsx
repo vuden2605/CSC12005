@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import "./style.scss";
 import { PositionService } from "../../services/PositionService";
 import { HRService } from "../../services/HRService";
+import { useAlert } from "../../context/AlertContext";
 
 const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
-  if (!visible || ! employee) return null;
+  if (!visible || !employee) return null;
 
   console.log("nhan vien update: ", employee);
-  
+
   const [positions, setPositions] = useState([]);
   const [loadingPositions, setLoadingPositions] = useState(false);
   const [errors, setErrors] = useState({});
@@ -16,27 +17,27 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
     fullName: employee.fullName || "",
     email: employee.email || "",
     phone: employee.phone || "",
-    address: employee. address || "",
+    address: employee.address || "",
     nationalCode: employee.nationalCode || "",
     taxCode: employee.taxCode || "",
     bankName: employee.bankName || "",
     bankAccount: employee.bankAccount || "",
     baseSalary: employee.baseSalary || "",
-    departmentId: employee. department?.id || "",
+    departmentId: employee.department?.id || "",
     positionId: employee.position?.id || "",
     birthDate: employee.birthDate || "",
     attachments: null,
   });
 
-  const departments=[
-          { id: 1, departmentName: "Human Resources" },
-          { id: 2, departmentName: "Finance" },
-          { id: 4, departmentName: "Information Technology" },
-          { id: 5, departmentName: "Sales" },
-          { id: 6, departmentName: "Marketing" },
-          { id: 7, departmentName: "Manufacturing" },
-        ];
-  
+  const departments = [
+    { id: 1, departmentName: "Human Resources" },
+    { id: 2, departmentName: "Finance" },
+    { id: 4, departmentName: "Information Technology" },
+    { id: 5, departmentName: "Sales" },
+    { id: 6, departmentName: "Marketing" },
+    { id: 7, departmentName: "Manufacturing" },
+  ];
+
   useEffect(() => {
     const fetchPositions = async () => {
       if (!formUpdate.departmentId) {
@@ -46,11 +47,15 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
       }
       try {
         setLoadingPositions(true);
-        const data = await PositionService.getByDepartmentId(formUpdate. departmentId);
+        const data = await PositionService.getByDepartmentId(
+          formUpdate.departmentId
+        );
         setPositions(data || []);
-        
-        const currentPositionValid = data?.some(p => p.id === formUpdate.positionId);
-        if (! currentPositionValid) {
+
+        const currentPositionValid = data?.some(
+          (p) => p.id === formUpdate.positionId
+        );
+        if (!currentPositionValid) {
           setFormUpdate((prev) => ({ ...prev, positionId: "" }));
         }
       } catch (error) {
@@ -75,7 +80,7 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
         bankName: employee.bankName || "",
         bankAccount: employee.bankAccount || "",
         baseSalary: employee.baseSalary || "",
-        departmentId: employee.department?. id || "",
+        departmentId: employee.department?.id || "",
         positionId: employee.position?.id || "",
         birthDate: employee.birthDate || "",
         attachments: null,
@@ -91,24 +96,32 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
   const validate = () => {
     const err = {};
 
-    if (!formUpdate. fullName. trim()) err.fullName = "Vui lòng nhập họ và tên";
+    if (!formUpdate.fullName.trim()) err.fullName = "Vui lòng nhập họ và tên";
     if (!formUpdate.birthDate) err.birthDate = "Vui lòng chọn ngày sinh";
-    if (!formUpdate.nationalCode. trim()) err.nationalCode = "Vui lòng nhập CCCD/CMND";
-    if (! formUpdate.email.trim()) err.email = "Vui lòng nhập email";
+    if (!formUpdate.nationalCode.trim())
+      err.nationalCode = "Vui lòng nhập CCCD/CMND";
+    if (!formUpdate.email.trim()) err.email = "Vui lòng nhập email";
     if (!formUpdate.phone.trim()) err.phone = "Vui lòng nhập số điện thoại";
     if (!formUpdate.address.trim()) err.address = "Vui lòng nhập địa chỉ";
     if (!formUpdate.bankName) err.bankName = "Vui lòng chọn ngân hàng";
-    if (!formUpdate.bankAccount.trim()) err.bankAccount = "Vui lòng nhập số tài khoản";
-    if (!formUpdate. departmentId) err.departmentId = "Vui lòng chọn phòng ban";
+    if (!formUpdate.bankAccount.trim())
+      err.bankAccount = "Vui lòng nhập số tài khoản";
+    if (!formUpdate.departmentId) err.departmentId = "Vui lòng chọn phòng ban";
     if (!formUpdate.positionId) err.positionId = "Vui lòng chọn vị trí";
-    if (!`${formUpdate.baseSalary}`.trim()) err.baseSalary = "Vui lòng nhập lương cơ bản";
+    if (!`${formUpdate.baseSalary}`.trim())
+      err.baseSalary = "Vui lòng nhập lương cơ bản";
     if (!formUpdate.taxCode.trim()) err.taxCode = "Vui lòng nhập mã số thuế";
 
-    if (formUpdate.email && !isEmail(formUpdate. email)) err.email = "Email không hợp lệ";
-    if (formUpdate.phone && !isPhoneVN(formUpdate.phone)) err.phone = "Số điện thoại 9-11 chữ số";
-    if (formUpdate.bankAccount && !isNumber(formUpdate. bankAccount)) 
+    if (formUpdate.email && !isEmail(formUpdate.email))
+      err.email = "Email không hợp lệ";
+    if (formUpdate.phone && !isPhoneVN(formUpdate.phone))
+      err.phone = "Số điện thoại 9-11 chữ số";
+    if (formUpdate.bankAccount && !isNumber(formUpdate.bankAccount))
       err.bankAccount = "Số tài khoản chỉ chứa chữ số";
-    if (formUpdate.baseSalary && (! isNumber(formUpdate.baseSalary) || Number(formUpdate.baseSalary) <= 0))
+    if (
+      formUpdate.baseSalary &&
+      (!isNumber(formUpdate.baseSalary) || Number(formUpdate.baseSalary) <= 0)
+    )
       err.baseSalary = "Lương cơ bản phải là số dương";
 
     setErrors(err);
@@ -122,7 +135,8 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const invalid = (name) => (errors[name] ?  "invalid" : "");
+  const invalid = (name) => (errors[name] ? "invalid" : "");
+  const { showAlert } = useAlert();
 
   //    submit form
   const handleSubmit = async (e) => {
@@ -133,24 +147,24 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
     if (Object.keys(err).length > 0) return;
 
     try {
-      // convert data 
+      // convert data
       const requestData = {
         fullName: formUpdate.fullName.trim(),
         email: formUpdate.email.trim(),
         phone: formUpdate.phone.trim(),
         address: formUpdate.address.trim(),
         birthDate: formUpdate.birthDate,
-        nationalCode: formUpdate. nationalCode.trim(),
-        taxCode: formUpdate.taxCode. trim(),
+        nationalCode: formUpdate.nationalCode.trim(),
+        taxCode: formUpdate.taxCode.trim(),
         bankName: formUpdate.bankName,
-        bankAccount: formUpdate. bankAccount.trim(),
+        bankAccount: formUpdate.bankAccount.trim(),
         baseSalary: Number(formUpdate.baseSalary),
         departmentId: Number(formUpdate.departmentId),
         positionId: Number(formUpdate.positionId),
       };
 
       console.log("Data to update:", requestData);
-      const data = await HRService. updateEmp(employee.id, requestData);
+      const data = await HRService.updateEmp(employee.id, requestData);
       console.log("user đã update", data);
 
       if (onUpdate) {
@@ -158,9 +172,12 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
       }
 
       onClose();
+      showAlert("success", "Cập nhật nhân viên thành công!");
+
     } catch (error) {
       console.error("Error updating employee:", error);
-      alert(error. message);
+      onClose();
+      showAlert("error", error.message);
     }
   };
 
@@ -181,7 +198,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.fullName}
                   onChange={handleChange("fullName")}
                 />
-                {errors.fullName && <small className="error">{errors.fullName}</small>}
+                {errors.fullName && (
+                  <small className="error">{errors.fullName}</small>
+                )}
               </div>
               <div className={`form-group ${invalid("birthDate")}`}>
                 <label>Ngày sinh</label>
@@ -190,7 +209,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.birthDate}
                   onChange={handleChange("birthDate")}
                 />
-                {errors.birthDate && <small className="error">{errors.birthDate}</small>}
+                {errors.birthDate && (
+                  <small className="error">{errors.birthDate}</small>
+                )}
               </div>
             </div>
 
@@ -202,7 +223,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.nationalCode}
                   onChange={handleChange("nationalCode")}
                 />
-                {errors.nationalCode && <small className="error">{errors. nationalCode}</small>}
+                {errors.nationalCode && (
+                  <small className="error">{errors.nationalCode}</small>
+                )}
               </div>
               <div className={`form-group ${invalid("email")}`}>
                 <label>Email cá nhân</label>
@@ -211,7 +234,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.email}
                   onChange={handleChange("email")}
                 />
-                {errors.email && <small className="error">{errors.email}</small>}
+                {errors.email && (
+                  <small className="error">{errors.email}</small>
+                )}
               </div>
             </div>
 
@@ -223,7 +248,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.phone}
                   onChange={handleChange("phone")}
                 />
-                {errors.phone && <small className="error">{errors.phone}</small>}
+                {errors.phone && (
+                  <small className="error">{errors.phone}</small>
+                )}
               </div>
               <div className={`form-group ${invalid("address")}`}>
                 <label>Địa chỉ</label>
@@ -232,7 +259,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.address}
                   onChange={handleChange("address")}
                 />
-                {errors.address && <small className="error">{errors.address}</small>}
+                {errors.address && (
+                  <small className="error">{errors.address}</small>
+                )}
               </div>
             </div>
 
@@ -240,7 +269,7 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
               <div className={`form-group ${invalid("bankName")}`}>
                 <label>Tên ngân hàng</label>
                 <select
-                  value={formUpdate. bankName}
+                  value={formUpdate.bankName}
                   onChange={handleChange("bankName")}
                 >
                   <option value="">-- Chọn ngân hàng --</option>
@@ -250,7 +279,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   <option value="Techcombank">Techcombank</option>
                   <option value="VPBank">VPBank</option>
                 </select>
-                {errors.bankName && <small className="error">{errors.bankName}</small>}
+                {errors.bankName && (
+                  <small className="error">{errors.bankName}</small>
+                )}
               </div>
 
               <div className={`form-group ${invalid("bankAccount")}`}>
@@ -260,7 +291,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.bankAccount}
                   onChange={handleChange("bankAccount")}
                 />
-                {errors.bankAccount && <small className="error">{errors.bankAccount}</small>}
+                {errors.bankAccount && (
+                  <small className="error">{errors.bankAccount}</small>
+                )}
               </div>
             </div>
           </fieldset>
@@ -282,17 +315,21 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                     </option>
                   ))}
                 </select>
-                {errors.departmentId && <small className="error">{errors.departmentId}</small>}
+                {errors.departmentId && (
+                  <small className="error">{errors.departmentId}</small>
+                )}
               </div>
               <div className={`form-group ${invalid("positionId")}`}>
                 <label>Vị trí</label>
                 <select
                   value={formUpdate.positionId}
                   onChange={handleChange("positionId")}
-                  disabled={! formUpdate.departmentId || loadingPositions}
+                  disabled={!formUpdate.departmentId || loadingPositions}
                 >
                   <option value="">
-                    {loadingPositions ? "Đang tải vị trí..." : "-- Chọn vị trí --"}
+                    {loadingPositions
+                      ? "Đang tải vị trí..."
+                      : "-- Chọn vị trí --"}
                   </option>
                   {positions.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -300,7 +337,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                     </option>
                   ))}
                 </select>
-                {errors.positionId && <small className="error">{errors. positionId}</small>}
+                {errors.positionId && (
+                  <small className="error">{errors.positionId}</small>
+                )}
               </div>
             </div>
 
@@ -313,7 +352,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.baseSalary}
                   onChange={handleChange("baseSalary")}
                 />
-                {errors.baseSalary && <small className="error">{errors.baseSalary}</small>}
+                {errors.baseSalary && (
+                  <small className="error">{errors.baseSalary}</small>
+                )}
               </div>
               <div className={`form-group ${invalid("taxCode")}`}>
                 <label>Mã số thuế</label>
@@ -322,7 +363,9 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
                   value={formUpdate.taxCode}
                   onChange={handleChange("taxCode")}
                 />
-                {errors.taxCode && <small className="error">{errors. taxCode}</small>}
+                {errors.taxCode && (
+                  <small className="error">{errors.taxCode}</small>
+                )}
               </div>
             </div>
           </fieldset>
@@ -330,10 +373,7 @@ const EmployeeFormUpdateModel = ({ visible, onClose, employee, onUpdate }) => {
           {/* --- Tài liệu --- */}
           <fieldset>
             <legend>Tài liệu đính kèm</legend>
-            <input
-              type="file"
-              onChange={handleChange("attachments")}
-            />
+            <input type="file" onChange={handleChange("attachments")} />
           </fieldset>
 
           <div className="form-actions">

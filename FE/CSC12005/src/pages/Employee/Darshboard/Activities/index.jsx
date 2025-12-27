@@ -3,6 +3,7 @@ import "./style.scss";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
 import { ActivityDetailModal } from "../../../../components/modals/ActivityDetailModal/ActivityDetailModal";
+import { useAlert } from "../../../../context/AlertContext";
 
 export const Activities = () => {
   const [activityName, setActivityName] = useState("");
@@ -56,7 +57,9 @@ export const Activities = () => {
       const data = await EmployeeService.getActivities(params);
 
       // Normalize payload so table can render nested shape from API
-      const rawActivities = Array.isArray(data) ? data : (data?.content || data?.activities || []);
+      const rawActivities = Array.isArray(data)
+        ? data
+        : data?.content || data?.activities || [];
       let normalizedActivities = rawActivities.map((item) => {
         if (item?.activity) {
           return {
@@ -71,18 +74,22 @@ export const Activities = () => {
       // Apply frontend filtering for registration status
       if (isRegisteredChecked && !isUnregisteredChecked) {
         // Only show registered
-        normalizedActivities = normalizedActivities.filter(item => item.isRegistered === true);
+        normalizedActivities = normalizedActivities.filter(
+          (item) => item.isRegistered === true
+        );
       } else if (!isRegisteredChecked && isUnregisteredChecked) {
         // Only show unregistered
-        normalizedActivities = normalizedActivities.filter(item => item.isRegistered === false);
+        normalizedActivities = normalizedActivities.filter(
+          (item) => item.isRegistered === false
+        );
       }
       // If both are checked or both are unchecked, show all
 
       setActivitiesData(normalizedActivities);
-      
+
       // Set pagination nếu có
       if (data?.totalPages !== undefined) {
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
           page: data.number || pagination.page,
           size: data.size || 10,
@@ -99,7 +106,17 @@ export const Activities = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.size, activityName, startDate, endDate, isRegisteredChecked, isUnregisteredChecked, sortBy, sortDirection]);
+  }, [
+    pagination.page,
+    pagination.size,
+    activityName,
+    startDate,
+    endDate,
+    isRegisteredChecked,
+    isUnregisteredChecked,
+    sortBy,
+    sortDirection,
+  ]);
 
   // Fetch activities khi component mount
   useEffect(() => {
@@ -109,48 +126,67 @@ export const Activities = () => {
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {
     if (pagination.page !== 0) {
-      setPagination(prev => ({ ...prev, page: 0 }));
+      setPagination((prev) => ({ ...prev, page: 0 }));
     }
-  }, [activityName, startDate, endDate, isRegisteredChecked, isUnregisteredChecked]);
+  }, [
+    activityName,
+    startDate,
+    endDate,
+    isRegisteredChecked,
+    isUnregisteredChecked,
+  ]);
 
   // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    setPagination(prev => ({ ...prev, page: 0 }));
+    setPagination((prev) => ({ ...prev, page: 0 }));
   };
 
   // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
-      setPagination(prev => ({ ...prev, page: newPage }));
+      setPagination((prev) => ({ ...prev, page: newPage }));
     }
   };
 
   const handleSizeChange = (newSize) => {
-    setPagination(prev => ({ ...prev, size: newSize, page: 0 }));
+    setPagination((prev) => ({ ...prev, size: newSize, page: 0 }));
   };
 
   const handlePaginationPageChange = (page) => {
-    setPagination(prev => ({ ...prev, page }));
+    setPagination((prev) => ({ ...prev, page }));
   };
 
   const handlePaginationSizeChange = (size) => {
-    setPagination(prev => ({ ...prev, size, page: 0 }));
+    setPagination((prev) => ({ ...prev, size, page: 0 }));
   };
+  const { showAlert } = useAlert();
+  const handleToggleRegister = async (activity) => {
+    const activityId = activity.id;
 
-  const handleRegister = async (activityId) => {
-    setRegisteringMap(prev => ({ ...prev, [activityId]: true }));
+    setRegisteringMap((prev) => ({ ...prev, [activityId]: true }));
+
     try {
-      await EmployeeService.registerActivity(activityId);
+      if (activity.isRegistered) {
+        
+        await EmployeeService.cancelActivity(activityId);
+        showAlert("success", "Hủy đăng ký thành công");
+      } else {
+        await EmployeeService.registerActivity(activityId);
+        showAlert("success", "Đăng ký thành công");
+      }
+
       await fetchActivities();
 
-      // Update modal data if currently viewing this activity
-      setSelectedActivity(prev => (prev && prev.id === activityId ? { ...prev, isRegistered: true } : prev));
+      setSelectedActivity((prev) =>
+        prev && prev.id === activityId
+          ? { ...prev, isRegistered: !activity.isRegistered }
+          : prev
+      );
     } catch (err) {
-      console.error("Failed to register activity:", err);
-      setError(err.message || "Đăng ký thất bại");
+      showAlert("error", err.message || "Có lỗi xảy ra");
     } finally {
-      setRegisteringMap(prev => ({ ...prev, [activityId]: false }));
+      setRegisteringMap((prev) => ({ ...prev, [activityId]: false }));
     }
   };
 
@@ -230,7 +266,9 @@ export const Activities = () => {
                 <input
                   type="checkbox"
                   checked={isUnregisteredChecked}
-                  onChange={() => setIsUnregisteredChecked(!isUnregisteredChecked)}
+                  onChange={() =>
+                    setIsUnregisteredChecked(!isUnregisteredChecked)
+                  }
                 />
                 Chưa đăng ký
               </label>
@@ -274,12 +312,14 @@ export const Activities = () => {
                 <thead>
                   <tr>
                     <th>Tên</th>
-                    <th 
-                      style={{ cursor: 'pointer', userSelect: 'none' }}
-                      onClick={() => handleSortColumn('startDate')}
+                    <th
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => handleSortColumn("startDate")}
                       title="Bấm để sắp xếp"
                     >
-                      Ngày bắt đầu {sortBy === 'startDate' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                      Ngày bắt đầu{" "}
+                      {sortBy === "startDate" &&
+                        (sortDirection === "ASC" ? "↑" : "↓")}
                     </th>
                     <th>Ngày kết thúc</th>
                     <th>Điểm thưởng</th>
@@ -291,24 +331,50 @@ export const Activities = () => {
                 </thead>
                 <tbody>
                   {activitiesData.map((activity, index) => (
-                    <tr key={activity.id || index} className={index % 2 === 0 ? 'even-row' : ''}>
-                      <td className="name-cell">{activity.activityName || activity.name || "N/A"}</td>
-                      <td className="date-cell">{formatDate(activity.startDate) || "N/A"}</td>
-                      <td className="date-cell">{formatDate(activity.endDate) || "N/A"}</td>
-                      <td className="point-cell">{activity.points ?? activity.point ?? activity.reward ?? 0}</td>
-                      <td className="quantity-cell">{activity.count || activity.totalSlot || activity.slots || "N/A"}</td>
-                      <td className="registered-count-cell">{activity.registeredCount || 0}</td>
+                    <tr
+                      key={activity.id || index}
+                      className={index % 2 === 0 ? "even-row" : ""}
+                    >
+                      <td className="name-cell">
+                        {activity.activityName || activity.name || "N/A"}
+                      </td>
+                      <td className="date-cell">
+                        {formatDate(activity.startDate) || "N/A"}
+                      </td>
+                      <td className="date-cell">
+                        {formatDate(activity.endDate) || "N/A"}
+                      </td>
+                      <td className="point-cell">
+                        {activity.points ??
+                          activity.point ??
+                          activity.reward ??
+                          0}
+                      </td>
+                      <td className="quantity-cell">
+                        {activity.count ||
+                          activity.totalSlot ||
+                          activity.slots ||
+                          "N/A"}
+                      </td>
+                      <td className="registered-count-cell">
+                        {activity.registeredCount || 0}
+                      </td>
                       <td className="register-cell">
                         <button
-                          className={`register-button ${activity.isRegistered ? 'registered' : ''}`}
-                          disabled={activity.isRegistered || registeringMap[activity.id]}
-                          onClick={() => handleRegister(activity.id)}
+                          className={`register-button ${
+                            activity.isRegistered ? "registered" : ""
+                          }`}
+                          onClick={() => handleToggleRegister(activity)}
                         >
-                          {activity.isRegistered ? "Đã đăng ký" : registeringMap[activity.id] ? "Đang đăng ký..." : "Đăng ký"}
+                          {activity.isRegistered
+                            ? "Hủy đăng ký"
+                            : registeringMap[activity.id]
+                            ? "Đang đăng ký..."
+                            : "Đăng ký"}
                         </button>
                       </td>
                       <td className="action-cell">
-                        <button 
+                        <button
                           className="view-link"
                           onClick={() => handleViewActivity(activity)}
                         >
@@ -320,7 +386,6 @@ export const Activities = () => {
                 </tbody>
               </table>
             </div>
-
             {/* Pagination */}
             <Pagination
               currentPage={pagination.page}
@@ -335,9 +400,9 @@ export const Activities = () => {
         )}
       </div>
 
-      <ActivityDetailModal 
-        activity={selectedActivity} 
-        isOpen={isModalOpen} 
+      <ActivityDetailModal
+        activity={selectedActivity}
+        isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
     </div>

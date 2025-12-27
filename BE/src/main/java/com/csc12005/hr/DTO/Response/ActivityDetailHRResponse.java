@@ -16,4 +16,5 @@ public class ActivityDetailHRResponse {
     private Long employeeId;
     private String employeeName;
     private Boolean isSuccess;
+    private Long activityRank;
 }

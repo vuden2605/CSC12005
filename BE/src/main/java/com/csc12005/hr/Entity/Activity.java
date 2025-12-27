@@ -26,4 +26,6 @@ public class Activity {
     private Long points;
 	@Builder.Default
 	private Long registeredCount = 0L;
+    @Builder.Default
+    private Boolean status=true;
 }

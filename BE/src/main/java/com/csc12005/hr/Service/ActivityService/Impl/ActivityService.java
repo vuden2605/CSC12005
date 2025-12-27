@@ -19,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class ActivityService implements IActivityService {
@@ -29,6 +31,12 @@ public class ActivityService implements IActivityService {
     @Transactional
 	@Override
 	public ActivityResponse createActivity(ActivityCreationRequest activityCreationRequest) {
+        LocalDate startDate = activityCreationRequest.getStartDate();
+        LocalDate sevenDaysAgo = startDate.minusDays(7);
+
+        if (!LocalDate.now().isBefore(sevenDaysAgo)) {
+            throw new AppException(ErrorCode.START_DATE_TOO_RECENT);
+        }
 		Activity activity = activityMapper.toActivity(activityCreationRequest);
 		eventPublisher.publishEvent(ActivityCreated.builder()
 			.activityId(activity.getId())
@@ -52,6 +60,12 @@ public class ActivityService implements IActivityService {
     public ActivityResponse updateActivity(ActivityUpdateRequest request, long id)
     {
         Activity activity= activityRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+        LocalDate startDate = activity.getStartDate();
+        LocalDate sevenDaysAgo = startDate.minusDays(7);
+
+        if (!LocalDate.now().isBefore(sevenDaysAgo)) {
+            throw new AppException(ErrorCode.UPDATE_TOO_LATE);
+        }
         activityMapper.updateActivity(activity, request);
         return activityMapper.toActivityResponse(activityRepository.save(activity));
     }
@@ -80,6 +94,7 @@ public class ActivityService implements IActivityService {
                 .id(ad.getId())
                 .employeeId(ad.getEmployee().getId())
                 .employeeName(ad.getEmployee().getFullName())
+                .activityRank(ad.getActivityRank())
                 .isSuccess(ad.getIsSuccess())
                 .build();
     }
