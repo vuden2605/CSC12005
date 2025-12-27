@@ -44,5 +44,29 @@ public class PointHistoryController {
 				.message("Point history retrieved successfully")
 				.build();
 	}
+	@GetMapping("/me/total-received/month")
+	public ApiResponse<Integer> getMyTotalReceivedPointsInMonth() {
+		int totalPoints = pointHistoryService.getTotalReceivedPointsInMonth();
+		return ApiResponse.<Integer>builder()
+				.data(totalPoints)
+				.message("Total received points in month retrieved successfully")
+				.build();
+	}
+	@GetMapping("/me/total-received/year")
+	public ApiResponse<Integer> getMyTotalReceivedPointsInYear() {
+		int totalPoints = pointHistoryService.getTotalReceivedPointsInYear();
+		return ApiResponse.<Integer>builder()
+				.data(totalPoints)
+				.message("Total received points in year retrieved successfully")
+				.build();
+	}
+	@GetMapping("/me/total-points")
+	public ApiResponse<Integer> getMyCurrentTotalPoints() {
+		int totalPoints = pointHistoryService.getCurrentTotalPoints();
+		return ApiResponse.<Integer>builder()
+				.data(totalPoints)
+				.message("Current total points retrieved successfully")
+				.build();
+	}
 
 }

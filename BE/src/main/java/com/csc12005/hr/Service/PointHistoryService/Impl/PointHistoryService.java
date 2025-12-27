@@ -5,6 +5,7 @@ import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.PointHistory;
+import com.csc12005.hr.Enums.PointReasonDescription;
 import com.csc12005.hr.Enums.PointReasonType;
 import com.csc12005.hr.Mapper.EmployeeMapper;
 import com.csc12005.hr.Mapper.PointHistoryMapper;
@@ -53,13 +54,32 @@ public class PointHistoryService implements IPointHistoryService {
 					.employee(candidate)
 					.pointChange(pointChange)
 					.reasonType(PointReasonType.MONTHLY_GRANT)
-					.description("Monthly candidate point grant")
+					.description(PointReasonDescription.ACTIVITY_BONUS.getDescription())
 					.build();
 			pointHistories.add(pointHistory);
 		}
 		pointHistoryRepository.saveAll(pointHistories);
 		employeeRepository.saveAll(candidates);
 	}
+
+	@Override
+	public int getTotalReceivedPointsInMonth() {
+		Long employeeId = securityUtils.getCurrentUserId();
+		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInMonth(employeeId);
+	}
+
+	@Override
+	public int getTotalReceivedPointsInYear() {
+		Long employeeId = securityUtils.getCurrentUserId();
+		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInYear(employeeId);
+	}
+
+	@Override
+	public int getCurrentTotalPoints() {
+		Long employeeId = securityUtils.getCurrentUserId();
+		return pointHistoryRepository.sumPointChangeByEmployeeIdInMonth(employeeId);
+	}
+
 	public List<PointHistoryResponse> myPointsHistory(PageRequestDTO pageRequestDTO) {
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Long employeeId = securityUtils.getCurrentUserId();

@@ -12,7 +12,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
     const fetchWFHDetail = async () => {
       try {
         setLoading(true);
-        const response = await EmployeeService.getWFHRequestDetail(requestId);
+        const response = await EmployeeService.getRequestDetail(requestId, "WorkFromHome");
         setWfhDetail(response);
       } catch (err) {
         console.error("Error fetching WFH detail:", err);
@@ -31,7 +31,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
   const handleApprove = async () => {
     try {
       setLoading(true);
-      await ManagerService.approveWFHRequest(requestId);
+      await ManagerService.approveRequest(requestId, "WorkFromHome");
       alert("Đã duyệt yêu cầu làm việc tại nhà");
       if (onSuccess) onSuccess();
       onClose();
