@@ -13,7 +13,7 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager, onSuccess 
       try {
         setLoading(true);
         const response =
-          await EmployeeService.getTimeSheetRequestDetail(requestId);
+          await EmployeeService.getRequestDetail(requestId, "TimeSheet");
         setTimeSheetDetail(response);
       } catch (err) {
         console.error("Error fetching TimeSheet detail:", err);
@@ -32,7 +32,7 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager, onSuccess 
   const handleApprove = async () => {
     try {
       setLoading(true);
-      await ManagerService.approveTimeSheetRequest(requestId);
+      await ManagerService.approveRequest(requestId, "TimeSheet");
       alert("Đã duyệt yêu cầu chấm công");
       if (onSuccess) onSuccess();
       onClose();
@@ -50,7 +50,7 @@ export const TimeSheetDetailModal = ({ requestId, onClose, isManager, onSuccess 
 
     try {
       setLoading(true);
-      await ManagerService.rejectTimeSheetRequest(requestId);
+      await ManagerService.rejectRequest(requestId, "TimeSheet");
       alert("Đã từ chối yêu cầu chấm công");
       if (onSuccess) onSuccess();
       onClose();

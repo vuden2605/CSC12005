@@ -35,8 +35,6 @@ public class PointExchange {
 
 	@Version
 	private Long version;
-
-	private String note;
 	@CreationTimestamp
 	private LocalDateTime requestedAt;
 	private LocalDateTime approvedAt;

@@ -7,12 +7,16 @@ import com.csc12005.hr.DTO.Request.UpdatePointExchangeStatusRequest;
 import com.csc12005.hr.DTO.Response.PointExchangeResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.PointExchange;
+import com.csc12005.hr.Entity.PointHistory;
 import com.csc12005.hr.Enums.PointExchangeStatus;
+import com.csc12005.hr.Enums.PointReasonDescription;
+import com.csc12005.hr.Enums.PointReasonType;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.PointExchangeMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PointExchangeRepository;
+import com.csc12005.hr.Repository.PointHistoryRepository;
 import com.csc12005.hr.Service.PointExchangeService.IPointExchangeService;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
@@ -31,6 +35,7 @@ public class PointExchangeService implements IPointExchangeService {
 	private final PointExchangeMapper pointExchangeMapper;
 	private final SecurityUtils securityUtils;
 	private final EmployeeRepository employeeRepository;
+	private final PointHistoryRepository pointHistoryRepository;
 	@Override
 	public PointExchangeResponse requestExchangePoints(PointExchangeRequest request) {
 		Long employeeId = securityUtils.getCurrentUserId();
@@ -41,7 +46,6 @@ public class PointExchangeService implements IPointExchangeService {
 				.pointUsed(request.getPoints())
 				.exchangeValue(request.getPoints() * 2000)
 				.status(PointExchangeStatus.PENDING)
-				.note("Requesting point exchange")
 				.build();
 		PointExchange savedPointExchange = pointExchangeRepository.save(pointExchange);
 		return pointExchangeMapper.toPointExchangeResponse(savedPointExchange);
@@ -74,7 +78,17 @@ public class PointExchangeService implements IPointExchangeService {
 
 					employee.setTotalPoints(employee.getTotalPoints() - pointUsed);
 					exchange.setCompletedAt(LocalDateTime.now());
+
+
+					PointHistory history = PointHistory.builder()
+							.employee(employee)
+							.pointChange(-pointUsed)
+							.reasonType(PointReasonType.EXCHANGE)
+							.referenceId(exchange.getId())
+							.description(PointReasonDescription.EXCHANGE.getDescription())
+							.build();
 					employeeRepository.save(employee);
+					pointHistoryRepository.save(history);
 				}
 
 				case REJECTED -> {

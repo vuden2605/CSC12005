@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 

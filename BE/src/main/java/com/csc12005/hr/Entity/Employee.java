@@ -3,6 +3,7 @@ package com.csc12005.hr.Entity;
 import com.csc12005.hr.Enums.EducationLevel;
 import com.csc12005.hr.Enums.EmployeeRole;
 import com.csc12005.hr.Enums.MarialStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

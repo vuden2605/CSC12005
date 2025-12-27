@@ -31,4 +31,30 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 			@Param("endDate") LocalDateTime endDate
 	);
 	List<PointHistory> findByEmployeeId(Long employeeId, Pageable pageable);
+
+	@Query("""
+	SELECT COALESCE(SUM(ph.pointChange), 0)
+	FROM PointHistory ph
+	WHERE ph.employee.id = :employeeId
+	  AND ph.pointChange > 0
+	  AND FUNCTION('MONTH', ph.createdAt) = FUNCTION('MONTH', CURRENT_DATE)
+	  AND FUNCTION('YEAR', ph.createdAt) = FUNCTION('YEAR', CURRENT_DATE)
+	""")
+	int sumReceivedPointsByEmployeeIdInMonth(@Param("employeeId") Long employeeId);
+
+	@Query("""
+	SELECT COALESCE(SUM(ph.pointChange), 0)
+	FROM PointHistory ph
+	WHERE ph.employee.id = :employeeId
+	  AND ph.pointChange > 0
+	  AND FUNCTION('YEAR', ph.createdAt) = FUNCTION('YEAR', CURRENT_DATE)
+	""")
+	int sumReceivedPointsByEmployeeIdInYear(@Param("employeeId") Long employeeId);
+
+	@Query("""	
+		SELECT COALESCE(SUM(ph.pointChange), 0)
+		FROM PointHistory ph
+		WHERE ph.employee.id = :employeeId 
+	""")
+	int sumPointChangeByEmployeeIdInMonth(@Param("employeeId") Long employeeId);
 }
