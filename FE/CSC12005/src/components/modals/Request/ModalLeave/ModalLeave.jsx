@@ -76,17 +76,15 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
     try {
       setLoading(true);
 
-      // Tạo FormData để gửi file
-      const formData = new FormData();
-      formData.append("startDate", `${form.startDate}T00:00:00`);
-      formData.append("endDate", `${form.endDate}T23:59:59`);
-      formData.append("reason", form.reason);
-      if (file) {
-        formData.append("file", file);
-      }
-
-      // Gọi API để tạo leave request
-      await EmployeeService.createLeaveRequest(formData);
+      await EmployeeService.createRequest(
+        {
+          startDate: `${form.startDate}T00:00:00`,
+          endDate: `${form.endDate}T23:59:59`,
+          reason: form.reason,
+          file
+        },
+        "Leave"
+      );
 
       // Gọi callback onSuccess nếu có để refresh danh sách
       if (onSuccess) {
