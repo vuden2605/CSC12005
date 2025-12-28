@@ -18,19 +18,20 @@ spring:
         database-platform: org.hibernate.dialect.MySQL8Dialect
     cache:
       type: redis
+      redis:
+        time-to-live: 1d
     data:
       redis:
         host: localhost
         port: 6379
 cache:
   expires:
-    user.details: 1m
-    access.token: 15m
-    refresh.token: 7d
+    "[user.details]": 1m
+    "[auth.invalidatedTokens]": 24h
 jwt:
     secret: your_jwt_secret_key_12333333333333333333333
     access-time: 360000000 # 1 hour in milliseconds
-    refresh-time: 604800000
+    refresh-time: 864000000 # 24 hours in milliseconds
 aws:
     access-key: AKIAQH3T6CWXA2TWPZ5O
     secret-key: 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
