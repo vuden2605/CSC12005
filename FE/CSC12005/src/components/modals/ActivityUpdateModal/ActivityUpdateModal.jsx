@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { HRService } from "../../../services/HRService";
+import { useAlert } from "../../../context/AlertContext";
 
 export const ActivityUpdateModal = ({
   activity,
@@ -99,11 +100,12 @@ export const ActivityUpdateModal = ({
       newErrors.count = "Số lượng tối đa không được trống";
     else if (!/^\d+$/.test(formUpdate.count))
       newErrors.count = "Số lượng tố đa phải là chữ số";
-else if (Number(formUpdate.count) < 20 || Number(formUpdate.count) > 50)
+    else if (Number(formUpdate.count) < 20 || Number(formUpdate.count) > 50)
       newErrors.count = "Số lượng tối đa phải từ 20 đến 50";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const { showAlert } = useAlert();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,8 +124,10 @@ else if (Number(formUpdate.count) < 20 || Number(formUpdate.count) > 50)
       const data = await HRService.UpdateActivity(activity.id, requestData);
       if (onUpdate) onUpdate(data);
       onClose();
+      showAlert("success", "Cập nhật sự kiện thành công");
     } catch (error) {
-      alert(error.message);
+      onClose();
+      showAlert("error", error.message);
     }
   };
 
@@ -261,6 +265,7 @@ else if (Number(formUpdate.count) < 20 || Number(formUpdate.count) > 50)
               <thead>
                 <tr>
                   <th>Tên nhân viên</th>
+                  <th>Xếp hạng</th>
                   <th>Trạng thái</th>
                 </tr>
               </thead>
@@ -275,6 +280,7 @@ else if (Number(formUpdate.count) < 20 || Number(formUpdate.count) > 50)
                   participants?.map((p) => (
                     <tr key={p.id}>
                       <td>{p.employeeName}</td>
+                      <td>{p.activityRank }</td>
                       <td>{p.isSuccess ? "Hoàn thành" : "Chưa hoàn thành"}</td>
                     </tr>
                   ))

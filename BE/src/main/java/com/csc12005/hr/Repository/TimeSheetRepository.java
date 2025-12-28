@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +25,18 @@ public interface TimeSheetRepository extends JpaRepository<TimeSheet, Long> {
 			"""
 	)
 	Page<TimeSheet> myTimeSheets(Long employeeId, Pageable pageable, LocalDate fromDate, LocalDate toDate);
+    @Query("""
+        SELECT t
+        FROM TimeSheet t
+        WHERE t.employee.id = :employeeId
+        AND MONTH(t.workDate) = :month
+        AND YEAR(t.workDate) = :year
+ 
+    """)
+    List<TimeSheet> findApprovedByEmployeeAndMonth(
+            @Param("employeeId") Long employeeId,
+            @Param("month") Long month,
+            @Param("year") Long year
+    );
+
 }

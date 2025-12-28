@@ -8,7 +8,10 @@ import { AuthService } from "../../services/AuthService";
 import { stompService } from "../../services/StompService";
 import { Notifications } from "../Notification/Notifications";
 import { NotificationService } from "../../services/NotificationService";
-import { addNotifications, setUnreadCount } from "../../redux/slices/notificationSlice";
+import {
+  addNotifications,
+  setUnreadCount,
+} from "../../redux/slices/notificationSlice";
 
 export const Header = () => {
   const location = useLocation();
@@ -30,6 +33,7 @@ export const Header = () => {
     HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý Sự kiện", path: "/hr/events" },
+      { label: "Quản lý Lương", path: "/hr/payroll" },
       { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
       { label: "Quản lý điểm", path: "/hr/bonus-points" },
     ],
@@ -65,7 +69,7 @@ export const Header = () => {
         );
 
         const data = response?.data?.content || response?.content || response;
-        
+
         if (Array.isArray(data) && data.length > 0) {
           // Map data sang format của Redux
           const formattedNotifications = data.map((n) => ({

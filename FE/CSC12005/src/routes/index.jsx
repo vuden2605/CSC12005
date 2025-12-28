@@ -1,38 +1,70 @@
 import { Navigate } from "react-router-dom";
-// import { Home } from "../pages/Home";
+
+const isAuthenticated = () => {
+  return !!localStorage.getItem("accessToken");
+};
+
+const PublicRoute = ({ children }) => {
+  if (isAuthenticated()) {
+    return <Navigate to="/employee/dashboard" replace />;
+  }
+  return children;
+};
+
+const PrivateRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+// PAGES
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
 import { Manager } from "../pages/Manager";
 import { Employee } from "../pages/Employee";
 import { HRAdmin } from "../pages/HRAdmin";
 import { LayoutDefault } from "../LayoutDefault";
+
 import { Dashboard } from "../pages/Employee/Darshboard";
 import { Information } from "../pages/Employee/Darshboard/Information";
 import { PersonalInfo } from "../pages/Employee/Darshboard/Information/PersonalInfo";
-import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails/index";
+import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetails";
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
-
 import { Attendance } from "../pages/Employee/Darshboard/Attendance";
-import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
+
+import { Salary } from "../pages/Employee/Darshboard/Salary";
 
 import { RequestManager } from "../pages/RequestManager";
 import { EventPageHR } from "../pages/EventHR";
+import { HRPayRoll } from "../pages/HRPayRoll";
+import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
+
 import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
 
-export const routes = [
-    { path: "/", element: <Navigate to="/login" replace /> },
 
+export const routes = [
+  // Redirect root
+  { path: "/", element: <Navigate to="/login" replace /> },
+
+  //PRIVATE AREA
   {
     path: "/",
-    element: <LayoutDefault />,
+    element: (
+      <PrivateRoute>
+        <LayoutDefault />
+      </PrivateRoute>
+    ),
     children: [
-      // { index: true, element: <Navigate to="/login" replace /> },
       { path: "admin", element: <Admin /> },
+
+      { path: "manager", element: <Manager /> },
       { path: "manager/department", element: <Manager /> },
       { path: "manager/requests", element: <RequestManager /> },
       { path: "manager/requests/:id", element: <RequestManager /> },
+
       {
         path: "employee",
         element: <Employee />,
@@ -52,24 +84,31 @@ export const routes = [
                   { path: "salary-info", element: <SalaryInfo /> },
                 ],
               },
-              // { path: "attendance", element: <Attendance /> },
               { path: "attendance", element: <Attendance /> },
               { path: "request", element: <Requests /> },
               { path: "event", element: <Activities /> },
+              { path: "salary", element: <Salary /> },
               { path: "bonus-points", element: <BonusPoints /> },
               // { path: "score", element: <Score /> },
             ],
           },
         ],
       },
+
       { path: "hr/humans", element: <HRAdmin /> },
-      { path: "manager", element: <Manager /> },
       { path: "hr/events", element: <EventPageHR /> },
+      { path: "hr/payroll", element: <HRPayRoll /> },
       { path: "hr/bonus-points", element: <BonusPointsAdmin /> },
     ],
   },
+
+  //PUBLIC
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
 ];

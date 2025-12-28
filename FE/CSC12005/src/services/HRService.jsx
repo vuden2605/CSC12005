@@ -126,10 +126,8 @@ export const HRService = {
   },
   GetParticipantsByActivity: async (activityId, params) => {
     try {
-      const response = await api.get(
-        `/activities/${activityId}`,
-        { params }
-      );
+      const response = await api.get(`/activities/${activityId}`, { params });
+      console.log("detail activity", response.data.data);
       return response.data.data;
     } catch (error) {
       const errMsg =
@@ -142,18 +140,14 @@ export const HRService = {
   importEmployees: async (file) => {
     try {
       const formData = new FormData();
-      formData.append("file", file); 
-  
-      const response = await api.post(
-        "/employees/import",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-  
+      formData.append("file", file);
+
+      const response = await api.post("/employees/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       return response.data.data;
     } catch (error) {
       const errMsg =
@@ -164,6 +158,75 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
+  getAllSalaries: async (filter, params) => {
+    try {
+      const response = await api.post(`/salaries/search`, filter, {
+        params,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("salaries:",response.data.data);
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching salaries";
+      console.error("Error fetching salaries:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  createPayroll: async (month, year) => {
+  try {
+    const response = await api.post(
+      "/salaries",
+      {
+        month,
+        year,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data; 
+  } catch (error) {
+    const errMsg =
+      error.response?.data?.message ||
+      error.message ||
+      "Error creating payroll";
+    console.error("Error creating payroll:", errMsg);
+    throw new Error(errMsg);
+  }
+},
+paySalary: async (month, year) => {
+    try {
+      const response = await api.post(
+        `/salaries/pay`,
+        null, 
+        {
+          params: { month, year },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error paying salary";
+
+      console.error("Pay salary error:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
   getMonthlyCandidatesPoints: async () => {
     try {
       const response = await api.get(
