@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -32,9 +33,21 @@ public class RedisCacheConfig {
 		GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
 		return RedisCacheConfiguration.defaultCacheConfig()
-				.entryTtl(Duration.ofMinutes(10))
 				.disableCachingNullValues()
 				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
 				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
 	}
+	@Bean
+	public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(
+			ExtendedCacheProperties extendedCacheProperties,
+			RedisCacheConfiguration customRedisCacheConfiguration) {
+		return builder -> {
+			builder.cacheDefaults(customRedisCacheConfiguration);
+
+			extendedCacheProperties.getExpires()
+					.forEach((key, value) -> builder.withCacheConfiguration(key,
+							customRedisCacheConfiguration.entryTtl(value)));
+		};
+	}
+
 }

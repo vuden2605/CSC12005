@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityCreated {
-	private Long activityId;
-	private String activityName;
+public class LogoutRequest {
+	@NotBlank(message = "REQUIRED_ACCESS_TOKEN")
+	private String accessToken;
 }
