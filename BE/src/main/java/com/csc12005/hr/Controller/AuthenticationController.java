@@ -18,45 +18,54 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
+
 	@PostMapping("/auth/login")
 	public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
 		AuthenticationResponse authResponse = authenticationService.login(loginRequest);
-		ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.getRefreshToken())
-				.httpOnly(true)
-				.secure(true)
-				.path("/refresh-token")
-				.maxAge(7 * 24 * 60 * 60)
-				.build();
 		return ResponseEntity.ok()
-				.header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(authResponse.getRefreshToken()).toString())
 				.body(ApiResponse.<AuthenticationResponse>builder()
-						.message("Login successful")
+						.message("Access token refreshed successfully")
 						.data(authResponse)
 						.build()
-		);
+				);
 	}
+
 	@PostMapping("/auth/refresh-token")
-	public ApiResponse<AuthenticationResponse> refreshAccessToken(@CookieValue(value = "refreshToken", required = true) String refreshToken) {
-		AuthenticationResponse authResponse = authenticationService.refreshAccessToken(refreshToken);
-		return ApiResponse.<AuthenticationResponse>builder()
-				.message("Access token refreshed successfully")
-				.data(authResponse)
-				.build();
-	}
-	@PostMapping("/auth/logout")
-	public ResponseEntity<ApiResponse<String>>  logout() {
-		ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
-				.httpOnly(true)
-				.secure(true)
-				.path("/refresh-token")
-				.maxAge(0)
-				.build();
+	public ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@CookieValue(value = "refreshToken", required = true) String refreshToken) {
+		AuthenticationResponse authResponse = authenticationService.refreshToken(refreshToken);
 		return ResponseEntity.ok()
-				.header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(authResponse.getRefreshToken()).toString())
+				.body(ApiResponse.<AuthenticationResponse>builder()
+						.message("Access token refreshed successfully")
+						.data(authResponse)
+						.build()
+				);
+	}
+
+	@PostMapping("/auth/logout")
+	public ResponseEntity<ApiResponse<String>> logout() {
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, deleteRefreshTokenCookie().toString())
 				.body(ApiResponse.<String>builder()
 						.message("Logout successful")
 						.data("Logged out")
 						.build()
-		);
+				);
+	}
+	private ResponseCookie buildRefreshTokenCookie(String refreshToken) {
+		return ResponseCookie.from("refreshToken", refreshToken)
+				.httpOnly(true)
+				.path("/auth/refresh-token")
+				.maxAge(7 * 24 * 60 * 60)
+				.build();
+	}
+	private ResponseCookie deleteRefreshTokenCookie() {
+		return ResponseCookie.from("refreshToken", "")
+				.httpOnly(true)
+				.path("/auth/refresh-token")
+				.maxAge(0)
+				.build();
 	}
 }
+

@@ -8,5 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IAuthenticationService {
 	AuthenticationResponse login(LoginRequest loginRequest);
+	AuthenticationResponse refreshToken(String refreshToken);
 
 }

@@ -18,9 +18,15 @@ spring:
         database-platform: org.hibernate.dialect.MySQL8Dialect
     cache:
       type: redis
-    redis:
-      host: localhost
-      port: 6379
+    data:
+      redis:
+        host: localhost
+        port: 6379
+cache:
+  expires:
+    user.details: 1m
+    access.token: 15m
+    refresh.token: 7d
 jwt:
     secret: your_jwt_secret_key_12333333333333333333333
     access-time: 360000000 # 1 hour in milliseconds

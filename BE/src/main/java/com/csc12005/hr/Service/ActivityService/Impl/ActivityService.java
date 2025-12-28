@@ -32,6 +32,7 @@ public class ActivityService implements IActivityService {
 		Activity activity = activityMapper.toActivity(activityCreationRequest);
 		eventPublisher.publishEvent(ActivityCreated.builder()
 			.activityId(activity.getId())
+			.activityName(activity.getActivityName())
 			.build());
 		return activityMapper.toActivityResponse(activityRepository.save(activity));
 	}

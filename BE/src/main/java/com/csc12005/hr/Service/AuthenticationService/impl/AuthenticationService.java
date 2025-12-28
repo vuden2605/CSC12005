@@ -35,7 +35,7 @@ public class AuthenticationService implements IAuthenticationService {
 				.isAuthenticated(true)
 				.build();
 	}
-	public AuthenticationResponse refreshAccessToken(String refreshToken) {
+	public AuthenticationResponse refreshToken(String refreshToken) {
 		if (refreshToken == null || refreshToken.isEmpty()) {
 			throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
 		}
@@ -43,9 +43,10 @@ public class AuthenticationService implements IAuthenticationService {
 		Employee employee = employeeRepository.findById(Long.parseLong(claims.getSubject()))
 				.orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
 		String newAccessToken = jwtService.generateAccessToken(employee);
+		String newRefreshToken = jwtService.generateRefreshToken(employee);
 		return AuthenticationResponse.builder()
 				.accessToken(newAccessToken)
-				.refreshToken(refreshToken)
+				.refreshToken(newRefreshToken)
 				.isAuthenticated(true)
 				.build();
 	}
