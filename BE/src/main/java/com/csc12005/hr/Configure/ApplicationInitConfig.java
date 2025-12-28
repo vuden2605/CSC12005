@@ -247,6 +247,8 @@ public class ApplicationInitConfig implements CommandLineRunner {
 	}
 	@Transactional
 	private void createDepartmentManagers() {
+		Employee ceo = employeeRepository.findByEmployeeCode("CEO")
+				.orElseThrow(() -> new RuntimeException("CEO user not found"));
 		// Lấy tất cả phòng ban
 		List<Department> departments = departmentRepository.findAll();
 
@@ -265,6 +267,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.password(passwordEncoder.encode("123456"))
 					.department(department)
 					.position(positions.getFirst())
+					.manager(ceo)
 					.build();
 			department.setManager(manager);
 			employeeRepository.save(manager);

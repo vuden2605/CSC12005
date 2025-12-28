@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface IEmployeeService {
     public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) ;
-    public EmployeeResponse getMyInfo();
-    public EmployeeResponse updateUser(EmployeeUpdateRequest employeeUpdateRequest);
+    public EmployeeResponse getMyInfo(Long userId);
+    public EmployeeResponse updateUser(EmployeeUpdateRequest employeeUpdateRequest, Long id);
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest employeeHRUpdateRequest, Long id);
     public List<EmployeeResponse> getAll();
     public EmployeeResponse updateStatus(Long id);

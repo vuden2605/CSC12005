@@ -43,4 +43,6 @@ public class EmployeeResponse {
 	private String major;
 	private String university;
 	private String gender;
+	private Long totalPoints;
+	private Long allocatedPoints;
 }

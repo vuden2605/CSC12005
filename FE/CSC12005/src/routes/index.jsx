@@ -34,11 +34,16 @@ import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo"
 import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
 import { Attendance } from "../pages/Employee/Darshboard/Attendance";
+
 import { Salary } from "../pages/Employee/Darshboard/Salary";
 
 import { RequestManager } from "../pages/RequestManager";
 import { EventPageHR } from "../pages/EventHR";
 import { HRPayRoll } from "../pages/HRPayRoll";
+import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
+
+import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
+
 
 export const routes = [
   // Redirect root
@@ -83,6 +88,8 @@ export const routes = [
               { path: "request", element: <Requests /> },
               { path: "event", element: <Activities /> },
               { path: "salary", element: <Salary /> },
+              { path: "bonus-points", element: <BonusPoints /> },
+              // { path: "score", element: <Score /> },
             ],
           },
         ],
@@ -91,6 +98,7 @@ export const routes = [
       { path: "hr/humans", element: <HRAdmin /> },
       { path: "hr/events", element: <EventPageHR /> },
       { path: "hr/payroll", element: <HRPayRoll /> },
+      { path: "hr/bonus-points", element: <BonusPointsAdmin /> },
     ],
   },
 

@@ -21,6 +21,7 @@ import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.ExcelUtils;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,9 @@ import org.apache.catalina.Manager;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mapstruct.Mapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,16 +56,17 @@ public class EmployeeService implements IEmployeeService {
 	private final PositionRepository positionRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final S3Service s3Service;
+	private final SecurityUtils securityUtils;
 
-	private String generateEmployeeCode(Department department, Position position) {
+	private String generateEmployeeCode(Department department) {
 		// Generate employee code logic
 		int year = LocalDate.now().getYear();
 		log.info("year: {}", year);
-		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId(), position.getId());
+		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId());
 		log.info("count: {}", count);
 		long sequence = count + 1;
 		String sequenceFormatted = String.format("%03d", sequence);
-		return year + "-" + department.getDepartmentCode() + "_" + position.getPositionCode() + "_" + sequenceFormatted;
+		return year + "_" + department.getDepartmentCode() + "_" + sequenceFormatted;
 	}
 
 	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
@@ -72,7 +77,7 @@ public class EmployeeService implements IEmployeeService {
 				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
 		Position position = positionRepository.findById(employeeCreationRequest.getPositionId())
 				.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
-		String employeeCode = generateEmployeeCode(department, position);
+		String employeeCode = generateEmployeeCode(department);
 		Employee employee = employeeMapper.toEmployee(employeeCreationRequest);
 		employee.setDepartment(department);
 		employee.setPosition(position);
@@ -94,19 +99,15 @@ public class EmployeeService implements IEmployeeService {
 		}
 		return employeeResponse;
 	}
-
-	public EmployeeResponse getMyInfo() {
-		var context = SecurityContextHolder.getContext();
-		String employeeId = context.getAuthentication().getName();
-		Employee employee = employeeRepository.findById(Long.parseLong(employeeId))
+	@Cacheable(value = "employeeCache", key ="#userId")
+	public EmployeeResponse getMyInfo(Long userId) {
+		Employee employee = employeeRepository.findById(userId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		return employeeMapper.toEmployeeResponse(employee);
 	}
-
-	public EmployeeResponse updateUser(EmployeeUpdateRequest request) {
-		var context = SecurityContextHolder.getContext();
-		String employeeId = context.getAuthentication().getName();
-		Employee employee = employeeRepository.findById(Long.parseLong(employeeId))
+	@CachePut(value = "employeeCache", key = "#userId")
+	public EmployeeResponse updateUser(EmployeeUpdateRequest request, Long userId) {
+		Employee employee = employeeRepository.findById(userId)
 				.orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
 		if (request.getEmail() != null) employee.setEmail(request.getEmail());
 		if (request.getPhone() != null) employee.setPhone(request.getPhone());
@@ -122,7 +123,7 @@ public class EmployeeService implements IEmployeeService {
 		employee = employeeRepository.save(employee);
 		return employeeMapper.toEmployeeResponse(employee);
 	}
-
+	@CachePut(value = "employeeCache", key = "#id")
 	public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id) {
 		// Tìm employee
 		Employee employee = employeeRepository.findById(id)
@@ -210,7 +211,7 @@ public class EmployeeService implements IEmployeeService {
 							.findByPositionCode(ExcelUtils.getString(row.getCell(17)))
 							.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
 
-					String employeeCode = generateEmployeeCode(department, position);
+					String employeeCode = generateEmployeeCode(department);
 
 					String email = ExcelUtils.getString(row.getCell(1));
 					if(employeeRepository.existsByEmail(email)) {
@@ -266,5 +267,10 @@ public class EmployeeService implements IEmployeeService {
 				.isSuccess(true)
 				.build();
 	}
+	@CacheEvict(value = "employeeCache", key = "#id")
+	public void deleteEmployee(Long id) {
+		employeeRepository.deleteById(id);
+	}
+
 }
 

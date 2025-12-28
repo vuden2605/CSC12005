@@ -3,6 +3,7 @@ package com.csc12005.hr.Entity;
 import com.csc12005.hr.Enums.EducationLevel;
 import com.csc12005.hr.Enums.EmployeeRole;
 import com.csc12005.hr.Enums.MarialStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,6 +38,8 @@ public class Employee {
 	private Long baseSalary;
 	@Builder.Default
 	private Long totalPoints = 0L;
+	@Builder.Default
+	private Long allocatePoints = 0L;
 	private String password;
     private String bankAccount;
     private String address;

@@ -227,4 +227,141 @@ paySalary: async (month, year) => {
     }
   },
 
+  getMonthlyCandidatesPoints: async () => {
+    try {
+      const response = await api.get(
+        `/point-histories/monthly-candidates`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching monthly candidates points";
+      console.error("Error fetching monthly candidates points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  grantMonthlyPoints: async (candidateIds) => {
+    try {
+      const response = await api.post(
+        `/point-histories/monthly-grant`,
+        { candidateIds },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error granting monthly points";
+      console.error("Error granting monthly points:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  getPointExchangeRequests: async (params = {}) => {
+    try {
+      const response = await api.get(
+        `/point-exchanges/all`,
+        {
+          params,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching point exchange requests";
+      console.error("Error fetching point exchange requests:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  approvePointExchangeRequest: async (requestIds) => {
+    try {
+      const response = await api.put(
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "APPROVED"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error approving request";
+      console.error("Error approving request:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  completePointExchangeRequest: async (requestIds) => {
+    try {
+      const response = await api.put(
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "COMPLETED"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error completing request";
+      console.error("Error completing request:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  rejectPointExchangeRequest: async (requestIds) => {
+    try {
+      const response = await api.put(
+        `/point-exchanges/status`,
+        {
+          pointExchangeIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+          status: "REJECTED"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error rejecting request";
+      console.error("Error rejecting request:", errMsg);
+      throw new Error(errMsg);
+    }
+  }
+
+  
+
 };

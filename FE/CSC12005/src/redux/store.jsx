@@ -18,6 +18,19 @@ export const store = configureStore({
     user: persistedUserReducer,
     notifications: notificationReducer, // gộp cùng reducer
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/PAUSE",
+          "persist/FLUSH",
+          "persist/PURGE",
+          "persist/REGISTER",
+        ],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);

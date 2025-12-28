@@ -22,14 +22,25 @@ export const HRAdmin = () => {
           >
             Ứng viên
           </button>
+          <button
+            className={`tab ${activeTab === "bonus-points" ? "active" : ""}`}
+            onClick={() => setActiveTab("bonus-points")}
+          >
+            Quản lý điểm
+          </button>
         </div>
       </div>
 
       <div className="dashboard-content">
         {activeTab === "employees" ? (
           <EmployeeList/>
-        ) : (
+        ) : activeTab === "candidates" ? (
           <CandidateList/>
+        ) : (
+          <div className="bonus-points-placeholder">
+            <p>Quản lý điểm thưởng</p>
+            {/* TODO: Thêm component quản lý điểm ở đây */}
+          </div>
         )}
         
       </div>

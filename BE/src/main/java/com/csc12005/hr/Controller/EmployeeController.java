@@ -9,6 +9,7 @@ import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequestMapping("/employees")
 public class EmployeeController {
 	private final EmployeeService employeeService;
+	private final SecurityUtils securityUtils;
 	@PostMapping
 //	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")
 	public ApiResponse<EmployeeResponse> createEmployee(@RequestBody @Valid EmployeeCreationRequest employeeCreationRequest) {
@@ -37,8 +39,9 @@ public class EmployeeController {
 	}
     @GetMapping("/profile")
     public ApiResponse<EmployeeResponse> myInfo(){
+        Long userId = securityUtils.getCurrentUserId();
         return ApiResponse.<EmployeeResponse>builder()
-                .data(employeeService.getMyInfo())
+                .data(employeeService.getMyInfo(userId))
                 .build();
     }
     @GetMapping("/department/{departmentId}")
@@ -62,9 +65,10 @@ public class EmployeeController {
     }
     @PatchMapping
     public ApiResponse<EmployeeResponse> updateEmployee(@RequestBody @Valid EmployeeUpdateRequest request){
+        Long userId = securityUtils.getCurrentUserId();
         return ApiResponse.<EmployeeResponse>builder()
                 .message("Employee update successfully")
-                .data(employeeService.updateUser(request))
+                .data(employeeService.updateUser(request, userId))
                 .build();
     }
     @PatchMapping("/{id}")

@@ -67,47 +67,35 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
 
   const submit = async () => {
     if (!validate()) return;
-
+  
     try {
       setLoading(true);
-
-      // Tạo FormData để gửi file
-      const formData = new FormData();
-      formData.append("workDate", form.workDate);
-      formData.append("checkInNew", form.checkInNew);
-      formData.append("checkOutNew", form.checkOutNew);
-      formData.append("reason", form.reason);
-      if (file) {
-        formData.append("file", file);
-      }
-
-      // Gọi API để tạo timesheet request
-      await EmployeeService.createTimesheetRequest(formData);
-
-      // Gọi callback onSuccess nếu có để refresh danh sách
-      if (onSuccess) {
-        onSuccess();
-      }
-
+  
+      await EmployeeService.createRequest(
+        {
+          workDate: form.workDate,
+          checkInNew: form.checkInNew,
+          checkOutNew: form.checkOutNew,
+          reason: form.reason,
+          file: file,
+        },
+        "TimeSheet"
+      );
+  
+      if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
       console.error("Error creating timesheet request:", error);
-
+  
       let errorMessage = "Không thể tạo yêu cầu. Vui lòng thử lại.";
-
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.status === 413 || error.message.includes("Maximum upload size")) {
-        errorMessage = "File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.";
-      }
-
+      if (error.message) errorMessage = error.message;
+  
       setErrors({ ...errors, submit: errorMessage });
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="modal-overlay">

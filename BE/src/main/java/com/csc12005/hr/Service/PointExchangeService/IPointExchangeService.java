@@ -1,0 +1,21 @@
+package com.csc12005.hr.Service.PointExchangeService;
+
+import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.PointExchangeFilterRequest;
+import com.csc12005.hr.DTO.Request.PointExchangeRequest;
+import com.csc12005.hr.DTO.Request.UpdatePointExchangeStatusRequest;
+import com.csc12005.hr.DTO.Response.PointExchangeResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public interface IPointExchangeService {
+	PointExchangeResponse requestExchangePoints(PointExchangeRequest request);
+	List<PointExchangeResponse> updatePointExchangeStatus(
+			UpdatePointExchangeStatusRequest request
+	);
+	Page<PointExchangeResponse> myPointExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest);
+	Page<PointExchangeResponse> getAllExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest);
+}

@@ -17,6 +17,7 @@ import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.ProjectRepository;
 import com.csc12005.hr.Repository.TaskRepository;
 import com.csc12005.hr.Service.TaskService.ITaskService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ public class TaskService implements ITaskService {
 	private final ProjectRepository projectRepository;
 	private final EmployeeRepository employeeRepository;
 	private final TaskMapper taskMapper;
+	private final SecurityUtils securityUtils;
 	public TaskResponse createTask(TaskCreationRequest taskCreationRequest) {
 		Project project = projectRepository.findById(taskCreationRequest.getProjectId())
 				.orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
@@ -69,10 +71,7 @@ public class TaskService implements ITaskService {
 		return tasks.stream().map(taskMapper::toTaskResponse).toList();
 	}
 	public Page<TaskResponse> getMyTasks(TaskFilterRequest request, PageRequestDTO pageRequestDTO) {
-		var context = SecurityContextHolder.getContext();
-		long userId = Long.parseLong(context.getAuthentication().getName());
-		Employee employee = employeeRepository.findById(userId)
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		Long userId = securityUtils.getCurrentUserId();
 		Pageable pageable = pageRequestDTO.buildPageable();
 		Page<Task> tasks = taskRepository.myTasks(
 				request.getTaskName(),
@@ -80,7 +79,7 @@ public class TaskService implements ITaskService {
 				request.getTaskStatus(),
 				request.getStartDate(),
 				request.getDueDate(),
-				employee.getId(),
+				userId,
 				pageable
 		);
 		return tasks.map(taskMapper::toTaskResponse);
@@ -101,21 +100,16 @@ public class TaskService implements ITaskService {
 		return tasks.map(taskMapper::toTaskResponse);
 	}
 	public TaskResponse updateTaskStatus(TaskStatus newStatus, Long taskId) {
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
-		Employee employee = employeeRepository.findById(employeeId)
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		Long employeeId = securityUtils.getCurrentUserId();
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 		Employee leader = task.getProject().getLeader();
 		if(newStatus == TaskStatus.DONE) {
-			if(employee.getPosition().getRole() != EmployeeRole.MN || !leader.getId().equals(employeeId)) {
+			if(!securityUtils.hasRole("MN")|| !leader.getId().equals(employeeId)) {
 				throw new AppException(ErrorCode.FORBIDDEN);
 			}
 		}
 		task.setStatus(newStatus);
 		return taskMapper.toTaskResponse(taskRepository.save(task));
-
-
 	}
 }
