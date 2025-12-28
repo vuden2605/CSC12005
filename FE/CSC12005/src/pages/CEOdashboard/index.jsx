@@ -3,6 +3,7 @@ import EmployeeList from '../../components/EmployeeList';
 import CompanyActivityList from './CompanyActivityList';
 import ProjectCreateModal from './ProjectCreateModal';
 import { Button } from 'reactstrap';
+import './style.scss';
 
 const CEODashboard = () => {
 const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
