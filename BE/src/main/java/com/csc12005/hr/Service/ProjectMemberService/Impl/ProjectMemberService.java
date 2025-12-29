@@ -8,6 +8,7 @@ import com.csc12005.hr.DTO.Response.ProjectResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Project;
 import com.csc12005.hr.Entity.ProjectMember;
+import com.csc12005.hr.Enums.ProjectMemberRole;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.ProjectMemberMapper;
@@ -15,8 +16,13 @@ import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.ProjectMemberRepository;
 import com.csc12005.hr.Repository.ProjectRepository;
 import com.csc12005.hr.Service.ProjectMemberService.IProjectMemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,15 +31,33 @@ public class ProjectMemberService implements IProjectMemberService {
 	private final ProjectMemberMapper projectMemberMapper;
 	private final EmployeeRepository employeeRepository;
 	private final ProjectRepository projectRepository;
+	@Transactional
 	@Override
-	public ProjectMemberResponse createProjectMember(ProjectMemberCreationRequest projectMemberCreationRequest) {
-		Employee employee = employeeRepository.findById(projectMemberCreationRequest.getEmployeeId())
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		Project project = projectRepository.findById(projectMemberCreationRequest.getProjectId())
+	public List<ProjectMemberResponse> createProjectMember(Long projectId, List<ProjectMemberCreationRequest> requests) {
+		List<Long> employeeIds = requests.stream()
+				.map(ProjectMemberCreationRequest::getEmployeeId)
+				.toList();
+		List<Employee> employee = employeeRepository.findAllById(employeeIds);
+		if(employee.size() != employeeIds.size()) {
+			throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+		}
+		Project project = projectRepository.findById(projectId)
 				.orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
-		ProjectMember projectMember = projectMemberMapper.toProjectMember(projectMemberCreationRequest);
-		projectMember.setEmployee(employee);
-		projectMember.setProject(project);
-		return projectMemberMapper.toProjectMemberResponse(projectMemberRepository.save(projectMember));
+		Map<Long, ProjectMemberRole> roleMap = requests.stream()
+				.collect(Collectors.toMap(
+						ProjectMemberCreationRequest::getEmployeeId,
+						ProjectMemberCreationRequest::getRole
+				));
+		List<ProjectMember> projectMembers = employee.stream()
+				.map(emp -> {
+					return ProjectMember.builder()
+							.employee(emp)
+							.project(project)
+							.role(roleMap.get(emp.getId()))
+							.build();
+				}).toList();
+		List<ProjectMember> savedProjectMembers = projectMemberRepository.saveAll(projectMembers);
+		return savedProjectMembers.stream().map(projectMemberMapper::toProjectMemberResponse).collect(Collectors.toList());
+
 	}
 }

@@ -11,6 +11,7 @@ import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.RequestMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.RequestRepository;
+import com.csc12005.hr.Service.S3Service.IS3Service;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 public abstract class AbstractRequestProvider implements IRequestProvider{
 	private final SecurityUtils securityUtils;
 	private final EmployeeRepository employeeRepository;
-	private final S3Service s3Service;
+	private final IS3Service s3Service;
 	private final RequestMapper requestMapper;
 	private final RequestRepository requestRepository;
 	protected final ApplicationEventPublisher eventPublisher;

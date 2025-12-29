@@ -6,19 +6,22 @@ import com.csc12005.hr.DTO.Response.ProjectMemberResponse;
 import com.csc12005.hr.Service.ProjectMemberService.Impl.ProjectMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/project-members")
 public class ProjectMemberController {
 	private final ProjectMemberService projectMemberService;
-	@PostMapping("/project-member" )
-	public ApiResponse<ProjectMemberResponse> createProjectMember(@RequestBody @Valid ProjectMemberCreationRequest request) {
-		return ApiResponse.<ProjectMemberResponse>builder()
+	@PostMapping("/by-project/{projectId}")
+	public ApiResponse<List<ProjectMemberResponse>> createProjectMember(
+			@PathVariable("projectId") Long projectId,
+			@RequestBody @Valid List<ProjectMemberCreationRequest> requests) {
+		return ApiResponse.<List<ProjectMemberResponse>>builder()
 				.message("Create project member successfully")
-				.data(projectMemberService.createProjectMember(request))
+				.data(projectMemberService.createProjectMember(projectId, requests))
 				.build();
 	}
 }

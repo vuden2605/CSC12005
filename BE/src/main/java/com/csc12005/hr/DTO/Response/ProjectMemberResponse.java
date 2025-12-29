@@ -23,6 +23,7 @@ public class ProjectMemberResponse {
 	private LocalDate joinedDate;
 	private LocalDate leftDate;
 	private boolean isActive;
-	private EmployeeResponse employee;
-	private ProjectResponse project;
+	private Long employeeId;
+	private String employeeName;
+	private String employeeCode;
 }

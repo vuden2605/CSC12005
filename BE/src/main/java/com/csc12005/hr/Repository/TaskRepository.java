@@ -20,14 +20,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByProjectIdAndAssignedToId(Long projectId, Long userId);
 	@Query("""
 		SELECT t FROM Task t
-			WHERE (:taskName IS NULL OR t.taskName LIKE %:taskName%)
+			WHERE t.project.id = :projectId
+			AND (:taskName IS NULL OR t.taskName LIKE %:taskName%)
 			AND (:taskPriority IS NULL OR t.priority = :taskPriority)
 			AND (:taskStatus IS NULL OR t.status = :taskStatus)
 			AND (:startDate IS NULL OR t.startDate >= :startDate)
 			AND (:dueDate IS NULL OR t.dueDate <= :dueDate)
 			AND (t.assignedTo.id = :assignedToId)
 	""")
-	Page<Task> myTasks(
+	Page<Task> myTasksByProject(
+			@Param("projectId") Long projectId,
 			@Param("taskName") String taskName,
 			@Param("taskPriority") TaskPriority taskPriority,
 			@Param("taskStatus") TaskStatus taskStatus,

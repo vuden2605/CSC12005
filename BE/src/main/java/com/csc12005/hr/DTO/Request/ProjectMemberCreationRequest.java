@@ -18,5 +18,4 @@ public class ProjectMemberCreationRequest {
 	private ProjectMemberRole role;
 	private LocalDate joinedDate;
 	private Long employeeId;
-	private Long projectId;
 }

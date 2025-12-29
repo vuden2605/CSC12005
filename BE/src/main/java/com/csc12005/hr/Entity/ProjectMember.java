@@ -21,7 +21,8 @@ public class ProjectMember {
 	private Long id;
 	@Enumerated(EnumType.STRING)
 	private ProjectMemberRole role;
-	private LocalDate joinedDate;
+	@Builder.Default
+	private LocalDate joinedDate = LocalDate.now();
 	private LocalDate leftDate;
 	@Builder.Default
 	private boolean isActive = true;

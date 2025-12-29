@@ -36,4 +36,14 @@ public class ProjectService implements IProjectService {
 		Pageable pageable = pageRequestDTO.buildPageable();
 		return projectRepository.findAll(pageable).map(projectMapper::toProjectResponse);
 	}
+	public Page<ProjectResponse> getProjectsByDepartment(Long departmentId, PageRequestDTO pageRequestDTO) {
+		Department department = departmentRepository.findById(departmentId)
+				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+		Pageable pageable = pageRequestDTO.buildPageable();
+		return projectRepository.findByDepartmentId(departmentId, pageable).map(projectMapper::toProjectResponse);
+	}
+	public Page<ProjectResponse> getMyProjects(Long userId, PageRequestDTO pageRequestDTO) {
+		Pageable pageable = pageRequestDTO.buildPageable();
+		return projectRepository.getMyProjects(userId, pageable).map(projectMapper::toProjectResponse);
+	}
 }
