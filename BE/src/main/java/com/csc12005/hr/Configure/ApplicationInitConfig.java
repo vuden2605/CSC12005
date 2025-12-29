@@ -49,7 +49,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.employeeCode("admin")
 					.fullName("Administrator")
 					.email("vuden2605@gmail.com")
-					.password(passwordEncoder.encode("admin"))
+					.password(passwordEncoder.encode("123456"))
 					.position(positions.getFirst())
 					.build();
 			employeeRepository.save(admin);
@@ -59,7 +59,7 @@ public class ApplicationInitConfig implements CommandLineRunner {
 					.employeeCode("CEO")
 					.fullName("Chief Executive Officer")
 					.email("vuden2605@gmail.com")
-					.password(passwordEncoder.encode("CEO"))
+					.password(passwordEncoder.encode("123456"))
 					.position(positions.get(1))
 					.build();
 			employeeRepository.save(user);
