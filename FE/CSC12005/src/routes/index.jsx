@@ -13,6 +13,7 @@ import { InfoDetails } from "../pages/Employee/Darshboard/Information/InfoDetail
 import { SalaryInfo } from "../pages/Employee/Darshboard/Information/SalaryInfo";
 import { Requests } from "../pages/Employee/Darshboard/Requests";
 import { Activities } from "../pages/Employee/Darshboard/Activities";
+import CEODashboard from "../pages/CEODashboard";
 
 import { Attendance } from "../pages/Employee/Darshboard/Attendance";
 
@@ -59,6 +60,7 @@ export const routes = [
           },
         ],
       },
+      { path: "ceo-dashboard", element: <CEODashboard /> },
       { path: "hr/humans", element: <HRAdmin /> },
       { path: "manager", element: <Manager /> },
       { path: "hr/events", element: <EventPageHR /> },
