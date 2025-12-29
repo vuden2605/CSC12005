@@ -7,6 +7,7 @@ import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
 import com.csc12005.hr.Entity.PointHistory;
 import com.csc12005.hr.Service.PointHistoryService.Impl.PointHistoryService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PointHistoryController {
 	private final PointHistoryService pointHistoryService;
+	private final SecurityUtils securityUtils;
 	@GetMapping("/monthly-candidates")
 	public ApiResponse<List<EmployeeResponse>> getMonthlyCandidates() {
 		List<EmployeeResponse> candidates = pointHistoryService.getMonthlyCandidates();
@@ -38,7 +40,8 @@ public class PointHistoryController {
 	}
 	@GetMapping("/me")
 	public ApiResponse<List<PointHistoryResponse>> getMyPointHistory(PageRequestDTO pageRequestDTO) {
-		List<PointHistoryResponse> pointHistories = pointHistoryService.myPointsHistory(pageRequestDTO);
+		Long userId = securityUtils.getCurrentUserId();
+		List<PointHistoryResponse> pointHistories = pointHistoryService.myPointsHistory(userId, pageRequestDTO);
 		return ApiResponse.<List<PointHistoryResponse>>builder()
 				.data(pointHistories)
 				.message("Point history retrieved successfully")
@@ -46,7 +49,8 @@ public class PointHistoryController {
 	}
 	@GetMapping("/me/total-received/month")
 	public ApiResponse<Integer> getMyTotalReceivedPointsInMonth() {
-		int totalPoints = pointHistoryService.getTotalReceivedPointsInMonth();
+		Long userId = securityUtils.getCurrentUserId();
+		int totalPoints = pointHistoryService.getTotalReceivedPointsInMonth(userId);
 		return ApiResponse.<Integer>builder()
 				.data(totalPoints)
 				.message("Total received points in month retrieved successfully")
@@ -54,7 +58,8 @@ public class PointHistoryController {
 	}
 	@GetMapping("/me/total-received/year")
 	public ApiResponse<Integer> getMyTotalReceivedPointsInYear() {
-		int totalPoints = pointHistoryService.getTotalReceivedPointsInYear();
+		Long userId = securityUtils.getCurrentUserId();
+		int totalPoints = pointHistoryService.getTotalReceivedPointsInYear(userId);
 		return ApiResponse.<Integer>builder()
 				.data(totalPoints)
 				.message("Total received points in year retrieved successfully")
@@ -62,7 +67,8 @@ public class PointHistoryController {
 	}
 	@GetMapping("/me/total-points")
 	public ApiResponse<Integer> getMyCurrentTotalPoints() {
-		int totalPoints = pointHistoryService.getCurrentTotalPoints();
+		Long userId = securityUtils.getCurrentUserId();
+		int totalPoints = pointHistoryService.getCurrentTotalPoints(userId);
 		return ApiResponse.<Integer>builder()
 				.data(totalPoints)
 				.message("Current total points retrieved successfully")

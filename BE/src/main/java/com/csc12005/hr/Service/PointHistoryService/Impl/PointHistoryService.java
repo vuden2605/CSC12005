@@ -15,6 +15,8 @@ import com.csc12005.hr.Service.PointHistoryService.IPointHistoryService;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,6 @@ public class PointHistoryService implements IPointHistoryService {
 	private final PointHistoryRepository pointHistoryRepository;
 	private final EmployeeMapper employeeMapper;
 	private final EmployeeRepository employeeRepository;
-	private final SecurityUtils securityUtils;
 	private final PointHistoryMapper pointHistoryMapper;
 	@Override
 	public List<EmployeeResponse> getMonthlyCandidates() {
@@ -61,28 +62,22 @@ public class PointHistoryService implements IPointHistoryService {
 		pointHistoryRepository.saveAll(pointHistories);
 		employeeRepository.saveAll(candidates);
 	}
-
 	@Override
-	public int getTotalReceivedPointsInMonth() {
-		Long employeeId = securityUtils.getCurrentUserId();
-		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInMonth(employeeId);
+	public int getTotalReceivedPointsInMonth(Long userId) {
+
+		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInMonth(userId);
+	}
+	@Override
+	public int getTotalReceivedPointsInYear(Long userId) {
+		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInYear(userId);
+	}
+	@Override
+	public int getCurrentTotalPoints(Long userId) {
+		return pointHistoryRepository.sumPointChangeByEmployeeIdInMonth(userId);
 	}
 
-	@Override
-	public int getTotalReceivedPointsInYear() {
-		Long employeeId = securityUtils.getCurrentUserId();
-		return pointHistoryRepository.sumReceivedPointsByEmployeeIdInYear(employeeId);
-	}
-
-	@Override
-	public int getCurrentTotalPoints() {
-		Long employeeId = securityUtils.getCurrentUserId();
-		return pointHistoryRepository.sumPointChangeByEmployeeIdInMonth(employeeId);
-	}
-
-	public List<PointHistoryResponse> myPointsHistory(PageRequestDTO pageRequestDTO) {
+	public List<PointHistoryResponse> myPointsHistory(Long employeeId, PageRequestDTO pageRequestDTO) {
 		Pageable pageable = pageRequestDTO.buildPageable();
-		Long employeeId = securityUtils.getCurrentUserId();
 		List<PointHistory> pointHistories = pointHistoryRepository.findByEmployeeId(employeeId, pageable);
 		return pointHistories.stream()
 				.map(pointHistoryMapper::toPointHistoryResponse)

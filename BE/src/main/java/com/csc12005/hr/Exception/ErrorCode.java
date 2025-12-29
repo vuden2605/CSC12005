@@ -111,7 +111,8 @@ public enum ErrorCode {
 	CANNOT_REQUEST_PAST_DATE(40023, "Cannot request for past dates", HttpStatus.BAD_REQUEST),
 	CANNOT_REQUEST_FUTURE_DATE(40024, "Cannot request for future dates", HttpStatus.BAD_REQUEST),
 	WORK_DATE_TOO_OLD(40025, "Work date is too old", HttpStatus.BAD_REQUEST),
-
+	VIOLATE_DATA_INTEGRITY(40026,"Data integrity violation", HttpStatus.BAD_REQUEST),
+	DUPLICATE_PROJECT_MEMBER(8009, "Duplicate project member", HttpStatus.BAD_REQUEST),
 	//Point History
 
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);

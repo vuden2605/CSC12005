@@ -14,7 +14,11 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "project_members")
+@Table(
+	name = "project_members",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"employee_id", "project_id"})
+	})
 public class ProjectMember {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

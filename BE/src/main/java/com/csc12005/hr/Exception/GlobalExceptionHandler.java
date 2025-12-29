@@ -3,6 +3,7 @@ package com.csc12005.hr.Exception;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.hibernate.TypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
@@ -58,4 +59,17 @@ public class GlobalExceptionHandler {
 				.build();
 		return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
 	}
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(
+			DataIntegrityViolationException e) {
+
+		ApiResponse<?> response = ApiResponse.builder()
+				.code(ErrorCode.VIOLATE_DATA_INTEGRITY.getCode())
+				.message(ErrorCode.VIOLATE_DATA_INTEGRITY.getMessage())
+				.build();
+		return ResponseEntity
+				.status(ErrorCode.VIOLATE_DATA_INTEGRITY.getHttpStatus())
+				.body(response);
+	}
+
 }
