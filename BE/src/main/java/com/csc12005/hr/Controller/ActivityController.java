@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class ActivityController {
 	private final ActivityService activityService;
 	private final ActivityDetailService activityDetailService;
-	@PostMapping
-	public ApiResponse<ActivityResponse> createActivity(@RequestBody @Valid ActivityCreationRequest request) {
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ApiResponse<ActivityResponse> createActivity(@ModelAttribute @Valid ActivityCreationRequest request) {
 		return ApiResponse.<ActivityResponse>builder()
 				.message("Create activity successfully")
 				.data(activityService.createActivity(request))

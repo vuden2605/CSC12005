@@ -11,6 +11,7 @@ import com.csc12005.hr.Repository.RequestRepository;
 import com.csc12005.hr.Service.RequestService.IRequestService;
 import com.csc12005.hr.Service.RequestService.Provider.IRequestProvider;
 import com.csc12005.hr.Service.RequestService.Provider.RequestProviderFactory;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class RequestService implements IRequestService {
 	private final RequestRepository requestRepository;
 	private final RequestMapper requestMapper;
 	private final RequestProviderFactory requestProviderFactory;
+	private final SecurityUtils securityUtils;
 
 	@Override
 	public RequestResponse createRequest(RequestCreationRequest request, RequestType requestType) {
@@ -50,8 +52,7 @@ public class RequestService implements IRequestService {
 	@Override
 	public Page<RequestResponse> getRequestByManager(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
 		Pageable pageable = pageRequestDTO.buildPageable();
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Long employeeId = securityUtils.getCurrentUserId();
 		Page<Request> requests = requestRepository.getRequestByManager(
 					pageable,
 					requestFilter.getStatus(),
@@ -66,8 +67,7 @@ public class RequestService implements IRequestService {
 	@Override
 	public Page<RequestResponse> myRequests(PageRequestDTO pageRequestDTO, RequestFilter requestFilter) {
 		Pageable pageable = pageRequestDTO.buildPageable();
-		var context = SecurityContextHolder.getContext();
-		long employeeId = Long.parseLong(context.getAuthentication().getName());
+		Long employeeId = securityUtils.getCurrentUserId();
 		Page<Request> requests = requestRepository.myRequests(
 				pageable,
 				requestFilter.getStatus(),

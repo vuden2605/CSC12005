@@ -31,6 +31,5 @@ public class ActivityDetail {
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
 	private Long activityRank;
-	@Builder.Default
-	private Boolean isSuccess = false;
+	private Boolean isSuccess;
 }

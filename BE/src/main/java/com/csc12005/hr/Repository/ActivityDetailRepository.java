@@ -39,9 +39,9 @@ public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, 
     JOIN ad.employee e
     JOIN ad.activity a
     WHERE a.id = :activityId
-    AND (:employeeName IS NULL 
+    AND (:employeeName IS NULL
          OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :employeeName, '%')))
-    AND (:isSuccess IS NULL 
+    AND (:isSuccess IS NULL
          OR ad.isSuccess = :isSuccess)
 """)
     Page<ActivityDetail> findActivity(

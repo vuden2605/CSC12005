@@ -34,7 +34,18 @@ public enum ErrorCode {
 	REQUIRED_WORK_DATE(4014, "Work date is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_START_DATE(4015, "Start date is required", HttpStatus.BAD_REQUEST),
 	REQUIRED_END_DATE(4016, "End date is required", HttpStatus.BAD_REQUEST),
-
+	REQUIRED_ACTIVITY_NAME(4017, "Activity name is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_ACTIVITY_TYPE(4018, "Activity type is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_REGISTRATION_DEADLINE(4019, "Registration deadline is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_MAX_PARTICIPANTS(4020, "Maximum number of participants is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_LOCATION(4021, "Location is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_ORGANIZER(4022, "Organizer is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_CONTACT_PHONE(4023, "Contact phone is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_CONTACT_EMAIL(4024, "Contact email is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_START_TIME(4025, "Start time is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_END_TIME(4026, "End time is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_ACTIVITY_ADDRESS(4027, "Activity address is required", HttpStatus.BAD_REQUEST),
+	REQUIRED_ACTIVITY_POINTS(4028, "Activity points are required", HttpStatus.BAD_REQUEST),
     //Authentication
 	AUTHENTICATION_FAILED(5001, "Authentication failed", HttpStatus.UNAUTHORIZED),
 	USERNAME_NOT_FOUND(5002, "Username not found", HttpStatus.NOT_FOUND),
@@ -113,8 +124,14 @@ public enum ErrorCode {
 	WORK_DATE_TOO_OLD(40025, "Work date is too old", HttpStatus.BAD_REQUEST),
 	VIOLATE_DATA_INTEGRITY(40026,"Data integrity violation", HttpStatus.BAD_REQUEST),
 	DUPLICATE_PROJECT_MEMBER(8009, "Duplicate project member", HttpStatus.BAD_REQUEST),
+	INVALID_DATETIME(40027, "Invalid date time format", HttpStatus.BAD_REQUEST),
 	//Point History
-
+	INVALID_ENUM(40013,"Invalid enum value", HttpStatus.BAD_REQUEST),
+	IMPORT_INVALID_BOOLEAN_FORMAT(40014,"Invalid boolean format", HttpStatus.BAD_REQUEST),
+	ALREADY_REGISTERED_ACTIVITY(4055,"Employee has already registered for this activity",HttpStatus.BAD_REQUEST),
+	ACTIVITY_RESULT_ALREADY_EXISTS(4056,"Activity result for this participant already exists",HttpStatus.BAD_REQUEST),
+	CANNOT_CANCEL_ACTIVITY(4057,"Cannot cancel this activity",HttpStatus.BAD_REQUEST),
+	CANNOT_REGISTER_ACTIVITY(4057,"Cannot register for this activity",HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 	private final Integer code;
 	private final String message;

@@ -33,24 +33,26 @@ public class SalaryService implements ISalaryService {
     private final SalaryRepository salaryRepository;
     private final EmployeeRepository employeeRepository;
     private final TimeSheetRepository timeSheetRepository;
+    @Transactional
     public void generatePayroll( Long month, Long year)
     {
         LocalDate today = LocalDate.now();
         int currentDay = today.getDayOfMonth();
         List<Salary> salaries=salaryRepository.findAll();
-        // vấn đáp mở lại, kiểu tra phải ngày phát lương k
-        if (currentDay!=15) throw new AppException(ErrorCode.PAYROLL_NOT_PAYMENT_DAY);
-        // tháng này đã xuất bảng lương chưa
+
+        if (currentDay != 30 && currentDay != 31)
+            throw new AppException(ErrorCode.PAYROLL_NOT_PAYMENT_DAY);
+
         boolean existed = salaryRepository.existsByMonthAndYear(month, year);
 
         if (existed) {
             throw new AppException(ErrorCode.PAYROLL_ALREADY_GENERATED);
         }
-        // lấy base lương theo giờ
+
         List<Employee> employees= employeeRepository.findAll();
         for(Employee emp:employees){
             // lấy base salary theo giờ
-            double  hourlySalary= emp.getBaseSalary()/(22*8);
+            double  hourlySalary = (double) emp.getBaseSalary() /(22*8);
             // Lấy time sheet
             List<TimeSheet> timeSheets =
                     timeSheetRepository.findApprovedByEmployeeAndMonth(
@@ -69,8 +71,7 @@ public class SalaryService implements ISalaryService {
                                 ts.getCheckIn(),
                                 ts.getCheckOut()
                         );
-                        double hours = duration.toMinutes() / 60.0;
-                        return hours;
+	                    return duration.toMinutes() / 60.0;
                     })
                     .sum();
             double totalPay = totalWorkedHours * hourlySalary;
@@ -107,14 +108,13 @@ public class SalaryService implements ISalaryService {
     }
     @Transactional
     public void paySalary(Long month, Long year) {
-        // kiểm tra có bảng lương tháng này chưa
         boolean exists = salaryRepository.existsByMonthAndYear(month, year);
         if (!exists) {
             throw new AppException(ErrorCode.PAYROLL_NOT_GENERATED);
         }
         int updated = salaryRepository.paySalary(month, year);
-// tháng này đã thanh toán lương
         if (updated == 0) {
             throw new AppException(ErrorCode.PAYROLL_ALREADY_PAID);
-        }    }
+        }
+	}
 }

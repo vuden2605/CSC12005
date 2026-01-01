@@ -12,10 +12,11 @@ import com.csc12005.hr.Mapper.ActivityMapper;
 import com.csc12005.hr.Repository.ActivityDetailRepository;
 import com.csc12005.hr.Repository.ActivityRepository;
 import com.csc12005.hr.Service.ActivityService.IActivityService;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,8 @@ public class ActivityService implements IActivityService {
 	private final ActivityMapper activityMapper;
     private final ActivityDetailRepository activityDetailRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SecurityUtils securityUtils;
+    private final S3Service s3Service;
     @Transactional
 	@Override
 	public ActivityResponse createActivity(ActivityCreationRequest activityCreationRequest) {
@@ -37,7 +40,13 @@ public class ActivityService implements IActivityService {
         if (!LocalDate.now().isBefore(sevenDaysAgo)) {
             throw new AppException(ErrorCode.START_DATE_TOO_RECENT);
         }
-		Activity activity = activityMapper.toActivity(activityCreationRequest);
+	    Activity activity = activityMapper.toActivity(activityCreationRequest);
+        if (activityCreationRequest.getAttachment() != null) {
+	        String attachmentUrl = s3Service.uploadFile(activityCreationRequest.getAttachment());
+	        activity.setAttachmentUrl(attachmentUrl);
+        }
+        String imageUrl = s3Service.uploadFile(activityCreationRequest.getImage());
+		activity.setImageUrl(imageUrl);
 		eventPublisher.publishEvent(ActivityCreated.builder()
 			.activityId(activity.getId())
 			.activityName(activity.getActivityName())
@@ -47,7 +56,7 @@ public class ActivityService implements IActivityService {
 
 	@Override
 	public Page<ActivityDetailResponse> getActivities(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO) {
-		long employeeId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
+		Long employeeId = securityUtils.getCurrentUserId();
 		return activityRepository.getActivities(
 				employeeId,
 				activityFilterRequest.getActivityName(),
@@ -77,7 +86,7 @@ public class ActivityService implements IActivityService {
             Boolean isSuccess,
             PageRequestDTO pageRequestDTO
     ) {
-        // Check activity tồn tại
+
         activityRepository.findById(activityId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
 
@@ -99,8 +108,5 @@ public class ActivityService implements IActivityService {
                 .isSuccess(ad.getIsSuccess())
                 .build();
     }
-
-
-
 
 }

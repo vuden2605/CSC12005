@@ -1,21 +1,16 @@
 package com.csc12005.hr.Exception;
 
 import com.csc12005.hr.DTO.Response.ApiResponse;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.hibernate.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.format.DateTimeParseException;
-import java.util.Map;
 import java.util.Objects;
 
 @ControllerAdvice
@@ -42,7 +37,14 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
 		String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
-		ErrorCode error = ErrorCode.valueOf(errorMessage);
+		ErrorCode error;
+		try {
+			error = ErrorCode.valueOf(errorMessage);
+		}
+		catch (IllegalArgumentException ex) {
+			error = ErrorCode.INVALID_INPUT;
+		}
+
 		ApiResponse<?> response = ApiResponse.builder()
 				.code(error.getCode())
 				.message(error.getMessage())
@@ -71,5 +73,36 @@ public class GlobalExceptionHandler {
 				.status(ErrorCode.VIOLATE_DATA_INTEGRITY.getHttpStatus())
 				.body(response);
 	}
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ApiResponse<?>> handleTypeMismatch(
+			MethodArgumentTypeMismatchException e) {
+
+		if (e.getCause() instanceof DateTimeParseException) {
+
+			ApiResponse<?> response = ApiResponse.builder()
+					.code(ErrorCode.INVALID_DATETIME.getCode())
+					.message("Invalid date-time format")
+					.build();
+
+			return ResponseEntity
+					.status(ErrorCode.INVALID_DATETIME.getHttpStatus())
+					.body(response);
+		}
+
+		if (e.getRequiredType() != null && e.getRequiredType().isEnum()) {
+
+			ApiResponse<?> response = ApiResponse.builder()
+					.code(ErrorCode.INVALID_ENUM.getCode())
+					.message("Invalid value for enum " + e.getRequiredType().getSimpleName())
+					.build();
+
+			return ResponseEntity
+					.status(ErrorCode.INVALID_ENUM.getHttpStatus())
+					.body(response);
+		}
+
+		throw e;
+	}
+
 
 }

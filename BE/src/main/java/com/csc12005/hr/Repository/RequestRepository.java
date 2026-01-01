@@ -1,8 +1,7 @@
 package com.csc12005.hr.Repository;
 
-import com.csc12005.hr.DTO.Request.RequestFilter;
-import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Entity.Request;
+import com.csc12005.hr.Enums.RequestStatus;
 import com.csc12005.hr.Enums.RequestType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,7 +25,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
       AND (r.employee.manager.id = :employeeId)
 """)
 	Page<Request> getRequestByManager(Pageable pageable,
-	                         @Param("status") String status,
+	                         @Param("status") RequestStatus status,
 	                         @Param("requestType") RequestType requestType,
 	                         @Param("startDate") LocalDateTime startDate,
 	                         @Param("endDate") LocalDateTime endDate,
@@ -42,7 +40,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
       AND r.employee.id = :employeeId
 """)
 	Page<Request> myRequests(Pageable pageable,
-	                         @Param("status") String status,
+	                         @Param("status") RequestStatus status,
 	                         @Param("requestType") RequestType requestType,
 	                         @Param("startDate") LocalDateTime startDate,
 	                         @Param("endDate") LocalDateTime endDate,

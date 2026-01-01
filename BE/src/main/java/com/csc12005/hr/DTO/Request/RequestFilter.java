@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import com.csc12005.hr.Enums.RequestStatus;
 import com.csc12005.hr.Enums.RequestType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,5 @@ public class RequestFilter {
 	private LocalDateTime startDate;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime endDate;
-	private String status;
+	private RequestStatus status;
 }
