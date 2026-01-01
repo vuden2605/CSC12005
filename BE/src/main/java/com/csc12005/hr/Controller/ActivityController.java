@@ -35,7 +35,6 @@ public class ActivityController {
 		return ApiResponse.<Page<ActivityDetailResponse>>builder()
 				.message("Get activities successfully")
 				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
-
 				.build();
 	}
 	@PostMapping("/{activityId}/details")

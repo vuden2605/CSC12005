@@ -73,7 +73,7 @@ public class ActivityResponse {
 
 	private Boolean isActive;
 
-	private String attachments;
+	private String attachmentUrl;
 
 	private String notes;
 
