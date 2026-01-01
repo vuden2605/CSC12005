@@ -40,6 +40,7 @@ export const Header = () => {
     MN: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý yêu cầu", path: "/manager/requests" },
+      { label: "Quản lý dự án", path: "/manager/projects" },
       { label: "Quản lý phòng ban", path: "/manager/department" },
     ],
   };

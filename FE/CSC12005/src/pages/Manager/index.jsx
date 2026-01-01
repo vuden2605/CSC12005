@@ -35,7 +35,6 @@ export const Manager = () => {
   useEffect(() => {
     if (currentUser?.id) fetchEmployees(currentPage);
   }, [currentUser, currentPage]);
-
   if (!employeesPage) return <div>Đang tải...</div>;
 
   const employees = employeesPage.content;
