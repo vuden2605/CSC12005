@@ -10,8 +10,10 @@ import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
+import com.csc12005.hr.Enums.ContractType;
 import com.csc12005.hr.Enums.EducationLevel;
 import com.csc12005.hr.Enums.MaritalStatus;
+import com.csc12005.hr.Enums.WorkSchedule;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.EmployeeMapper;
@@ -38,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -182,6 +185,7 @@ public class EmployeeService implements IEmployeeService {
 		int successCount = 0;
 		List<ImportError> importErrors = new ArrayList<>();
 		List<Employee> employees = new ArrayList<>();
+		Long currentUserId = securityUtils.getCurrentUserId();
 
 		try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
 
@@ -228,14 +232,29 @@ public class EmployeeService implements IEmployeeService {
 							.major(ExcelUtils.getString(row.getCell(13)))
 							.university(ExcelUtils.getString(row.getCell(14)))
 							.gender(ExcelUtils.getString(row.getCell(15)))
+							.hireDate(ExcelUtils.getLocalDate(row.getCell(18)))
+							.degree(ExcelUtils.getString(row.getCell(19)))
+							.graduationYear(Objects.requireNonNull(ExcelUtils.getLong(row.getCell(20))).intValue())
+							.nationality(ExcelUtils.getString(row.getCell(21)))
+							.placeOfBirth(ExcelUtils.getString(row.getCell(22)))
+							.religion(ExcelUtils.getString(row.getCell(23)))
+							.emergencyContactName(ExcelUtils.getString(row.getCell(24)))
+							.emergencyContactPhone(ExcelUtils.getString(row.getCell(25)))
+							.emergencyContactRelationship(ExcelUtils.getString(row.getCell(26)))
+							.contractStartDate(ExcelUtils.getLocalDate(row.getCell(27)))
+							.contractEndDate(ExcelUtils.getLocalDate(row.getCell(28)))
+							.contractType(ContractType.valueOf(ExcelUtils.getString(row.getCell(29))))
+							.workSchedule(WorkSchedule.valueOf(ExcelUtils.getString(row.getCell(30))))
+							.bankBranch(ExcelUtils.getString(row.getCell(31)))
 							.employeeCode(employeeCode)
 							.department(department)
 							.position(position)
 							.password(passwordEncoder.encode(employeeCode))
 							.build();
+					employee.setCreatedBy(employeeRepository.getReferenceById(currentUserId));
+					employee.setUpdatedBy(employeeRepository.getReferenceById(currentUserId));
 					employees.add(employee);
 					successCount++;
-
 				} catch (Exception ex) {
 					importErrors.add(
 							ImportError.builder()
