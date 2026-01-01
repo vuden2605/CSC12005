@@ -11,7 +11,7 @@ import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.Position;
 import com.csc12005.hr.Enums.EducationLevel;
-import com.csc12005.hr.Enums.MarialStatus;
+import com.csc12005.hr.Enums.MaritalStatus;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.EmployeeMapper;
@@ -22,26 +22,19 @@ import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.ExcelUtils;
 import com.csc12005.hr.Utils.SecurityUtils;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.Manager;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.mapstruct.Mapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +223,7 @@ public class EmployeeService implements IEmployeeService {
 							.bankAccount(ExcelUtils.getString(row.getCell(8)))
 							.baseSalary(ExcelUtils.getLong(row.getCell(9)))
 							.permanentAddress(ExcelUtils.getString(row.getCell(10)))
-							.marialStatus(MarialStatus.valueOf(ExcelUtils.getString(row.getCell(11))))
+							.maritalStatus(MaritalStatus.valueOf(ExcelUtils.getString(row.getCell(11))))
 							.educationLevel(EducationLevel.valueOf(ExcelUtils.getString(row.getCell(12))))
 							.major(ExcelUtils.getString(row.getCell(13)))
 							.university(ExcelUtils.getString(row.getCell(14)))
