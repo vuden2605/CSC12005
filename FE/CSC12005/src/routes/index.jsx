@@ -43,6 +43,7 @@ import { HRPayRoll } from "../pages/HRPayRoll";
 import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
 
 import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
+import { ManagerProjects } from "../pages/Manager/ManagerProjects";
 
 
 export const routes = [
@@ -62,6 +63,7 @@ export const routes = [
 
       { path: "manager", element: <Manager /> },
       { path: "manager/department", element: <Manager /> },
+      { path: "manager/projects", element: <ManagerProjects /> },
       { path: "manager/requests", element: <RequestManager /> },
       { path: "manager/requests/:id", element: <RequestManager /> },
 
