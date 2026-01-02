@@ -14,6 +14,7 @@ import com.csc12005.hr.Mapper.TimeSheetMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Service.TimeSheetService.ITimeSheetService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class TimeSheetService implements ITimeSheetService {
 	private final TimeSheetRepository timeSheetRepository;
 	private final TimeSheetMapper timeSheetMapper;
 	private final EmployeeRepository employeeRepository;
+	private final SecurityUtils securityUtils;
 	private static final int COL_EMPLOYEE_ID = 0;
 	private static final int COL_WORK_DATE = 1;
 	private static final int COL_CHECK_IN = 2;
@@ -45,6 +47,7 @@ public class TimeSheetService implements ITimeSheetService {
 
 	@Transactional
 	public ImportResult importTimeSheetExcel(TimeSheetCreationRequest timeSheetCreationRequest) {
+		Long currentEmployeeId = securityUtils.getCurrentUserId();
 		MultipartFile file = timeSheetCreationRequest.getMultipartFile();
 		List<TimeSheet> timeSheets = new ArrayList<>();
 		List<ImportError> importErrors = new ArrayList<>();
@@ -58,6 +61,8 @@ public class TimeSheetService implements ITimeSheetService {
 				try {
 					TimeSheet timeSheet = parseTimeSheetRow(row);
 					timeSheet.calculateAll();
+					timeSheet.setCreatedBy(employeeRepository.getReferenceById(currentEmployeeId));
+					timeSheet.setUpdatedBy(employeeRepository.getReferenceById(currentEmployeeId));
 					timeSheets.add(timeSheet);
 				} catch (Exception ex) {
 					importErrors.add(buildImportError(rowNum, ex));

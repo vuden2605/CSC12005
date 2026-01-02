@@ -25,7 +25,8 @@ public class RequestResponse {
 	private String reason;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private EmployeeResponse employee;
+	private String employeeName;
+	private String employeeCode;
 	private LocalTime checkInNew;
 	private LocalTime checkOutNew;
 	private LocalDate workDate;
