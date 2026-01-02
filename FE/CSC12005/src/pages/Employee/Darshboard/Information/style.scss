@@ -69,49 +69,34 @@
     }
   
     
-  
-    // Content Section
-    .content-section {
-      display: grid;
-      grid-template-columns: 250px 1fr;
-      gap: 1.5rem;
-  
-      // Sidebar
-      .sidebar {
-        .sidebar-title {
-          font-size: 12px;
-          color: #6b7280;
-          margin-bottom: 1rem;
-          font-weight: 500;
-        }
-  
+      .tabs-bar {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+
         .action-button {
-          display: block;
-          width: 200px;
-          padding: 0.875rem 1rem;
-          border-radius: 8px;
+          padding: 0.75rem 1.5rem;
+          border-radius: 999px;
           border: none;
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          margin-bottom: 0.5rem;
-          text-align: left;
           text-decoration: none;
           transition: all 0.2s ease;
-  
+
           &.yellow {
             background-color: #fbbf24;
             color: #1f2937;
-  
+
             &:hover {
               background-color: #f59e0b;
             }
-  
+
             &.active {
               background-color: #f59e0b;
             }
           }
-  
+
           &.gray {
             background-color: #e5e7eb;
             color: #4b5563;
@@ -127,31 +112,28 @@
           }
         }
       }
-  
-      // Main Content
-      .main-content {
-        background-color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
-        .content-placeholder {
-          text-align: left;
-          padding: 3rem;
-          color: #6b7280;
+
+      // Content Section
+      .content-section {
+        .main-content {
+          background-color: white;
+          border-radius: 12px;
+          padding: 1.5rem 1rem 1rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+          .content-placeholder {
+            text-align: left;
+            padding: 1.5rem 1rem 1rem;
+            color: #6b7280;
+          }
         }
       }
-    }
   }
   
   // Responsive Design
   @media (max-width: 1024px) {
     .information-page {
       padding: 1rem;
-  
-      .content-section {
-        grid-template-columns: 1fr;
-      }
     }
   }
   

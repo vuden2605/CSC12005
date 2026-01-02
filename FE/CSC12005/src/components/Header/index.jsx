@@ -146,7 +146,15 @@ export const Header = () => {
             onClick={() => setOpenDropdown(!openDropdown)}
           >
             <div className="avatar">
-              <User size={20} />
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt="Avatar"
+                  className="avatar-image"
+                />
+              ) : (
+                <User size={20} />
+              )}
             </div>
             <div className="UserName">{user?.fullName}</div>
           </button>

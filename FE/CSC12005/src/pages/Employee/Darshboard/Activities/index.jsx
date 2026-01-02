@@ -11,6 +11,9 @@ export const Activities = () => {
   const [endDate, setEndDate] = useState("");
   const [isRegisteredChecked, setIsRegisteredChecked] = useState(false);
   const [isUnregisteredChecked, setIsUnregisteredChecked] = useState(false);
+  const [isMandatoryChecked, setIsMandatoryChecked] = useState(false);
+  const [isOptionalChecked, setIsOptionalChecked] = useState(false);
+  const [activityStatus, setActivityStatus] = useState("");
 
   // API data states
   const [activitiesData, setActivitiesData] = useState([]);
@@ -85,6 +88,26 @@ export const Activities = () => {
       }
       // If both are checked or both are unchecked, show all
 
+      // Apply frontend filtering for mandatory status
+      if (isMandatoryChecked && !isOptionalChecked) {
+        // Only mandatory activities
+        normalizedActivities = normalizedActivities.filter(
+          (item) => item.isMandatory === true
+        );
+      } else if (!isMandatoryChecked && isOptionalChecked) {
+        // Only optional (non-mandatory) activities
+        normalizedActivities = normalizedActivities.filter(
+          (item) => item.isMandatory === false
+        );
+      }
+
+      // Apply frontend filtering for activity status
+      if (activityStatus) {
+        normalizedActivities = normalizedActivities.filter(
+          (item) => item.activityStatus === activityStatus
+        );
+      }
+
       setActivitiesData(normalizedActivities);
 
       // Set pagination nếu có
@@ -114,6 +137,9 @@ export const Activities = () => {
     endDate,
     isRegisteredChecked,
     isUnregisteredChecked,
+    isMandatoryChecked,
+    isOptionalChecked,
+    activityStatus,
     sortBy,
     sortDirection,
   ]);
@@ -134,6 +160,9 @@ export const Activities = () => {
     endDate,
     isRegisteredChecked,
     isUnregisteredChecked,
+    isMandatoryChecked,
+    isOptionalChecked,
+    activityStatus,
   ]);
 
   // Handle search
@@ -275,6 +304,46 @@ export const Activities = () => {
             </div>
           </div>
 
+          <div className="filter-group">
+            <span className="filter-label">Bắt buộc tham gia:</span>
+            <div className="checkbox-row">
+              <label className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={isMandatoryChecked}
+                  onChange={() => setIsMandatoryChecked(!isMandatoryChecked)}
+                />
+                Bắt buộc
+              </label>
+              <label className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={isOptionalChecked}
+                  onChange={() => setIsOptionalChecked(!isOptionalChecked)}
+                />
+                Không bắt buộc
+              </label>
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="activityStatus">Trạng thái hoạt động:</label>
+            <select
+              id="activityStatus"
+              value={activityStatus}
+              onChange={(e) => setActivityStatus(e.target.value)}
+              className="input-field"
+            >
+              <option value="">Tất cả</option>
+              <option value="ONGOING">Đang diễn ra</option>
+              <option value="OPEN_FOR_REGISTRATION">Đang mở đăng ký</option>
+              <option value="REGISTRATION_CLOSED">Đã đóng đăng ký</option>
+              <option value="COMPLETED">Đã hoàn thành</option>
+              <option value="CANCELLED">Đã hủy</option>
+              <option value="DRAFT">Nháp</option>
+            </select>
+          </div>
+
           <button type="submit" className="search-button">
             Tìm kiếm
           </button>
@@ -287,6 +356,9 @@ export const Activities = () => {
               setEndDate("");
               setIsRegisteredChecked(false);
               setIsUnregisteredChecked(false);
+              setIsMandatoryChecked(false);
+              setIsOptionalChecked(false);
+              setActivityStatus("");
               fetchActivities(0);
             }}
           >
@@ -345,16 +417,19 @@ export const Activities = () => {
                         {formatDate(activity.endDate) || "N/A"}
                       </td>
                       <td className="point-cell">
-                        {activity.points ??
+                        {activity.basePoints ??
+                          activity.points ??
                           activity.point ??
                           activity.reward ??
                           0}
                       </td>
                       <td className="quantity-cell">
-                        {activity.count ||
-                          activity.totalSlot ||
-                          activity.slots ||
-                          "N/A"}
+                        {
+                          (activity.maxParticipants ??
+                            activity.count ??
+                            activity.totalSlot ??
+                            activity.slots) ?? "N/A"
+                        }
                       </td>
                       <td className="registered-count-cell">
                         {activity.registeredCount || 0}

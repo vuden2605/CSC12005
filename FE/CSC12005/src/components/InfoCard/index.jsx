@@ -19,25 +19,32 @@ function InfoCard({employee}){
     try {
       setLoading(true);
       const data = await EmployeeService.getCurrentUser();
-      
+
       // Map dữ liệu từ API
       // Nếu position là object, extract positionName; nếu là string thì dùng trực tiếp
       let role = "N/A";
-      if (typeof data.position === 'object' && data.position !== null) {
-        role = data.position.positionName || data.position.name || "N/A";
-      } else if (typeof data.position === 'string') {
+      if (typeof data.position === "object" && data.position !== null) {
+        role =
+          data.position.positionName || data.position.name || "N/A";
+      } else if (typeof data.position === "string") {
         role = data.position;
       } else if (data.role) {
         role = data.role;
       }
-      
+
       const mappedData = {
         name: data.fullName || data.name || "N/A",
         role: role,
-        avatar: data.avatar || "👨‍💼",
+        // Ưu tiên dùng avatarUrl nếu có, fallback emoji
+        avatarUrl: data.avatarUrl || null,
+        avatar: "👨‍💼",
         email: data.email,
         phone: data.phone,
-        department: typeof data.department === 'object' ? data.department?.name : data.department
+        // Ưu tiên departmentName nếu là object
+        department:
+          typeof data.department === "object" && data.department
+            ? data.department.departmentName || data.department.name
+            : data.department,
       };
       
       setEmployeeData(mappedData);
@@ -76,7 +83,17 @@ function InfoCard({employee}){
     <div className="profile-header">
       <div className="header-content">
         <div className="profile-avatar-large">
-          <span className="avatar-emoji">{employeeData?.avatar || "👨‍💼"}</span>
+          {employeeData?.avatarUrl ? (
+            <img
+              src={employeeData.avatarUrl}
+              alt="Avatar"
+              className="avatar-image"
+            />
+          ) : (
+            <span className="avatar-emoji">
+              {employeeData?.avatar || "👨‍💼"}
+            </span>
+          )}
         </div>
         <div className="profile-info">
           <h1>{employeeData?.name || "N/A"}</h1>
