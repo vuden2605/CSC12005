@@ -2,14 +2,12 @@ package com.csc12005.hr.Service.TimeSheetService.Impl;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.TimeSheetCreationRequest;
-import com.csc12005.hr.DTO.Request.TimeSheetRequestCreationRequest;
 import com.csc12005.hr.DTO.Response.ImportError;
 import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.DTO.Response.TimeSheetResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.TimeSheet;
-import com.csc12005.hr.Enums.RequestStatus;
-import com.csc12005.hr.Enums.TimeSheetStatus;
+import com.csc12005.hr.Enums.TimeSheetType;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.TimeSheetMapper;
@@ -23,12 +21,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -61,6 +57,7 @@ public class TimeSheetService implements ITimeSheetService {
 
 				try {
 					TimeSheet timeSheet = parseTimeSheetRow(row);
+					timeSheet.calculateAll();
 					timeSheets.add(timeSheet);
 				} catch (Exception ex) {
 					importErrors.add(buildImportError(rowNum, ex));
@@ -83,13 +80,11 @@ public class TimeSheetService implements ITimeSheetService {
 		LocalTime checkIn = parseLocalTime(row.getCell(COL_CHECK_IN));
 		LocalTime checkOut = parseLocalTime(row.getCell(COL_CHECK_OUT));
 		validateCheckInCheckOut(checkIn, checkOut);
-		TimeSheetStatus status = determineTimeSheetStatus(checkIn, checkOut);
 		return TimeSheet.builder()
 				.employee(employee)
 				.workDate(workDate)
 				.checkIn(checkIn)
 				.checkOut(checkOut)
-				.status(status)
 				.build();
 	}
 	private void validateCheckInCheckOut(LocalTime checkIn, LocalTime checkOut) {
@@ -146,14 +141,14 @@ public class TimeSheetService implements ITimeSheetService {
 		}
 	}
 
-	private TimeSheetStatus parseStatus(Cell cell) {
+	private TimeSheetType parseStatus(Cell cell) {
 		if (cell == null) {
 			throw new IllegalArgumentException("Trạng thái không được để trống");
 		}
 		try {
 			String statusText = cell.getStringCellValue().trim().toUpperCase();
 			log.info("Parsing status: {}", statusText);
-			return TimeSheetStatus.valueOf(statusText);
+			return TimeSheetType.valueOf(statusText);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("Trạng thái không hợp lệ: " + getCellValue(cell));
 		}
@@ -184,21 +179,7 @@ public class TimeSheetService implements ITimeSheetService {
 				.isSuccess(errors.isEmpty())
 				.build();
 	}
-	private TimeSheetStatus determineTimeSheetStatus(LocalTime checkIn, LocalTime checkOut) {
-		if (checkIn == null || checkOut == null) {
-			return TimeSheetStatus.ABSENT;
-		}
-		if(checkIn.isAfter(LocalTime.parse("08:15:00"))) {
-			return TimeSheetStatus.LATE;
-		}
-		Duration workDuration = Duration.between(checkIn, checkOut);
-		if (workDuration.toHours() >= 8) {
-			return TimeSheetStatus.PRESENT;
-		} else if (workDuration.toHours() >= 4) {
-			return TimeSheetStatus.HALF_DAY;
-		}
-		return TimeSheetStatus.ABSENT;
-	}
+
 	public List<TimeSheetResponse> getAllTimeSheets() {
 		List<TimeSheet> timeSheets = timeSheetRepository.findAll();
 		return timeSheets.stream().map(timeSheetMapper::toTimeSheetResponse).toList();

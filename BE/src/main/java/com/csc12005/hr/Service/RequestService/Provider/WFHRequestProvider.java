@@ -4,12 +4,11 @@ import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.WFHRequestCreated;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Entity.Employee;
-import com.csc12005.hr.Entity.Request;
 import com.csc12005.hr.Entity.TimeSheet;
 import com.csc12005.hr.Entity.WFHRequest;
 import com.csc12005.hr.Enums.RequestStatus;
 import com.csc12005.hr.Enums.RequestType;
-import com.csc12005.hr.Enums.TimeSheetStatus;
+import com.csc12005.hr.Enums.TimeSheetType;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.RequestMapper;
@@ -72,7 +71,7 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 					.workDate(startDate.plusDays(i))
 					.checkIn(LocalTime.parse("08:00:00"))
 					.checkOut(LocalTime.parse("17:00:00"))
-					.status(TimeSheetStatus.WFH)
+					.type(TimeSheetType.WFH)
 					.build();
 			timeSheets.add(timeSheet);
 		}

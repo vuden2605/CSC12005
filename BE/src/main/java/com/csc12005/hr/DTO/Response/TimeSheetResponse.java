@@ -1,6 +1,6 @@
 package com.csc12005.hr.DTO.Response;
 
-import com.csc12005.hr.Enums.TimeSheetStatus;
+import com.csc12005.hr.Enums.TimeSheetType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,6 +17,6 @@ public class TimeSheetResponse {
 	private LocalDate workDate;
 	private LocalTime checkIn;
 	private LocalTime checkOut;
-	private TimeSheetStatus status;
+	private TimeSheetType type;
 	private EmployeeResponse employee;
 }
