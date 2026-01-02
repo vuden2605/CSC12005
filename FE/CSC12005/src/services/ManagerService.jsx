@@ -104,6 +104,16 @@ export const ManagerService = {
           { params: { requestType } }
         );
         return response.data.data;
-    
-    }      
+
+    },
+
+    createProject: async (projectData) => {
+        try {
+            const response = await api.post('/projects', projectData);
+            return response.data.data;
+        } catch (error) {
+            const errMsg = error.response?.data?.message || error.message;
+            throw new Error(errMsg);
+        }
+    }
 };
