@@ -13,7 +13,33 @@ export const InfoDetails = () => {
     phone: "",
     email: "",
     address: "",
+    permanentAddress: "",
+    gender: "",
+    birthDate: "",
+    nationalCode: "",
+    maritalStatus: "",
+    nationality: "",
+    religion: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    emergencyContactRelationship: "",
+    hireDate: "",
+    educationLevel: "",
+    major: "",
+    university: "",
+    graduationYear: "",
   });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
 
   useEffect(() => {
     const fetchEmployeeInfo = async () => {
@@ -21,12 +47,63 @@ export const InfoDetails = () => {
         setLoading(true);
         setError(null);
         const employeeData = await EmployeeService.getCurrentUser();
-        
+
+        const GENDER_LABEL = {
+          MALE: "Nam",
+          FEMALE: "Nữ",
+          OTHER: "Khác",
+        };
+
+        const MARITAL_STATUS_LABEL = {
+          SINGLE: "Độc thân",
+          MARRIED: "Đã kết hôn",
+          DIVORCED: "Đã ly hôn",
+          WIDOWED: "Góa",
+        };
+
+        const EDUCATION_LEVEL_LABEL = {
+          HIGH_SCHOOL: "Trung học phổ thông",
+          COLLEGE: "Cao đẳng",
+          UNIVERSITY: "Đại học",
+          MASTER: "Thạc sĩ",
+          DOCTORATE: "Tiến sĩ",
+        };
+
         // Map dữ liệu từ API vào state
         setInfo({
           phone: employeeData.phone || "",
           email: employeeData.email || "",
           address: employeeData.address || "",
+          permanentAddress: employeeData.permanentAddress || "",
+          gender:
+            GENDER_LABEL[employeeData.gender] || employeeData.gender || "",
+          birthDate: formatDate(employeeData.birthDate),
+          nationalCode: employeeData.nationalCode || "",
+          maritalStatus:
+            MARITAL_STATUS_LABEL[employeeData.maritalStatus] ||
+            employeeData.maritalStatus ||
+            "",
+          nationality: employeeData.nationality || "",
+          religion:
+            employeeData.religion === "None"
+              ? "Không"
+              : employeeData.religion || "",
+          emergencyContactName: employeeData.emergencyContactName || "",
+          emergencyContactPhone: employeeData.emergencyContactPhone || "",
+          emergencyContactRelationship:
+            employeeData.emergencyContactRelationship || "",
+          hireDate: formatDate(employeeData.hireDate),
+          educationLevel:
+            EDUCATION_LEVEL_LABEL[employeeData.educationLevel] ||
+            employeeData.educationLevel ||
+            "",
+          major: employeeData.major || "",
+          university: employeeData.university || "",
+          graduationYear:
+            employeeData.graduationYear !== undefined &&
+            employeeData.graduationYear !== null
+              ? String(employeeData.graduationYear)
+              : "",
         });
       } catch (err) {
         console.error("Error fetching employee info:", err);
@@ -52,7 +129,7 @@ export const InfoDetails = () => {
       });
       
       // Cập nhật state sau khi API thành công
-      setInfo(updated);
+      setInfo((prev) => ({ ...prev, ...updated }));
       setIsModalOpen(false);
       
       // Có thể thêm thông báo thành công ở đây nếu cần
@@ -91,9 +168,10 @@ export const InfoDetails = () => {
   return (
     <div className="info-details">
       <div className="details-card">
-        <h2>Thông tin cá nhân</h2>
+        <h2>Thông tin chi tiết</h2>
 
         <div className="details-grid">
+          <div className="details-section-title">Thông tin liên hệ</div>
           <div className="details-item">
             <span className="details-label">Số điện thoại</span>
             <input
@@ -115,6 +193,132 @@ export const InfoDetails = () => {
             <input
               className="details-input"
               value={info.address}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Địa chỉ thường trú</span>
+            <input
+              className="details-input"
+              value={info.permanentAddress}
+              readOnly
+            />
+          </div>
+
+          <div className="details-section-title">Người liên hệ khẩn cấp</div>
+          <div className="details-item">
+            <span className="details-label">Họ tên</span>
+            <input
+              className="details-input"
+              value={info.emergencyContactName}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Mối quan hệ</span>
+            <input
+              className="details-input"
+              value={info.emergencyContactRelationship}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Số điện thoại</span>
+            <input
+              className="details-input"
+              value={info.emergencyContactPhone}
+              readOnly
+            />
+          </div>
+
+          <div className="details-section-title">Thông tin cá nhân</div>
+          <div className="details-item">
+            <span className="details-label">Giới tính</span>
+            <input
+              className="details-input"
+              value={info.gender}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Ngày sinh</span>
+            <input
+              className="details-input"
+              value={info.birthDate}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Quốc tịch</span>
+            <input
+              className="details-input"
+              value={info.nationality}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Tôn giáo</span>
+            <input
+              className="details-input"
+              value={info.religion}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Tình trạng hôn nhân</span>
+            <input
+              className="details-input"
+              value={info.maritalStatus}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">CMND/CCCD</span>
+            <input
+              className="details-input"
+              value={info.nationalCode}
+              readOnly
+            />
+          </div>
+
+          <div className="details-section-title">Học vấn & công việc</div>
+          <div className="details-item">
+            <span className="details-label">Trình độ học vấn</span>
+            <input
+              className="details-input"
+              value={info.educationLevel}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Chuyên ngành</span>
+            <input
+              className="details-input"
+              value={info.major}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Trường/Đơn vị đào tạo</span>
+            <input
+              className="details-input"
+              value={info.university}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Năm tốt nghiệp</span>
+            <input
+              className="details-input"
+              value={info.graduationYear}
+              readOnly
+            />
+          </div>
+          <div className="details-item">
+            <span className="details-label">Ngày vào làm</span>
+            <input
+              className="details-input"
+              value={info.hireDate}
               readOnly
             />
           </div>

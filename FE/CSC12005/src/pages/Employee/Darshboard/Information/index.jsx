@@ -55,27 +55,25 @@ export const Information = () => {
             <h3 className="section-title">
                 {pathToTitleMap[location.pathname] || "Thông tin cá nhân"}
             </h3>
-            
-            {/* Content Section */}
+
+            {/* Tabs + Content */}
+            <div className="tabs-bar">
+                {actionButtons.map((btn) => {
+                    const active = isActive(btn);
+                    const colorClass = active ? btn.color : "gray";
+                    return (
+                        <Link
+                            key={btn.id}
+                            to={btn.path}
+                            className={`action-button ${colorClass} ${active ? "active" : ""}`}
+                        >
+                            {btn.label}
+                        </Link>
+                    );
+                })}
+            </div>
+
             <div className="content-section">
-                {/* Sidebar */}
-                <div className="sidebar">
-                    {actionButtons.map((btn) => {
-                        const active = isActive(btn);
-                        const colorClass = active ? btn.color : "gray";
-                        return (
-                            <Link
-                                key={btn.id}
-                                to={btn.path}
-                                className={`action-button ${colorClass} ${active ? "active" : ""}`}
-                            >
-                                {btn.label}
-                            </Link>
-                        );
-                    })}
-                </div>
-                
-                {/* Main Content */}
                 <div className="main-content">
                     <div className="content-placeholder">
                         <Outlet />

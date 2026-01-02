@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeService } from "../../../../../services/EmployeeService";
+import { formatCurrencyVND } from "../../../../../Utils/formatCurrency";
 import "./style.scss";
 import mbLogo from "../../../../../assets/images/mbbank-logo.png"; 
 
@@ -14,20 +15,33 @@ export const SalaryInfo = () => {
     logo: mbLogo,
   });
 
+  const [salaryInfo, setSalaryInfo] = useState({
+    baseSalary: 0,
+    salaryRangeMin: 0,
+    salaryRangeMax: 0,
+  });
+
   useEffect(() => {
     const fetchSalaryInfo = async () => {
       try {
         setLoading(true);
         setError(null);
         const employeeData = await EmployeeService.getCurrentUser();
-        
-        // Map dữ liệu từ API vào state
+
+        // Map dữ liệu ngân hàng
         setBankInfo({
           bankName: employeeData.bankName || "",
           accountName: employeeData.fullName || "",
-          branch: "", // Không có trong API response, có thể để trống hoặc thêm sau
+          branch: employeeData.bankBranch || "",
           accountNumber: employeeData.bankAccount || "",
           logo: mbLogo, // Giữ logo mặc định
+        });
+
+        // Map thông tin lương cơ bản và dải lương từ vị trí
+        setSalaryInfo({
+          baseSalary: employeeData.baseSalary || 0,
+          salaryRangeMin: employeeData.position?.salaryRangeMin || 0,
+          salaryRangeMax: employeeData.position?.salaryRangeMax || 0,
         });
       } catch (err) {
         console.error("Error fetching salary info:", err);
@@ -69,7 +83,7 @@ export const SalaryInfo = () => {
   return (
     <div className="salary-info">
       <div className="salary-card">
-        <h2>Tài khoản ngân hàng của tôi</h2>
+        <h2>Thông tin tài chính</h2>
 
         <div className="bank-info">
           <div className="bank-logo">
@@ -96,6 +110,23 @@ export const SalaryInfo = () => {
             )}
           </div>
         </div>          
+
+        <div className="salary-summary">
+          <div className="salary-item">
+            <span className="label">Lương cơ bản</span>
+            <span className="value">{formatCurrencyVND(salaryInfo.baseSalary)}</span>
+          </div>
+          {(salaryInfo.salaryRangeMin || salaryInfo.salaryRangeMax) && (
+            <div className="salary-item">
+              <span className="label">Khung lương vị trí</span>
+              <span className="value">
+                {formatCurrencyVND(salaryInfo.salaryRangeMin)} -
+                {" "}
+                {formatCurrencyVND(salaryInfo.salaryRangeMax)}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

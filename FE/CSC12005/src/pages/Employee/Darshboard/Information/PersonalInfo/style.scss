@@ -8,12 +8,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 3rem;
+    // padding: 3rem;
     background-color: #fff;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     width: 100%;
-    max-width: 700px;
+    max-width: 960px;
 
     .profile-avatar-medium {
       width: 120px;
@@ -28,6 +28,14 @@
       .avatar-emoji {
         font-size: 60px;
       }
+
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+      }
     }
 
     h2 {
@@ -39,10 +47,9 @@
 
     .info-grid {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 2rem;
       width: 100%;
-      max-width: 600px;
 
       .info-item {
         display: flex;
@@ -63,8 +70,34 @@
       }
 
       .info-divider {
-        width: 1px;
-        background-color: #e5e7eb;
+        display: none;
+      }
+    }
+
+    .info-extra {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .info-label {
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 500;
+        }
+
+        .info-value {
+          font-size: 16px;
+          color: #1f2937;
+          font-weight: 600;
+        }
       }
     }
 
@@ -87,10 +120,10 @@
       .info-grid {
         grid-template-columns: 1fr !important;
         gap: 1.5rem;
+      }
 
-        .info-divider {
-          display: none;
-        }
+      .info-extra {
+        grid-template-columns: 1fr;
       }
     }
   }
