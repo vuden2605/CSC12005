@@ -47,62 +47,64 @@ public class SalaryService implements ISalaryService {
 		List<Salary> salaries = new ArrayList<>();
 		for (Employee employee : employees) {
 			if(employee.getEmployeeCode().equals("ADMIN") || employee.getEmployeeCode().equals("CEO")) continue;
-			MonthlyAttendanceSummary attendanceSummary = monthlyAttendanceSummaryRepository
+			monthlyAttendanceSummaryRepository
 					.findByEmployeeIdAndMonthAndYear(employee.getId(), month.intValue(), year.intValue())
-					.orElseThrow(() -> new AppException(ErrorCode.ATTENDANCE_SUMMARY_NOT_FOUND));
+					.ifPresent(attendanceSummary -> {
+						BigDecimal baseSalary = employee.getBaseSalary();
 
-			BigDecimal baseSalary = employee.getBaseSalary();
+						BigDecimal socialInsurance = calculateSocialInsurance(baseSalary);
+						BigDecimal healthInsurance = calculateHealthInsurance(baseSalary);
+						BigDecimal unemploymentInsurance = calculateUnemploymentInsurance(baseSalary);
+						BigDecimal totalInsurance = socialInsurance.add(healthInsurance).add(unemploymentInsurance);
 
-			BigDecimal socialInsurance = calculateSocialInsurance(baseSalary);
-			BigDecimal healthInsurance = calculateHealthInsurance(baseSalary);
-			BigDecimal unemploymentInsurance = calculateUnemploymentInsurance(baseSalary);
-			BigDecimal totalInsurance = socialInsurance.add(healthInsurance).add(unemploymentInsurance);
-
-			BigDecimal positionAllowance = getPositionAllowance(employee);
-			Salary salary = Salary.builder()
-					.year(year.intValue())
-					.month(month.intValue())
-					.attendanceSummary(attendanceSummary)
-					.baseSalary(employee.getBaseSalary())
-					.actualSalary(attendanceSummary.getActualSalary())
-					.lateDeduction(attendanceSummary.getLateDeduction())
-					.positionAllowance(positionAllowance)
-					.socialInsurance(socialInsurance)
-					.healthInsurance(healthInsurance)
-					.unemploymentInsurance(unemploymentInsurance)
-					.totalInsurance(totalInsurance)
-					.employee(employee)
-					.build();
+						BigDecimal positionAllowance = getPositionAllowance(employee);
+						Salary salary = Salary.builder()
+								.year(year.intValue())
+								.month(month.intValue())
+								.attendanceSummary(attendanceSummary)
+								.baseSalary(employee.getBaseSalary())
+								.actualSalary(attendanceSummary.getActualSalary())
+								.lateDeduction(attendanceSummary.getLateDeduction())
+								.positionAllowance(positionAllowance)
+								.socialInsurance(socialInsurance)
+								.healthInsurance(healthInsurance)
+								.unemploymentInsurance(unemploymentInsurance)
+								.totalInsurance(totalInsurance)
+								.employee(employee)
+								.build();
 
 
-			BigDecimal personalDeduction = new BigDecimal("11000000");
-			BigDecimal dependentDeduction = new BigDecimal("4400000")
-					.multiply(new BigDecimal(employee.getNumberOfDependents()));
+						BigDecimal personalDeduction = new BigDecimal("11000000");
+						BigDecimal dependentDeduction = new BigDecimal("4400000")
+								.multiply(new BigDecimal(employee.getNumberOfDependents()));
 
-			BigDecimal grossSalary = attendanceSummary.getActualSalary()
-					.add(positionAllowance)
-					.add(salary.getTransportAllowance())
-					.add(attendanceSummary.getOvertimePay())
-					.add(salary.getMealAllowance());
+						BigDecimal grossSalary = attendanceSummary.getActualSalary()
+								.add(positionAllowance)
+								.add(salary.getTransportAllowance())
+								.add(attendanceSummary.getOvertimePay())
+								.add(salary.getMealAllowance());
 
-			BigDecimal taxableIncome = calculateTaxableIncome(
-					grossSalary,
-					totalInsurance,
-					personalDeduction,
-					dependentDeduction
-			);
-			BigDecimal personalIncomeTax = calculatePersonalIncomeTax(taxableIncome);
+						BigDecimal taxableIncome = calculateTaxableIncome(
+								grossSalary,
+								totalInsurance,
+								personalDeduction,
+								dependentDeduction
+						);
+						BigDecimal personalIncomeTax = calculatePersonalIncomeTax(taxableIncome);
 
-			BigDecimal totalDeductions = totalInsurance.add(personalIncomeTax).add(attendanceSummary.getLateDeduction());
+						BigDecimal totalDeductions = totalInsurance.add(personalIncomeTax).add(attendanceSummary.getLateDeduction());
 
-			BigDecimal netSalary = grossSalary.subtract(totalDeductions);
+						BigDecimal netSalary = grossSalary.subtract(totalDeductions);
 
-			salary.setTaxableIncome(taxableIncome);
-			salary.setPersonalIncomeTax(personalIncomeTax);
-			salary.setGrossSalary(grossSalary);
-			salary.setTotalDeductions(totalDeductions);
-			salary.setNetSalary(netSalary);
-			salaries.add(salary);
+						salary.setTaxableIncome(taxableIncome);
+						salary.setPersonalIncomeTax(personalIncomeTax);
+						salary.setGrossSalary(grossSalary);
+						salary.setTotalDeductions(totalDeductions);
+						salary.setNetSalary(netSalary);
+						salaries.add(salary);
+					});
+
+
 		}
 
 		if(!salaries.isEmpty()) {

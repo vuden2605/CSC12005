@@ -3,6 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.SalaryResponse;
+import com.csc12005.hr.Service.MonthlyAttendanceSummaryService.impl.MonthlyAttendanceSummaryService;
 import com.csc12005.hr.Service.SalaryService.Impl.SalaryService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/salaries")
 public class SalaryController {
     private final SalaryService salaryService;
+    private final MonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
     @PostMapping
     public ApiResponse<Void> createAll(@RequestBody SalaryCreationRequest request)
     {
@@ -53,4 +55,13 @@ public class SalaryController {
                 .message("Pay salary successfully")
                 .build();
     }
+    @PostMapping("/monthly-summary")
+    public ApiResponse<Void> createMonthlyAttendanceSummary(
+			@RequestBody MonthlyAttendanceSummaryCreationRequest request
+	) {
+		monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(request);
+		return ApiResponse.<Void>builder()
+				.message("Create monthly attendance summary successfully")
+				.build();
+	}
 }

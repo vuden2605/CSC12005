@@ -60,6 +60,7 @@ public class Salary {
 
 	private BigDecimal netSalary;
 
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	private SalaryStatus status = SalaryStatus.DRAFT;
 

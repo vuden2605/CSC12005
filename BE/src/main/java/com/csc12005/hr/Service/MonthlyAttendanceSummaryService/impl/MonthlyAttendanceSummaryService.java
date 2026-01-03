@@ -51,6 +51,7 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 					request.getMonth()
 
 			);
+			if (aggregate == null) continue;
 			BigDecimal baseSalary = employee.getBaseSalary();
 			BigDecimal actualSalary = calculateActualSalary(baseSalary, aggregate.getTotalWorkDays().intValue(), publicHolidays);
 			BigDecimal overtimePay = calculateOvertimePay(
@@ -142,8 +143,11 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 					ts.getLateMinutes() > 0) {
 
 				BigDecimal deduction = dailySalary
-						.multiply(ts.getLateDeductionRate());
-
+						.multiply(ts.getLateDeductionRate()).divide(
+								new BigDecimal("100"),
+								2,
+								RoundingMode.HALF_UP
+						);
 				totalLateDeduction = totalLateDeduction.add(deduction);
 			}
 		}
