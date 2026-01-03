@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -131,7 +133,7 @@ public class SalaryService implements ISalaryService {
         );
     }
     @Transactional
-    public void paySalary(Long month, Long year, SalaryStatus status) {
+    public void updateStatus(Long month, Long year, SalaryStatus status) {
         boolean exists = salaryRepository.existsByMonthAndYear(month, year);
         if (!exists) {
             throw new AppException(ErrorCode.PAYROLL_NOT_GENERATED);
@@ -141,7 +143,6 @@ public class SalaryService implements ISalaryService {
             throw new AppException(ErrorCode.PAYROLL_ALREADY_PAID);
         }
 	}
-
 
 	public BigDecimal calculateSocialInsurance(BigDecimal baseSalary) {
 		BigDecimal insuranceBase = getInsuranceBase(baseSalary);
@@ -298,5 +299,38 @@ public class SalaryService implements ISalaryService {
 		if (currentDay != lastDayOfMonth) {
 			throw new AppException(ErrorCode.PAYROLL_GENERATION_DATE_INVALID);
 		}
+	}
+	public String generateQRPayRoll(Long salaryId) {
+		Salary salary = salaryRepository.findById(salaryId)
+				.orElseThrow(() -> new AppException(ErrorCode.SALARY_NOT_FOUND));
+
+		Employee employee = salary.getEmployee();
+		String bankAccount = employee.getBankAccount();
+		String bankBin = getBankBin(employee.getBankName());
+		BigDecimal amount = salary.getNetSalary();
+		String message = "Chi luong thang " + salary.getMonth()
+				+ " cho " + employee.getFullName();
+		String accountName = employee.getFullName();
+		return String.format(
+				"https://api.vietqr.io/image/%s-%s-compact2.png" +
+						"?amount=%s&addInfo=%s&accountName=%s",
+				bankBin,
+				bankAccount,
+				amount.toPlainString(),
+				URLEncoder.encode(message, StandardCharsets.UTF_8),
+				URLEncoder.encode(accountName, StandardCharsets.UTF_8)
+		);
+
+
+
+	}
+	private String getBankBin(String bankName) {
+		return switch (bankName.toUpperCase()) {
+			case "VIETCOMBANK" -> "970436";
+			case "VIETINBANK" -> "970415";
+			case "BIDV" -> "970418";
+			case "ACB" -> "970416";
+			default -> throw new AppException(ErrorCode.BANK_NOT_SUPPORTED);
+		};
 	}
 }

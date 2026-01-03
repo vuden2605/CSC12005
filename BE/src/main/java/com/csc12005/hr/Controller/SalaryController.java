@@ -46,11 +46,11 @@ public class SalaryController {
                 .message("Get my salaries successfully")
                 .build();
     }
-    @PostMapping("/pay")
+    @PostMapping("/update-status")
     public ApiResponse<Void> paySalary(
 		    @RequestBody PaySalaryRequest request
 		    ) {
-        salaryService.paySalary(request.getMonth(), request.getYear(), request.getStatus());
+        salaryService.updateStatus(request.getMonth(), request.getYear(), request.getStatus());
         return ApiResponse.<Void>builder()
                 .message("Pay salary successfully")
                 .build();
@@ -62,6 +62,16 @@ public class SalaryController {
 		monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(request);
 		return ApiResponse.<Void>builder()
 				.message("Create monthly attendance summary successfully")
+				.build();
+	}
+	@GetMapping("/qr/{salaryId}")
+	public ApiResponse<String> getSalaryPaymentQRCode(
+			@PathVariable Long salaryId
+	) {
+		String qrCodeUrl = salaryService.generateQRPayRoll(salaryId);
+		return ApiResponse.<String>builder()
+				.data(qrCodeUrl)
+				.message("Get salary payment QR code successfully")
 				.build();
 	}
 }

@@ -17,5 +17,5 @@ public interface ISalaryService {
     public Page<SalaryResponse> getMySalaries(
             MySalaryFilterRequest request,
             PageRequestDTO pageRequestDTO    );
-    public void paySalary(Long month, Long year, SalaryStatus status);
+    public void updateStatus(Long month, Long year, SalaryStatus status);
 }
