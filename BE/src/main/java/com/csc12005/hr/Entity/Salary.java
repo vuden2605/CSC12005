@@ -73,22 +73,5 @@ public class Salary {
 
 	private String payslipUrl;
 
-	public void getPositionAllowance() {
-		if (employee != null && employee.getPosition().getRole() != null) {
-			String role = employee.getPosition().getRole().toString();
-			switch (role) {
-				case "MN":
-					this.positionAllowance = BigDecimal.valueOf(2000000);
-					break;
-				case "HR":
-					this.positionAllowance = BigDecimal.valueOf(1000000);
-					break;
-				default:
-					this.positionAllowance = BigDecimal.valueOf(500000);
-					break;
-			}
-		} else {
-			this.positionAllowance = BigDecimal.ZERO;
-		}
-	}
+
 }

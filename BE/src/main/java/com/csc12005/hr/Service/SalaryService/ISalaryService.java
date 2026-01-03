@@ -4,6 +4,7 @@ import com.csc12005.hr.DTO.Request.MySalaryFilterRequest;
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.SalaryFilterRequest;
 import com.csc12005.hr.DTO.Response.SalaryResponse;
+import com.csc12005.hr.Enums.SalaryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,5 @@ public interface ISalaryService {
     public Page<SalaryResponse> getMySalaries(
             MySalaryFilterRequest request,
             PageRequestDTO pageRequestDTO    );
-    public void paySalary(Long month, Long year);
+    public void paySalary(Long month, Long year, SalaryStatus status);
 }

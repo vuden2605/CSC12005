@@ -1,6 +1,5 @@
 package com.csc12005.hr.DTO.Request;
 
-import com.csc12005.hr.Enums.SalaryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MySalaryFilterRequest {
-    private SalaryStatus status;
-    private Long month;
-    private Long year;
+public class MonthlyAttendanceSummaryCreationRequest {
+	private Integer year;
+	private Integer month;
 }

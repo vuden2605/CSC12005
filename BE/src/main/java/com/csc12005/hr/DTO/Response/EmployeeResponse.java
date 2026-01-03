@@ -4,6 +4,7 @@ import com.csc12005.hr.Enums.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -48,7 +49,7 @@ public class EmployeeResponse {
 
     private Boolean status ;
 
-    private Long baseSalary;
+    private BigDecimal baseSalary;
 
 	private Long totalPoints;
 
@@ -114,4 +115,5 @@ public class EmployeeResponse {
 
 	private LocalDateTime updatedAt;
 
+	private Integer numberOfDependents;
 }

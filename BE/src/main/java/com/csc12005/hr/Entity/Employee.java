@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -36,7 +37,7 @@ public class Employee {
 	private String bankName;
 	@Builder.Default
 	private Boolean status = true; // soft delete flag
-	private Long baseSalary;
+	private BigDecimal baseSalary;
 	@Builder.Default
 	private Long totalPoints = 0L;
 	@Builder.Default
@@ -129,4 +130,6 @@ public class Employee {
 	public Integer getAvailableLeave() {
 		return annualLeave - usedLeave;
 	}
+	@Builder.Default
+	private Integer numberOfDependents = 0;
 }

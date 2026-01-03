@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 @Data
 @Builder
@@ -54,7 +55,7 @@ public class EmployeeCreationRequest {
 	private String bankAccount;
 
 	@NotNull(message = "REQUIRED_BASE_SALARY")
-	private Long baseSalary;
+	private BigDecimal baseSalary;
 
 	@NotBlank(message = "REQUIRED_ADDRESS")
 	private String address;
@@ -66,6 +67,8 @@ public class EmployeeCreationRequest {
 	private EducationLevel educationLevel;
 
 	private String major;
+
+	private Integer numberOfDependents;
 
 	private String university;
 

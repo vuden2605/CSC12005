@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -48,9 +49,9 @@ public class PublicHoliday {
 	@Builder.Default
 	private Boolean isPaid = true;
 
-	@Column(precision = 3, scale = 1, name = "salary_multiplier")
+	@Column(name = "salary_multiplier")
 	@Builder.Default
-	private Double salaryMultiplier = 1.0;
+	private BigDecimal salaryMultiplier = BigDecimal.ONE;
 
 	@Column(columnDefinition = "TEXT")
 	private String description;
@@ -78,4 +79,6 @@ public class PublicHoliday {
 	@ManyToOne(fetch = FetchType. LAZY)
 	@JoinColumn(name = "deleted_by")
 	private Employee deletedBy;
+
+	private Boolean isActive;
 }

@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class MySalaryFilterRequest {
-    private SalaryStatus status;
-    private Long month;
-    private Long year;
+@NoArgsConstructor
+public class PaySalaryRequest {
+	private Long month;
+	private Long year;
+	private SalaryStatus status;
 }

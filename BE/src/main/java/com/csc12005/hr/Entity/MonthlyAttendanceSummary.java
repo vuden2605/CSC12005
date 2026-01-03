@@ -8,9 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 @Entity
-@Table(name = "monthly_attendance_summaries")
+@Table(
+	name = "monthly_attendance_summaries",
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"employee_id", "year", "month"})
+	},
+	indexes =  {
+		@Index(name = "idx_employee_year_month", columnList = "employee_id, year, month")
+	}
+)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,8 +38,6 @@ public class MonthlyAttendanceSummary {
 	private Integer month;
 
 	private Integer totalWorkDays;
-
-	private Integer totalPresentDays;
 
 	private Integer totalAbsentDays;
 

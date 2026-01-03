@@ -50,6 +50,8 @@ public class TimeSheet {
 	@Builder. Default
 	private Integer lateMinutes = 0;
 
+	private BigDecimal lateDeductionRate;
+
 	@Builder.Default
 	@Column(nullable = false)
 	private Boolean isAdjusted = false;

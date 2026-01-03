@@ -15,6 +15,7 @@ import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.TimeSheetRepository;
 import com.csc12005.hr.Service.TimeSheetService.ITimeSheetService;
 import com.csc12005.hr.Utils.SecurityUtils;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -63,6 +65,8 @@ public class TimeSheetService implements ITimeSheetService {
 					timeSheet.calculateAll();
 					timeSheet.setCreatedBy(employeeRepository.getReferenceById(currentEmployeeId));
 					timeSheet.setUpdatedBy(employeeRepository.getReferenceById(currentEmployeeId));
+					BigDecimal deductionLateRate = getDeductionLateRate(timeSheet.getLateMinutes());
+					timeSheet.setLateDeductionRate(deductionLateRate);
 					timeSheets.add(timeSheet);
 				} catch (Exception ex) {
 					importErrors.add(buildImportError(rowNum, ex));
@@ -197,5 +201,16 @@ public class TimeSheetService implements ITimeSheetService {
 		Page<TimeSheet> timeSheets = timeSheetRepository.myTimeSheets(employeeId, pageable, fromDate, toDate);
 		return timeSheets.map(timeSheetMapper::toTimeSheetResponse);
 	}
-
+	private BigDecimal getDeductionLateRate (Integer minutesLate) {
+		if (minutesLate == null || minutesLate <= 0 || minutesLate <= 15) {
+			return BigDecimal.ZERO;
+		}
+		else if (minutesLate <= 30) {
+			return BigDecimal.valueOf(10);
+		} else if (minutesLate <= 60) {
+			return BigDecimal.valueOf(15);
+		} else {
+			return BigDecimal.valueOf(20);
+		}
+	}
 }

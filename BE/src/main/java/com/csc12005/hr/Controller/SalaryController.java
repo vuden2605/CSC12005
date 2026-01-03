@@ -1,9 +1,6 @@
 package com.csc12005.hr.Controller;
 
-import com.csc12005.hr.DTO.Request.MySalaryFilterRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.SalaryCreationRequest;
-import com.csc12005.hr.DTO.Request.SalaryFilterRequest;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.SalaryResponse;
 import com.csc12005.hr.Service.SalaryService.Impl.SalaryService;
@@ -49,10 +46,9 @@ public class SalaryController {
     }
     @PostMapping("/pay")
     public ApiResponse<Void> paySalary(
-            @RequestParam Long month,
-            @RequestParam Long year
-    ) {
-        salaryService.paySalary(month, year);
+		    @RequestBody PaySalaryRequest request
+		    ) {
+        salaryService.paySalary(request.getMonth(), request.getYear(), request.getStatus());
         return ApiResponse.<Void>builder()
                 .message("Pay salary successfully")
                 .build();
