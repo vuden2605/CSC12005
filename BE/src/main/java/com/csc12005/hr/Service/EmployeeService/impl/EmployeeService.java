@@ -37,6 +37,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -214,7 +215,10 @@ public class EmployeeService implements IEmployeeService {
 					if(employeeRepository.existsByEmail(email)) {
 						throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
 					}
-
+					Long baseSalaryValue = ExcelUtils.getLong(row.getCell(9));
+					BigDecimal baseSalary = baseSalaryValue != null
+							? BigDecimal.valueOf(baseSalaryValue)
+							: BigDecimal.ZERO;
 					Employee employee = Employee.builder()
 							.fullName(ExcelUtils.getString(row.getCell(0)))
 							.email(email)
@@ -225,7 +229,7 @@ public class EmployeeService implements IEmployeeService {
 							.taxCode(ExcelUtils.getString(row.getCell(6)))
 							.bankName(ExcelUtils.getString(row.getCell(7)))
 							.bankAccount(ExcelUtils.getString(row.getCell(8)))
-							.baseSalary(ExcelUtils.getLong(row.getCell(9)))
+							.baseSalary(baseSalary)
 							.permanentAddress(ExcelUtils.getString(row.getCell(10)))
 							.maritalStatus(MaritalStatus.valueOf(ExcelUtils.getString(row.getCell(11))))
 							.educationLevel(EducationLevel.valueOf(ExcelUtils.getString(row.getCell(12))))

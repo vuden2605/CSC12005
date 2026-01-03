@@ -132,7 +132,12 @@ public enum ErrorCode {
 	ACTIVITY_RESULT_ALREADY_EXISTS(4056,"Activity result for this participant already exists",HttpStatus.BAD_REQUEST),
 	CANNOT_CANCEL_ACTIVITY(4057,"Cannot cancel this activity",HttpStatus.BAD_REQUEST),
 	CANNOT_REGISTER_ACTIVITY(4057,"Cannot register for this activity",HttpStatus.BAD_REQUEST),
+	PAYROLL_GENERATION_DATE_INVALID(6503,"Payroll can only be generated on the 30th or 31st of the month",HttpStatus.BAD_REQUEST),
+	ATTENDANCE_SUMMARY_NOT_FOUND(6504,"Attendance summary not found for employee",HttpStatus.NOT_FOUND),
+	SALARY_NOT_FOUND(6505,"Salary record not found for employee",HttpStatus.NOT_FOUND),
+	BANK_NOT_SUPPORTED(7005,"Bank not supported for transfers", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
+
 	private final Integer code;
 	private final String message;
 	private final HttpStatus httpStatus;
