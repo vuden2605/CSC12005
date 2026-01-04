@@ -10,6 +10,7 @@ import com.csc12005.hr.Service.RequestService.Impl.RequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +37,9 @@ public class RequestController {
 				.build();
 	}
 	@PostMapping
+			(
+				consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+			)
 	public ApiResponse<RequestResponse> createRequest (
 			@ModelAttribute @Valid RequestCreationRequest request,
 			@RequestParam RequestType requestType

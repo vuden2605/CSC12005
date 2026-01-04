@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import com.csc12005.hr.Enums.LeaveType;
 import com.csc12005.hr.Enums.RequestType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.AssertTrue;
@@ -33,4 +34,6 @@ public class RequestCreationRequest {
 	private LocalTime checkOutNew;
 
 	private LocalDate workDate;
+
+	private LeaveType leaveType;
 }
