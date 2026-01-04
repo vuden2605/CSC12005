@@ -17,13 +17,14 @@ import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 public abstract class AbstractRequestProvider implements IRequestProvider{
-	private final SecurityUtils securityUtils;
-	private final EmployeeRepository employeeRepository;
+	protected final SecurityUtils securityUtils;
+	protected final EmployeeRepository employeeRepository;
 	private final IS3Service s3Service;
 	private final RequestMapper requestMapper;
 	private final RequestRepository requestRepository;
@@ -94,6 +95,24 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		if (workDate.isAfter(LocalDate.now())) {
 			throw new AppException(ErrorCode.CANNOT_REQUEST_FUTURE_DATE);
 		}
+	}
+	protected int calculateDaysBetween(LocalDateTime start, LocalDateTime end) {
+		LocalDate startDate = start.toLocalDate();
+		LocalDate endDate = end.toLocalDate();
+
+		int days = 0;
+		LocalDate current = startDate;
+
+		while (!current.isAfter(endDate)) {
+			DayOfWeek dayOfWeek = current.getDayOfWeek();
+
+			if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY) {
+				days++;
+			}
+
+			current = current.plusDays(1);
+		}
+		return days;
 	}
 
 }

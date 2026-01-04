@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface TimeSheetRepository extends JpaRepository<TimeSheet, Long> {
+	boolean existsByEmployeeIdAndWorkDate(Long employeeId, LocalDate workDate);
 	Optional<TimeSheet> findByEmployeeIdAndWorkDate(Long employeeId, LocalDate workDate);
 	@Query(
 			"""
