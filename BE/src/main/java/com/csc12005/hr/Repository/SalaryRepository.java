@@ -17,8 +17,8 @@ public interface SalaryRepository extends JpaRepository<Salary,Long> {
     @Query("""
 SELECT new com.csc12005.hr.DTO.Response.SalaryResponse(
     s.id,
-    s.month,
     s.year,
+    s.month,
     s.baseSalary,
     s.actualSalary,
 	s.lateDeduction,
@@ -38,10 +38,20 @@ SELECT new com.csc12005.hr.DTO.Response.SalaryResponse(
 	s.approvedAt,
 	s.paidAt,
 	s.payslipUrl,
-	e.id,
 	e.fullName,
 	e.employeeCode,
-	p.positionName
+	e.id,
+	p.positionName,
+	new com.csc12005.hr.DTO.Response.MonthlyAttendanceSummaryResponse(
+	    s.attendanceSummary.id,
+	    s.attendanceSummary.totalWorkDays,
+	    s.attendanceSummary.totalAbsentDays,
+	    s.attendanceSummary.totalLateDays,
+	    s.attendanceSummary.totalWorkHours,
+	    s.attendanceSummary.totalOvertimeHours,
+	    s.attendanceSummary.overtimePay,
+	    s.attendanceSummary.status
+	)
 )
 FROM Salary s
 JOIN s.employee e

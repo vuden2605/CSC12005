@@ -69,5 +69,5 @@ public class SalaryResponse {
 
 	private String positionName;
 
-
+	private MonthlyAttendanceSummaryResponse attendanceSummary;
 }

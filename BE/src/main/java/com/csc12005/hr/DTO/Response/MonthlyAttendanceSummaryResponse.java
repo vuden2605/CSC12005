@@ -20,14 +20,6 @@ public class MonthlyAttendanceSummaryResponse {
 
 	private Long id;
 
-	private String employeeName;
-
-	private String employeeCode;
-
-	private Integer year;
-
-	private Integer month;
-
 	private Integer totalWorkDays;
 
 	private Integer totalAbsentDays;
@@ -38,13 +30,7 @@ public class MonthlyAttendanceSummaryResponse {
 
 	private BigDecimal totalOvertimeHours;
 
-	private BigDecimal baseSalary;
-
-	private BigDecimal actualSalary;
-
 	private BigDecimal overtimePay;
-
-	private BigDecimal lateDeduction;
 
 	private AttendanceStatus status;
 }

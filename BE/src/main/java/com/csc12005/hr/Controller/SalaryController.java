@@ -30,16 +30,16 @@ public class SalaryController {
                 .message("create success")
                 .build();
     }
-    @PostMapping("/search")
-    public ApiResponse<Page<SalaryResponse>> getAll(@RequestBody SalaryFilterRequest request, PageRequestDTO pageRequestDTO){
+    @GetMapping("/search")
+    public ApiResponse<Page<SalaryResponse>> getAll(SalaryFilterRequest request, PageRequestDTO pageRequestDTO){
         return ApiResponse.<Page<SalaryResponse>> builder()
                 .message("search success")
                 .data(salaryService.getAll(request,pageRequestDTO))
                 .build();
     }
-    @PostMapping("/my")
+    @GetMapping("/my")
     public ApiResponse<Page<SalaryResponse>> mySalaries(
-            @RequestBody MySalaryFilterRequest request,PageRequestDTO pageRequestDTO
+            MySalaryFilterRequest request,PageRequestDTO pageRequestDTO
     ) {
         return ApiResponse.<Page<SalaryResponse>>builder()
                 .data(salaryService.getMySalaries(request, pageRequestDTO))
