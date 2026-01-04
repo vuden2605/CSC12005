@@ -71,6 +71,7 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 		validateDateRange(request.getStartDate(), request.getEndDate());
 		LeaveRequest leaveRequest = leaveRequestMapper.toLeaveRequest(request);
 		setCommonFields(leaveRequest, employee, attachmentUrl, RequestType.Leave);
+		leaveRequest.setLeaveType(request.getLeaveType());
 		LeaveRequest saved = leaveRequestRepository.save(leaveRequest);
 		eventPublisher.publishEvent(
 				LeaveRequestCreated.builder()
