@@ -17,10 +17,10 @@
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
-    border-radius: 12px;
-    padding: 36px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-out;
+    border-radius: 16px;
+    padding: 32px 32px 28px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+    animation: fadeIn 0.25s ease-out;
 
     /* Scrollbar styling */
     &::-webkit-scrollbar {
@@ -44,13 +44,13 @@
   
   /* ===== Modal Header ===== */
   .modal-box h2 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    text-align: center;
-    color: #333;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #f0f0f0;
+    text-align: left;
+    color: #111827;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f3f4f6;
   }
   
   /* ===== Form Elements ===== */
@@ -205,16 +205,16 @@
 
   /* ===== WFH Detail Modal ===== */
   .wfh-detail-modal {
-    max-width: 750px;
-    padding: 40px;
+    max-width: 780px;
+    padding: 32px 32px 24px;
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
 
       h2 {
         font-size: 24px;
@@ -246,19 +246,21 @@
     }
 
     .modal-content {
-      padding: 0 8px;
+      width: 200%;
+      padding: 0;
+      max-width: none;
     }
 
     .detail-section {
       margin-bottom: 32px;
 
       h3 {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 700;
-        color: #333;
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #f0f0f0;
+        color: #111827;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
       }
     }
 
@@ -266,8 +268,8 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 16px 0;
-      border-bottom: 1px solid #f5f5f5;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e5e7eb;
 
       &:last-child {
         border-bottom: none;
@@ -275,15 +277,15 @@
     }
 
     .detail-label {
-      font-weight: 600;
-      color: #666;
+      font-weight: 500;
+      color: #6b7280;
       font-size: 14px;
       min-width: 160px;
       padding-right: 24px;
     }
 
     .detail-value {
-      color: #333;
+      color: #111827;
       font-size: 14px;
       text-align: right;
       flex: 1;

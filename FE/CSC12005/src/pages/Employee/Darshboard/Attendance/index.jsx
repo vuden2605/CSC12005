@@ -4,12 +4,15 @@ import "./style.scss";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
+import { MyTimesheetDetailModal } from "../../../../components/modals/Request/MyTimesheetDetailModal/MyTimesheetDetailModal";
 
 export const Attendance = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showTimekeepingModal, setShowTimekeepingModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [showTimesheetDetailModal, setShowTimesheetDetailModal] = useState(false);
+  const [selectedTimesheet, setSelectedTimesheet] = useState(null);
 
   // API data states
   const [attendanceData, setAttendanceData] = useState([]);
@@ -58,17 +61,20 @@ export const Attendance = () => {
     let lateDays = 0;
 
     records.forEach((record) => {
-      // Count absent days
-      if (record.status !== 'ABSENT') {
-        // Count work days (non-absent records)
+      const type = record.type || record.status;
+
+      // Count work days (non-absent records)
+      if (type !== "ABSENT") {
         totalWorkDays++;
 
-        // Count late days (checkIn > 08:00:00)
-        if (record.checkIn) {
-          const [hours, minutes] = record.checkIn.split(':').map(Number);
+        // Prefer backend lateMinutes field if available
+        if (typeof record.lateMinutes === "number" && record.lateMinutes > 0) {
+          lateDays++;
+        } else if (record.checkIn) {
+          const [hours, minutes] = record.checkIn.split(":").map(Number);
           const checkInMinutes = hours * 60 + minutes;
-          const lateMinutes = 8 * 60; // 08:00
-          if (checkInMinutes > lateMinutes) {
+          const lateThresholdMinutes = 8 * 60; // 08:00
+          if (checkInMinutes > lateThresholdMinutes) {
             lateDays++;
           }
         }
@@ -184,7 +190,9 @@ export const Attendance = () => {
       'Thời gian': formatDate(record.workDate),
       'Check-in': formatTime(record.checkIn) || 'N/A',
       'Check-out': formatTime(record.checkOut) || 'N/A',
-      'Trạng thái': statusMap[record.status] || record.status || 'Bình thường',
+      'Giờ làm (giờ)': typeof record.workHours === 'number' ? record.workHours : '',
+      'Đi muộn (phút)': typeof record.lateMinutes === 'number' ? record.lateMinutes : '',
+      'Trạng thái': statusMap[record.type] || statusMap[record.status] || record.type || record.status || 'Bình thường',
     }));
 
     // Add statistics at the end
@@ -223,7 +231,9 @@ export const Attendance = () => {
       { wch: 15 },
       { wch: 12 },
       { wch: 12 },
-      { wch: 15 }
+      { wch: 16 },
+      { wch: 16 },
+      { wch: 15 },
     ];
 
     // Generate file name with current date
@@ -237,6 +247,11 @@ export const Attendance = () => {
   const handleCreateRequest = (workDate) => {
     setSelectedDate(workDate);
     setShowTimekeepingModal(true);
+  };
+
+  const handleViewTimesheetDetail = (record) => {
+    setSelectedTimesheet(record);
+    setShowTimesheetDetailModal(true);
   };
 
   const handleModalSuccess = () => {
@@ -333,8 +348,11 @@ export const Attendance = () => {
                     </th>
                     <th>Check-in</th>
                     <th>Check-out</th>
+                    <th>Giờ làm (giờ)</th>
+                    <th>Đi muộn (phút)</th>
                     <th>Trạng thái</th>
                     <th>Tạo yêu cầu</th>
+                    <th>Chi tiết</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -357,9 +375,11 @@ export const Attendance = () => {
                         <td className="checkout-cell">
                           <span className="time-danger">{formatTime(record.checkOut) || "N/A"}</span>
                         </td>
+                        <td>{typeof record.workHours === 'number' ? record.workHours : '-'}</td>
+                        <td>{typeof record.lateMinutes === 'number' ? record.lateMinutes : 0}</td>
                         <td className="status-cell">
-                          <span className={`status ${record.status?.toLowerCase() || 'normal'}`}>
-                            {statusMap[record.status] || record.status || "Bình thường"}
+                          <span className={`status ${(record.type || record.status)?.toLowerCase() || 'normal'}`}>
+                            {statusMap[record.type] || statusMap[record.status] || record.type || record.status || "Bình thường"}
                           </span>
                         </td>
                         <td className="action-cell">
@@ -369,6 +389,15 @@ export const Attendance = () => {
                             title="Tạo yêu cầu chấm công"
                           >
                             Tạo yêu cầu
+                          </button>
+                        </td>
+                        <td className="action-cell">
+                          <button
+                            className="create-request-btn"
+                            onClick={() => handleViewTimesheetDetail(record)}
+                            title="Xem chi tiết timesheet"
+                          >
+                            Xem
                           </button>
                         </td>
                       </tr>
@@ -398,6 +427,15 @@ export const Attendance = () => {
           onClose={() => setShowTimekeepingModal(false)}
           onSuccess={handleModalSuccess}
           initialDate={selectedDate}
+        />
+      )}
+      {showTimesheetDetailModal && selectedTimesheet && (
+        <MyTimesheetDetailModal
+          timesheet={selectedTimesheet}
+          onClose={() => {
+            setShowTimesheetDetailModal(false);
+            setSelectedTimesheet(null);
+          }}
         />
       )}
     </div>
