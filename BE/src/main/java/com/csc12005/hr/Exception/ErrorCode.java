@@ -136,6 +136,7 @@ public enum ErrorCode {
 	ATTENDANCE_SUMMARY_NOT_FOUND(6504,"Attendance summary not found for employee",HttpStatus.NOT_FOUND),
 	SALARY_NOT_FOUND(6505,"Salary record not found for employee",HttpStatus.NOT_FOUND),
 	BANK_NOT_SUPPORTED(7005,"Bank not supported for transfers", HttpStatus.BAD_REQUEST),
+	HOLIDAY_NOT_FOUND(40013,"Holiday not found", HttpStatus.NOT_FOUND),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 
 	private final Integer code;

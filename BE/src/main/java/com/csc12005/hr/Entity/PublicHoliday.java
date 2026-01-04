@@ -1,6 +1,5 @@
 package com.csc12005.hr.Entity;
 
-import com.csc12005.hr.Enums.HolidayType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,10 +39,6 @@ public class PublicHoliday {
 	@Column(nullable = false)
 	private Integer month;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 30, name = "holiday_type")
-	@Builder.Default
-	private HolidayType holidayType = HolidayType.FIXED_DATE;
 
 	@Column(nullable = false, name = "is_paid")
 	@Builder.Default
@@ -55,7 +50,6 @@ public class PublicHoliday {
 
 	@Column(columnDefinition = "TEXT")
 	private String description;
-	;
 
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false, name = "created_at")
@@ -80,5 +74,6 @@ public class PublicHoliday {
 	@JoinColumn(name = "deleted_by")
 	private Employee deletedBy;
 
-	private Boolean isActive;
+    @Builder.Default
+	private Boolean isActive = true;
 }
