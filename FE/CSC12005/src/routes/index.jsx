@@ -44,6 +44,7 @@ import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
 
 import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
 import { ManagerProjects } from "../pages/Manager/ManagerProjects";
+import CEODashboard from "../pages/CEOdashboard";
 
 
 export const routes = [
@@ -60,6 +61,7 @@ export const routes = [
     ),
     children: [
       { path: "admin", element: <Admin /> },
+      { path: "ceo/dashboard", element: <CEODashboard /> },
 
       { path: "manager", element: <Manager /> },
       { path: "manager/department", element: <Manager /> },
