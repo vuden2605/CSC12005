@@ -99,7 +99,7 @@ export const Salary = () => {
           <option value="false">Pending</option>
         </select>
 
-        <button onClick={FilterReset}>reset</button>
+        <button onClick={FilterReset}>Reset</button>
       </div>
 
       {/* TABLE */}

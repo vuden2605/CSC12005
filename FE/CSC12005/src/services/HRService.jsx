@@ -158,16 +158,18 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  getAllSalaries: async (filter, params) => {
+  // Tìm kiếm bảng lương (HR)
+  // params: { status, month, year, employeeName, page, size, sortBy, direction }
+  getAllSalaries: async (params = {}) => {
     try {
-      const response = await api.post(`/salaries/search`, filter, {
+      const response = await api.get(`/salaries/search`, {
         params,
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log("salaries:",response.data.data);
-      return response.data.data;
+      console.log("salaries:", response.data.data);
+      return response.data.data || response.data;
     } catch (error) {
       const errMsg =
         error.response?.data?.message ||
