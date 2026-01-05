@@ -4,7 +4,14 @@ import { formatCurrencyVND } from "../../../Utils/formatCurrency";
 import { HRService } from "../../../services/HRService";
 import { useAlert } from "../../../context/AlertContext";
 
-export const SalaryDetailModal = ({ salary, onClose, onStatusUpdated }) => {
+export const SalaryDetailModal = ({
+  salary,
+  onClose,
+  onStatusUpdated,
+  canUpdateStatus = true,
+  showQr = true,
+  hideEmployeeInfo = false,
+}) => {
   if (!salary) return null;
 
   const [qrUrl, setQrUrl] = useState(null);
@@ -74,6 +81,7 @@ export const SalaryDetailModal = ({ salary, onClose, onStatusUpdated }) => {
   };
 
   const handleUpdateStatus = async () => {
+    if (!canUpdateStatus) return;
     if (!newStatus) {
       showAlert("error", "Vui lòng chọn trạng thái mới");
       return;
@@ -114,18 +122,25 @@ export const SalaryDetailModal = ({ salary, onClose, onStatusUpdated }) => {
 
         <div className="modal-content">
           {/* Thông tin nhân viên */}
+          {!hideEmployeeInfo && (
+            <div className="detail-section">
+              <h3>Thông tin nhân viên</h3>
+              <div className="detail-row">
+                <span className="detail-label">Nhân viên:</span>
+                <span className="detail-value">
+                  {employeeName} ({employeeCode})
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Vị trí:</span>
+                <span className="detail-value">{positionName || "-"}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Kỳ lương & trạng thái */}
           <div className="detail-section">
-            <h3>Thông tin nhân viên</h3>
-            <div className="detail-row">
-              <span className="detail-label">Nhân viên:</span>
-              <span className="detail-value">
-                {employeeName} ({employeeCode})
-              </span>
-            </div>
-            <div className="detail-row">
-              <span className="detail-label">Vị trí:</span>
-              <span className="detail-value">{positionName || "-"}</span>
-            </div>
+            <h3>Thông tin bảng lương</h3>
             <div className="detail-row">
               <span className="detail-label">Thời gian:</span>
               <span className="detail-value">
@@ -270,59 +285,63 @@ export const SalaryDetailModal = ({ salary, onClose, onStatusUpdated }) => {
           </div>
 
           {/* QR thanh toán lương */}
-          <div className="detail-section">
-            <h3>QR thanh toán lương</h3>
-            <div className="detail-row">
-              <button
-                className="btn primary"
-                type="button"
-                onClick={handleViewQr}
-                disabled={qrLoading}
-              >
-                {qrLoading ? "Đang lấy QR..." : "Xem mã QR"}
-              </button>
+          {showQr && (
+            <div className="detail-section">
+              <h3>QR thanh toán lương</h3>
+              <div className="detail-row">
+                <button
+                  className="btn primary"
+                  type="button"
+                  onClick={handleViewQr}
+                  disabled={qrLoading}
+                >
+                  {qrLoading ? "Đang lấy QR..." : "Xem mã QR"}
+                </button>
+              </div>
+              {qrError && (
+                <div className="detail-row">
+                  <span className="detail-label">Lỗi:</span>
+                  <span className="detail-value error-text">{qrError}</span>
+                </div>
+              )}
+              {qrUrl && (
+                <div className="detail-row">
+                  <span className="detail-label">Mã QR:</span>
+                  <span className="detail-value">
+                    <img
+                      src={qrUrl}
+                      alt="QR thanh toán lương"
+                      style={{ maxWidth: "260px", borderRadius: "8px" }}
+                    />
+                  </span>
+                </div>
+              )}
             </div>
-            {qrError && (
-              <div className="detail-row">
-                <span className="detail-label">Lỗi:</span>
-                <span className="detail-value error-text">{qrError}</span>
-              </div>
-            )}
-            {qrUrl && (
-              <div className="detail-row">
-                <span className="detail-label">Mã QR:</span>
-                <span className="detail-value">
-                  <img
-                    src={qrUrl}
-                    alt="QR thanh toán lương"
-                    style={{ maxWidth: "260px", borderRadius: "8px" }}
-                  />
-                </span>
-              </div>
-            )}
-          </div>
+          )}
 
           <div className="modal-footer">
-            <div className="salary-status-footer">
-              <select
-                className="salary-status-select"
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
-              >
-                <option value="">-- Chọn trạng thái --</option>
-                <option value="DRAFT">Nháp</option>
-                <option value="APPROVED">Đã duyệt</option>
-                <option value="PAID">Đã thanh toán</option>
-              </select>
-              <button
-                className="btn primary"
-                type="button"
-                onClick={handleUpdateStatus}
-                disabled={updatingStatus}
-              >
-                {updatingStatus ? "Đang cập nhật..." : "Cập nhật trạng thái"}
-              </button>
-            </div>
+            {canUpdateStatus && (
+              <div className="salary-status-footer">
+                <select
+                  className="salary-status-select"
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                >
+                  <option value="">-- Chọn trạng thái --</option>
+                  <option value="DRAFT">Nháp</option>
+                  <option value="APPROVED">Đã duyệt</option>
+                  <option value="PAID">Đã thanh toán</option>
+                </select>
+                <button
+                  className="btn primary"
+                  type="button"
+                  onClick={handleUpdateStatus}
+                  disabled={updatingStatus}
+                >
+                  {updatingStatus ? "Đang cập nhật..." : "Cập nhật trạng thái"}
+                </button>
+              </div>
+            )}
             <button className="btn cancel" onClick={onClose}>
               Đóng
             </button>
