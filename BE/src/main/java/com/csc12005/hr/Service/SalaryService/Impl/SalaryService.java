@@ -52,6 +52,10 @@ public class SalaryService implements ISalaryService {
 		for (Employee employee : employees) {
 			if(employee.getEmployeeCode().equals("ADMIN") || employee.getEmployeeCode().equals("CEO")) continue;
 			MonthlyAttendanceSummary attendanceSummary = monthlyAttendanceSummaryService.getMonthlyAttendanceSummary(employee.getId(), year.intValue(), month.intValue());
+			if (attendanceSummary == null) {
+				log.warn("No attendance summary found for employee ID {} for {}/{}", employee.getId(), month, year);
+				continue;
+			}
 			BigDecimal baseSalary = employee.getBaseSalary();
 
 			BigDecimal socialInsurance = calculateSocialInsurance(baseSalary);
