@@ -79,7 +79,6 @@ public class SalaryService implements ISalaryService {
 					.employee(employee)
 					.build();
 
-
 			BigDecimal personalDeduction = new BigDecimal("11000000");
 			BigDecimal dependentDeduction = new BigDecimal("4400000")
 					.multiply(new BigDecimal(employee.getNumberOfDependents()));

@@ -155,7 +155,7 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 	}
 	public MonthlyAttendanceSummary getMonthlyAttendanceSummary(Long employeeId, int year, int month) {
 		return monthlyAttendanceSummaryRepository
-				.findByEmployeeIdAndMonthAndYear(employeeId, year, month)
-				.orElse(null);
+				.findByEmployeeIdAndMonthAndYear(employeeId, month, year)
+				.orElseGet(() -> null);
 	}
 }
