@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import "../Request/style.scss";
 import { formatCurrencyVND } from "../../../Utils/formatCurrency";
+import { HRService } from "../../../services/HRService";
 
 export const SalaryDetailModal = ({ salary, onClose }) => {
   if (!salary) return null;
+
+  const [qrUrl, setQrUrl] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState("");
+
+  const handleViewQr = async () => {
+    if (!salary?.id) return;
+
+    setQrLoading(true);
+    setQrError("");
+    setQrUrl(null);
+
+    try {
+      const url = await HRService.getSalaryPaymentQr(salary.id);
+      setQrUrl(url);
+    } catch (error) {
+      setQrError(error.message || "Không lấy được mã QR thanh toán");
+    } finally {
+      setQrLoading(false);
+    }
+  };
 
   const formatDateTime = (value) => {
     if (!value) return "-";
@@ -213,6 +235,39 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
               <span className="detail-label">Ngày trả lương:</span>
               <span className="detail-value">{formatDateTime(paidAt)}</span>
             </div>
+          </div>
+
+          {/* QR thanh toán lương */}
+          <div className="detail-section">
+            <h3>QR thanh toán lương</h3>
+            <div className="detail-row">
+              <button
+                className="btn primary"
+                type="button"
+                onClick={handleViewQr}
+                disabled={qrLoading}
+              >
+                {qrLoading ? "Đang lấy QR..." : "Xem mã QR"}
+              </button>
+            </div>
+            {qrError && (
+              <div className="detail-row">
+                <span className="detail-label">Lỗi:</span>
+                <span className="detail-value error-text">{qrError}</span>
+              </div>
+            )}
+            {qrUrl && (
+              <div className="detail-row">
+                <span className="detail-label">Mã QR:</span>
+                <span className="detail-value">
+                  <img
+                    src={qrUrl}
+                    alt="QR thanh toán lương"
+                    style={{ maxWidth: "260px", borderRadius: "8px" }}
+                  />
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="modal-footer">
