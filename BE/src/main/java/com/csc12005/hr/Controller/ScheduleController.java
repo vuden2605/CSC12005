@@ -77,4 +77,25 @@ public class ScheduleController {
                 .message("Filter schedules successfully")
                 .build();
     }
+    @GetMapping("/{scheduleId}")
+    public ApiResponse<ScheduleResponse> getScheduleById(
+            @PathVariable Long scheduleId
+    ) {
+        return ApiResponse.<ScheduleResponse>builder()
+                .data(scheduleService.getScheduleById(scheduleId))
+                .message("Get schedule by id successfully")
+                .build();
+    }
+    // filter giống filterSchedules nhưng chỉ lấy lịch của user đăng nhập, không truyền positionId
+    @GetMapping("/my-schedules")
+    public ApiResponse<Page<ScheduleResponse>> mySchedules(
+            ScheduleFilterRequest request,
+            PageRequestDTO pageRequestDTO)
+    {
+        return ApiResponse.<Page<ScheduleResponse>>builder()
+                .data(scheduleService.mySchedules(request, pageRequestDTO))
+                .message("Get my schedules successfully")
+                .build();
+    }
+
 }

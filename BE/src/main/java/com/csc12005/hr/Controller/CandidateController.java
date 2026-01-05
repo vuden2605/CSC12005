@@ -85,7 +85,25 @@ public class CandidateController {
                 .message("Filter candidates successfully")
                 .build();
     }
-
+    // get candidate by id
+    @GetMapping("/{id}")
+    public ApiResponse<CandidateResponse> getCandidateById(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.<CandidateResponse>builder()
+                .data(candidateService.getCandidateById(id))
+                .message("Get candidate by id successfully")
+                .build(); }
+    // chuyển ứng viên thành nhân viên
+    @PostMapping("/hire/{id}")
+    public ApiResponse<EmployeeResponse> hireCandidate(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.<EmployeeResponse>builder()
+                .data(candidateService.hireCandidate(id))
+                .message("Hire candidate successfully")
+                .build();
+    }
 
 
 }

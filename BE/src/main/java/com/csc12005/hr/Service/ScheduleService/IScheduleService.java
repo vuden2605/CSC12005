@@ -25,4 +25,9 @@ public interface IScheduleService {
             ScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO
     );
+    public ScheduleResponse getScheduleById(Long scheduleId);
+    public Page<ScheduleResponse> mySchedules(
+            ScheduleFilterRequest request,
+            PageRequestDTO pageRequestDTO
+    );
 }

@@ -13,6 +13,7 @@ import com.csc12005.hr.Mapper.ScheduleMapper;
 import com.csc12005.hr.Repository.*;
 import com.csc12005.hr.Service.MailService.IMailService;
 import com.csc12005.hr.Service.ScheduleService.IScheduleService;
+import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.Lint;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class ScheduleService implements IScheduleService {
     private final PositionRepository positionRepository;
     private final DepartmentRepository departmentRepository;
     private final IMailService mailService;
-
+    private final SecurityUtils securityUtils;
 
     public ScheduleResponse createSchedule(ScheduleCreationRequest scheduleCreationRequest)
     {
@@ -192,6 +193,29 @@ public class ScheduleService implements IScheduleService {
 
         Page<Schedule> page = scheduleRepository.filterSchedules(
                 request.getPositionId(),
+                request.getTimeSlot(),
+                request.getStatus(),
+                request.getLocation(),
+                request.getDateFrom(),
+                request.getDateTo(),
+                pageRequestDTO.buildPageable()
+        );
+
+        return page.map(scheduleMapper::toScheduleResponse);
+    }
+    public ScheduleResponse getScheduleById(Long scheduleId){
+        Schedule schedule= scheduleRepository.findById(scheduleId).orElseThrow(()-> new AppException(ErrorCode.SCHEDULE_NOT_FOUND));
+        return scheduleMapper.toScheduleResponse(schedule);
+    }
+    public Page<ScheduleResponse> mySchedules(
+            ScheduleFilterRequest request,
+            PageRequestDTO pageRequestDTO
+    ) {
+        var myId = securityUtils.getCurrentUserId();
+        Employee employee= employeeRepository.findById(myId).orElseThrow(()-> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        Page<Schedule> page = scheduleRepository.filterSchedules(
+                employee.getPosition().getId(),
                 request.getTimeSlot(),
                 request.getStatus(),
                 request.getLocation(),

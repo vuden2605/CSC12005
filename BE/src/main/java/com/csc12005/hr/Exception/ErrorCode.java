@@ -72,6 +72,7 @@ public enum ErrorCode {
     REQUIRED_RATING_CULTURE_FIT(5067, "Culture fit rating is required", HttpStatus.BAD_REQUEST),
     INVALID_FEEDBACK_LENGTH(5068, "Feedback must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
     CANDIDATE_CANNOT_BE_UPDATED(5069, "Candidate cannot be updated in the current status", HttpStatus.BAD_REQUEST),
+    CANDIDATE_CANNOT_BE_HIRED(5070, "Only candidates with 'Interviewed' status can be hired", HttpStatus.BAD_REQUEST),
     //Activity
     START_DATE_TOO_RECENT(4050,"Start date must be earlier than 7 days before today",HttpStatus.BAD_REQUEST),
     REGISTRATION_TOO_LATE(4051,"Registration is no longer allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),

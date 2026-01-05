@@ -2,21 +2,24 @@ package com.csc12005.hr.Service.CandidateService.impl;
 
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.CandidateResponse;
-import com.csc12005.hr.Entity.Candidate;
-import com.csc12005.hr.Entity.Position;
-import com.csc12005.hr.Entity.Schedule;
+import com.csc12005.hr.DTO.Response.EmployeeResponse;
+import com.csc12005.hr.Entity.*;
 import com.csc12005.hr.Enums.CandidateStatus;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.CandidateMapper;
+import com.csc12005.hr.Mapper.EmployeeMapper;
 import com.csc12005.hr.Repository.CandidateRepository;
+import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.CandidateService.ICandidateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,6 +28,9 @@ public class CandidateService implements ICandidateService {
     private final CandidateRepository candidateRepository;
     private final CandidateMapper candidateMapper;
     private final PositionRepository positionRepository;
+    private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmployeeMapper employeeMapper;
     public CandidateResponse createCandidate(CandidateCreationRequest request){
         Candidate candidate= candidateMapper.toCandidate(request);
         Position position= positionRepository.findById(request.getPositionId()).orElseThrow(()-> new AppException(ErrorCode.POSITION_NOT_FOUND));
@@ -137,6 +143,41 @@ public class CandidateService implements ICandidateService {
                 .map(candidateMapper::toCandidateResponse)
                 .toList();
     }
-
+    public CandidateResponse getCandidateById(Long candidateId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new AppException(ErrorCode.CANDIDATE_NOT_FOUND));
+        return candidateMapper.toCandidateResponse(candidate); }
+    private String generateEmployeeCode(Department department) {
+        // Generate employee code logic
+        int year = LocalDate.now().getYear();
+        long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId());
+        long sequence = count + 1;
+        String sequenceFormatted = String.format("%03d", sequence);
+        return year + "_" + department.getDepartmentCode() + "_" + sequenceFormatted;
+    }
+    @Transactional
+    public EmployeeResponse hireCandidate(Long candidateId){
+        Candidate candidate= candidateRepository.findById(candidateId).orElseThrow(()-> new AppException(ErrorCode.CANDIDATE_NOT_FOUND));
+        if(candidate.getStatus()!= CandidateStatus.PASSED){
+            throw new AppException(ErrorCode.CANDIDATE_CANNOT_BE_HIRED);   }
+        var employeeCode= generateEmployeeCode(candidate.getPosition().getDepartment());
+        Employee employee = Employee.builder()
+                .fullName(candidate.getFullName())
+                .email(candidate.getEmail())
+                .employeeCode(employeeCode)
+                .phone(candidate.getPhone())
+                .gender(candidate.getGender())
+                .address(candidate.getAddress())
+                .password(passwordEncoder.encode(employeeCode))
+                .birthDate(candidate.getBirthDate())
+                .position(candidate.getPosition())
+                .department(candidate.getPosition().getDepartment())
+                .hireDate(LocalDate.now())
+                .build();
+        employeeRepository.save(employee);
+        candidate.transitionTo(CandidateStatus.HIRED);
+        candidateRepository.save(candidate);
+        return employeeMapper.toEmployeeResponse(employee);
+    }
 }
 

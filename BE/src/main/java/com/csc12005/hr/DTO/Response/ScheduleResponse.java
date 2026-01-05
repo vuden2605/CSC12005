@@ -1,6 +1,7 @@
 package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Enums.CandidateStatus;
+import com.csc12005.hr.Enums.ScheduleStatus;
 import com.csc12005.hr.Enums.ScheduleTimeSlot;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,5 @@ public class ScheduleResponse {
     private LocalDate date;
     private EmployeeResponse interviewer;
     private PositionResponse position;
-
+    private ScheduleStatus status;
 }

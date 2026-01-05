@@ -22,7 +22,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
     @Query("""
     SELECT DISTINCT s FROM Schedule s
     LEFT JOIN s.candidates c
-    LEFT JOIN c.position p
+    LEFT JOIN s.position p
     WHERE (:positionId IS NULL OR p.id = :positionId)
       AND (:timeSlot IS NULL OR s.timeSlot = :timeSlot)
       AND (:status IS NULL OR s.status = :status)
