@@ -55,15 +55,15 @@ public class SalaryController {
                 .message("Pay salary successfully")
                 .build();
     }
-    @PostMapping("/monthly-summary")
-    public ApiResponse<Void> createMonthlyAttendanceSummary(
-			@RequestBody MonthlyAttendanceSummaryCreationRequest request
-	) {
-		monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(request);
-		return ApiResponse.<Void>builder()
-				.message("Create monthly attendance summary successfully")
-				.build();
-	}
+//    @PostMapping("/monthly-summary")
+//    public ApiResponse<Void> createMonthlyAttendanceSummary(
+//			@RequestBody MonthlyAttendanceSummaryCreationRequest request
+//	) {
+//		monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(request);
+//		return ApiResponse.<Void>builder()
+//				.message("Create monthly attendance summary successfully")
+//				.build();
+//	}
 	@GetMapping("/qr/{salaryId}")
 	public ApiResponse<String> getSalaryPaymentQRCode(
 			@PathVariable Long salaryId

@@ -31,6 +31,7 @@ public class EmployeeResponse {
 	private String emergencyContactName;
 
 	private String emergencyContactRelationship;
+
 	private LocalDate birthDate;
 
 	private String nationalCode;
@@ -108,6 +109,16 @@ public class EmployeeResponse {
 	private Integer annualLeave;
 
 	private Integer usedLeave;
+
+	private Integer usedSickLeaveDays;
+
+	private Integer usedPersonalLeaveDays;
+
+	private Boolean isOnMaternityLeave;
+
+	private LocalDate maternityStartDate;
+
+	private LocalDate maternityEndDate;
 
 	private Boolean isActive;
 

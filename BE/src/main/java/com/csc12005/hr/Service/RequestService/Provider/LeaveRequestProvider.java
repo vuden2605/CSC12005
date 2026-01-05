@@ -111,6 +111,7 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 		return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
 	}
 	private void createTimeSheetsForLeaveRequest(LeaveRequest leaveRequest) {
+		Long currentUserId = securityUtils.getCurrentUserId();
 		LocalDate startDate = leaveRequest. getStartDate().toLocalDate();
 		LocalDate endDate = leaveRequest.getEndDate().toLocalDate();
 		Employee employee = leaveRequest.getEmployee();
@@ -140,6 +141,10 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 							.lateDeductionRate(BigDecimal.ZERO)
 							.request(leaveRequest)
 							.createdAt(LocalDateTime.now())
+							.isAdjusted(true)
+							.adjustmentReason("Leave Request Approved")
+							.createdBy(employeeRepository.getReferenceById(currentUserId))
+							.updatedBy(employeeRepository.getReferenceById(currentUserId))
 							.build();
 					timesheets.add(timesheet);
 				}
