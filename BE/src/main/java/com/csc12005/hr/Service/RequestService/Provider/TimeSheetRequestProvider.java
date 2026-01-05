@@ -23,6 +23,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+
 @Service
 public class TimeSheetRequestProvider extends AbstractRequestProvider {
 	private final TimeSheetRepository timeSheetRepository;
@@ -61,8 +63,12 @@ public class TimeSheetRequestProvider extends AbstractRequestProvider {
 						timeSheetRequest.getEmployee().getId(),
 						timeSheetRequest.getWorkDate())
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
-		timeSheet.setCheckIn(timeSheetRequest.getCheckInNew());
-		timeSheet.setCheckOut(timeSheetRequest.getCheckOutNew());
+		LocalTime checkInNew = timeSheetRequest.getCheckInNew();
+		LocalTime checkOutNew = timeSheetRequest.getCheckOutNew();
+		timeSheet.setCheckIn(checkInNew);
+		timeSheet.setCheckOut(checkOutNew);
+		timeSheet.calculateAll();
+		timeSheet.setRequest(timeSheetRequest);
 		timeSheetRepository.save(timeSheet);
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
