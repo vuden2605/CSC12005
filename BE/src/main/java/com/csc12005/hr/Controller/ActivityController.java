@@ -4,6 +4,7 @@ import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.*;
 import com.csc12005.hr.Entity.ActivityDetail;
 import com.csc12005.hr.Service.ActivityDetailService.Impl.ActivityDetailService;
+import com.csc12005.hr.Service.ActivityService.IActivityService;
 import com.csc12005.hr.Service.ActivityService.Impl.ActivityService;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/activities")
 @Slf4j
 public class ActivityController {
-	private final ActivityService activityService;
+	private final IActivityService activityService;
 	private final ActivityDetailService activityDetailService;
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ApiResponse<ActivityResponse> createActivity(@ModelAttribute @Valid ActivityCreationRequest request) {

@@ -13,6 +13,5 @@ public interface EmployeeMapper{
     @Mapping(target = "department", source = "department")
     EmployeeResponse toEmployeeResponse(Employee employee);
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-
     void updateEmployeeFromDto(EmployeeHRUpdateRequest dto, @MappingTarget Employee employee);
 }
