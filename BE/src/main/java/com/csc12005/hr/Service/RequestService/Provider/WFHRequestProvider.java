@@ -23,6 +23,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 	@Override
 	@Transactional
 	public RequestResponse approveRequest(Long requestId) {
+		Long currentUserId = securityUtils.getCurrentUserId();
 		WFHRequest wfhRequest = wFhRequestRepository.findById(requestId)
 				.orElseThrow(() -> new AppException(ErrorCode.WFH_REQUEST_NOT_FOUND));
 		Employee employee = wfhRequest.getEmployee();
@@ -71,7 +73,15 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 					.workDate(startDate.plusDays(i))
 					.checkIn(LocalTime.parse("08:00:00"))
 					.checkOut(LocalTime.parse("17:00:00"))
+					.workHours(BigDecimal.valueOf(8))
+					.lateMinutes(0)
+					.lateDeductionRate(BigDecimal.ZERO)
+					.isAdjusted(true)
+					.adjustmentReason("Work From Home")
 					.type(TimeSheetType.WFH)
+					.request(wfhRequest)
+					.createdBy(employeeRepository.getReferenceById(currentUserId))
+					.updatedBy(employeeRepository.getReferenceById(currentUserId))
 					.build();
 			timeSheets.add(timeSheet);
 		}

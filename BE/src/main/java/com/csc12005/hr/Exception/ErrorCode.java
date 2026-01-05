@@ -54,6 +54,24 @@ public enum ErrorCode {
 	FORBIDDEN(5005, "Unauthorized", HttpStatus.FORBIDDEN),
 	INVALID_REFRESH_TOKEN(5006, "Invalid refresh token", HttpStatus.UNAUTHORIZED),
     USER_DISABLED(5007,"This user account has been disabled.",HttpStatus.BAD_REQUEST),
+    //Schedule
+    SCHEDULE_NOT_FOUND(5500, "Schedule not found", HttpStatus.NOT_FOUND),
+    DATE_TOO_RECENT(5501,"Start date must be earlier than 5 days before today",HttpStatus.BAD_REQUEST),
+    UPDATE_SCHEDULE_TOO_LATE(5503,"Update schedule is not allowed within 2 days of the start date.",HttpStatus.BAD_REQUEST),
+    DATE_IN_PAST(5502,"Schedule date cannot be in the past",HttpStatus.BAD_REQUEST),
+    CANNOT_CANCEL_COMPLETED_SCHEDULE(5504,"Cannot cancel a completed schedule",HttpStatus.BAD_REQUEST),
+    INTERVIEWER_HAS_SCHEDULE_CONFLICT(5505,"Interviewer has a scheduling conflict",HttpStatus.BAD_REQUEST),
+    //candidate
+    CANDIDATE_NOT_FOUND(5600, "Candidate not found", HttpStatus.NOT_FOUND),
+    CANDIDATE_ALREADY_SCHEDULED(5601, "Candidate has already been scheduled", HttpStatus.BAD_REQUEST),
+    CANDIDATE_NOT_IN_SCHEDULE(5062, "Candidate is not assigned to any schedule", HttpStatus.BAD_REQUEST),
+    REQUIRED_RATING_TECHNICAL(5063, "Technical rating is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_RATING_COMMUNICATION(5064, "Communication rating is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_RATING_PROBLEM_SOLVING(5065, "Problem solving rating is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_RATING_EXPERIENCE(5066, "Experience rating is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_RATING_CULTURE_FIT(5067, "Culture fit rating is required", HttpStatus.BAD_REQUEST),
+    INVALID_FEEDBACK_LENGTH(5068, "Feedback must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
+    CANDIDATE_CANNOT_BE_UPDATED(5069, "Candidate cannot be updated in the current status", HttpStatus.BAD_REQUEST),
     //Activity
     START_DATE_TOO_RECENT(4050,"Start date must be earlier than 7 days before today",HttpStatus.BAD_REQUEST),
     REGISTRATION_TOO_LATE(4051,"Registration is no longer allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),
@@ -73,7 +91,13 @@ public enum ErrorCode {
 	LEAVE_REQUEST_NOT_FOUND(6003, "Leave request not found", HttpStatus.NOT_FOUND),
 	//Request
 	REQUEST_NOT_FOUND(6004, "Request not found", HttpStatus.NOT_FOUND),
-	//File Upload
+    REQUIRED_SCHEDULE_TIME_SLOT(6005, "Time slot is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_SCHEDULE_DATE(6008, "Date is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_SCHEDULE_LOCATION(6006, "Location is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_INTERVIEWER_ID(6007, "Interviewer id is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_SCHEDULE_ID(6009, "Location id is required", HttpStatus.BAD_REQUEST),
+    REQUIRED_CANDIDATE_IDS(6010, "Candidate id is required", HttpStatus.BAD_REQUEST),
+    //File Upload
 	FILE_UPLOAD_FAILED(7000,"File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
 	GENERATE_URL_FAILED(7003,"Generate file URL failed", HttpStatus.INTERNAL_SERVER_ERROR),
 	FILE_REQUIRED(7004,"File is required", HttpStatus.BAD_REQUEST),
@@ -137,6 +161,7 @@ public enum ErrorCode {
 	SALARY_NOT_FOUND(6505,"Salary record not found for employee",HttpStatus.NOT_FOUND),
 	BANK_NOT_SUPPORTED(7005,"Bank not supported for transfers", HttpStatus.BAD_REQUEST),
 	HOLIDAY_NOT_FOUND(40013,"Holiday not found", HttpStatus.NOT_FOUND),
+	INSUFFICIENT_CASUAL_LEAVE_BALANCE(40014,"Insufficient casual leave balance", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 
 	private final Integer code;

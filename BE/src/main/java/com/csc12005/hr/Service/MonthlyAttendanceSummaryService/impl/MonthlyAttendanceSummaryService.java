@@ -36,7 +36,7 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 
 	@Override
 	@Transactional
-	public void createMonthlyAttendanceSummary(MonthlyAttendanceSummaryCreationRequest request) {
+	public void createMonthlyAttendanceSummary(int year, int month) {
 		List<Employee> employees = employeeRepository.findAll();
 		List<MonthlyAttendanceSummary> summaries = new ArrayList<>();
 		for(Employee employee : employees) {
@@ -44,11 +44,11 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 				continue;
 			}
 			Long employeeId = employee.getId();
-			int publicHolidays = publicHolidayRepository.countByYearAndMonth(request.getYear(), request.getMonth());
+			int publicHolidays = publicHolidayRepository.countByYearAndMonth(year, month);
 			MonthlyAttendanceAggResponse aggregate  = timeSheetRepository.aggregateMonthlyAttendance(
 					employeeId,
-					request.getYear(),
-					request.getMonth()
+					year,
+					month
 
 			);
 			if (aggregate == null) continue;
@@ -60,8 +60,8 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 			);
 			BigDecimal lateDeduction = calculateLateDeduction(
 					employee.getId(),
-					request.getYear(),
-					request.getMonth(),
+					year,
+					month,
 					baseSalary
 			);
 			int totalWorkDays = aggregate.getTotalWorkDays().intValue();
@@ -69,8 +69,8 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 
 			MonthlyAttendanceSummary summary = MonthlyAttendanceSummary.builder()
 					.employee(employee)
-					.year(request.getYear())
-					.month(request.getMonth())
+					.year(year)
+					.month(month)
 					.totalWorkDays(totalWorkDays)
 					.totalAbsentDays(absentDays)
 					.totalLateDays(aggregate.getTotalLateDays().intValue())
@@ -152,5 +152,10 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 			}
 		}
 		return totalLateDeduction.setScale(0, RoundingMode.HALF_UP);
+	}
+	public MonthlyAttendanceSummary getMonthlyAttendanceSummary(Long employeeId, int year, int month) {
+		return monthlyAttendanceSummaryRepository
+				.findByEmployeeIdAndMonthAndYear(employeeId, year, month)
+				.orElse(null);
 	}
 }

@@ -87,13 +87,13 @@ export const HRPayRoll = () => {
       {/* FILTER */}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div className="payroll-filter">
-          <span className="title">Payroll</span>
+          <span className="title">BẢNG LƯƠNG</span>
 
           <select
             value={filters.month}
             onChange={(e) => setFilters({ ...filters, month: e.target.value })}
           >
-            <option value="">Month</option>
+            <option value="">Tháng</option>
             {[...Array(12)].map((_, i) => (
               <option key={i + 1} value={i + 1}>
                 {i + 1}
@@ -103,7 +103,7 @@ export const HRPayRoll = () => {
           <div className="year-field">
             <input
               type="number"
-              placeholder="Year"
+              placeholder="Năm"
               min={2000}
               max={2100}
               value={filters.year}
@@ -126,7 +126,7 @@ export const HRPayRoll = () => {
 
           <input
             type="text"
-            placeholder="Employee Name"
+            placeholder="Tên nhân viên"
             value={filters.employeeName}
             onChange={(e) =>
               setFilters({
@@ -140,6 +140,7 @@ export const HRPayRoll = () => {
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           >
+
             <option value="">Tất cả trạng thái</option>
             <option value="DRAFT">Nháp</option>
             <option value="APPROVED">Đã duyệt</option>
@@ -147,6 +148,7 @@ export const HRPayRoll = () => {
           </select>
 
           <button onClick={FilterReset}>Reset</button>
+
           <button onClick={handlePaySalary}>Phát lương</button>
         </div>
         <button className="payroll-button" onClick={handleCreatePayroll}>
@@ -155,12 +157,12 @@ export const HRPayRoll = () => {
       </div>
       {/* TABLE */}
       <div className="payroll-table">
-        <h3>EMPLOYEE</h3>
+        <h3>NHÂN VIÊN</h3>
 
         <table>
           <thead>
             <tr>
-              <th>#</th>
+              <th>STT</th>
               <th>Nhân viên</th>
               <th>Thời gian</th>
               <th>Vị trí</th>
@@ -221,7 +223,9 @@ export const HRPayRoll = () => {
                     <span
                       className={`status ${getStatusClass(status)}`}
                     >
+
                       {getStatusLabel(status)}
+
                     </span>
                   </td>
                   <td>
@@ -239,6 +243,7 @@ export const HRPayRoll = () => {
         </table>
 
         {/* PAGINATION */}
+
         <Pagination
           currentPage={page}
           totalPages={totalPages}
@@ -250,6 +255,7 @@ export const HRPayRoll = () => {
             setPage(0);
           }}
         />
+
       </div>
       {selectedSalary && (
         <SalaryDetailModal

@@ -1,5 +1,6 @@
 package com.csc12005.hr.Entity;
 
+import com.csc12005.hr.Enums.LeaveType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -17,4 +18,5 @@ import java.time.LocalDateTime;
 public class LeaveRequest extends Request {
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
+	private LeaveType leaveType;
 }

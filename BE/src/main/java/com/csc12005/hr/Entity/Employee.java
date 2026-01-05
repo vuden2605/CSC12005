@@ -107,6 +107,24 @@ public class Employee {
 	@Column(nullable = false)
 	private Integer usedLeave = 0;
 
+	@Column(name = "used_sick_leave_days")
+	@Builder.Default
+	private Integer usedSickLeaveDays = 0;
+
+	@Column(name = "used_personal_leave_days")
+	@Builder.Default
+	private Integer usedPersonalLeaveDays = 0;
+
+	@Column(name = "is_on_maternity_leave")
+	@Builder.Default
+	private Boolean isOnMaternityLeave = false;
+
+	@Column(name = "maternity_start_date")
+	private LocalDate maternityStartDate;
+
+	@Column(name = "maternity_end_date")
+	private LocalDate maternityEndDate;
+
 	@Builder.Default
 	@Column(nullable = false)
 	private Boolean isActive = true;
