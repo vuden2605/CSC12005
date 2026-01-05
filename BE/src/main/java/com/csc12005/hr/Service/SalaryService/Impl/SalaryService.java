@@ -1,9 +1,6 @@
 package com.csc12005.hr.Service.SalaryService.Impl;
 
-import com.csc12005.hr.DTO.Request.MySalaryFilterRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.SalaryCreationRequest;
-import com.csc12005.hr.DTO.Request.SalaryFilterRequest;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.SalaryResponse;
 import com.csc12005.hr.Entity.*;
 import com.csc12005.hr.Enums.SalaryStatus;
@@ -79,7 +76,6 @@ public class SalaryService implements ISalaryService {
 					.employee(employee)
 					.build();
 
-
 			BigDecimal personalDeduction = new BigDecimal("11000000");
 			BigDecimal dependentDeduction = new BigDecimal("4400000")
 					.multiply(new BigDecimal(employee.getNumberOfDependents()));
@@ -133,15 +129,16 @@ public class SalaryService implements ISalaryService {
         );
     }
     @Transactional
-    public void updateStatus(Long month, Long year, SalaryStatus status) {
-        boolean exists = salaryRepository.existsByMonthAndYear(month, year);
-        if (!exists) {
-            throw new AppException(ErrorCode.PAYROLL_NOT_GENERATED);
-        }
-        int updated = salaryRepository.paySalary(month, year, status);
-        if (updated == 0) {
-            throw new AppException(ErrorCode.PAYROLL_ALREADY_PAID);
-        }
+    public void updateStatus(UpdateSalaryStatus request) {
+		SalaryStatus status = request.getStatus();
+		List<Salary> salaries = salaryRepository.findAllById(request.getSalaryIds());
+		if(salaries.size() != request.getSalaryIds().size()) {
+			throw new AppException(ErrorCode.SALARY_NOT_FOUND);
+		}
+		for(Salary salary : salaries) {
+			salary.setStatus(status);
+		}
+		salaryRepository.saveAll(salaries);
 	}
 
 	public BigDecimal calculateSocialInsurance(BigDecimal baseSalary) {

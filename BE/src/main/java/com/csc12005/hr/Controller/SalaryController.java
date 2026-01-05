@@ -48,9 +48,9 @@ public class SalaryController {
     }
     @PostMapping("/update-status")
     public ApiResponse<Void> paySalary(
-		    @RequestBody PaySalaryRequest request
+		    @RequestBody UpdateSalaryStatus request
 		    ) {
-        salaryService.updateStatus(request.getMonth(), request.getYear(), request.getStatus());
+        salaryService.updateStatus(request);
         return ApiResponse.<Void>builder()
                 .message("Pay salary successfully")
                 .build();

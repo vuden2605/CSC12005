@@ -362,6 +362,54 @@ paySalary: async (month, year) => {
       console.error("Error rejecting request:", errMsg);
       throw new Error(errMsg);
     }
+  },
+
+  // Cập nhật trạng thái bảng lương (vd: APPROVED, PAID)
+  updateSalaryStatus: async (salaryIds, status) => {
+    try {
+      const response = await api.post(
+        `/salaries/update-status`,
+        {
+          salaryIds: Array.isArray(salaryIds) ? salaryIds : [salaryIds],
+          status,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error updating salary status";
+      console.error("Error updating salary status:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+
+  // Lấy QR code thanh toán lương cho một bảng lương cụ thể
+  getSalaryPaymentQr: async (salaryId) => {
+    try {
+      const response = await api.get(`/salaries/qr/${salaryId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // backend trả { code, message, data }, trong đó data là URL ảnh QR
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching salary payment QR";
+      console.error("Error fetching salary payment QR:", errMsg);
+      throw new Error(errMsg);
+    }
   }
 
   

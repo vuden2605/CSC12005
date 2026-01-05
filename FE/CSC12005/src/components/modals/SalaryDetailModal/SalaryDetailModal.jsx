@@ -1,9 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import "../Request/style.scss";
 import { formatCurrencyVND } from "../../../Utils/formatCurrency";
+import { HRService } from "../../../services/HRService";
+import { useAlert } from "../../../context/AlertContext";
 
-export const SalaryDetailModal = ({ salary, onClose }) => {
+export const SalaryDetailModal = ({
+  salary,
+  onClose,
+  onStatusUpdated,
+  canUpdateStatus = true,
+  showQr = true,
+  hideEmployeeInfo = false,
+}) => {
   if (!salary) return null;
+
+  const [qrUrl, setQrUrl] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState("");
+  const [newStatus, setNewStatus] = useState(salary.status || "");
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  const { showAlert } = useAlert();
+
+  const handleViewQr = async () => {
+    if (!salary?.id) return;
+
+    setQrLoading(true);
+    setQrError("");
+    setQrUrl(null);
+
+    try {
+      const url = await HRService.getSalaryPaymentQr(salary.id);
+      setQrUrl(url);
+    } catch (error) {
+      setQrError(error.message || "Không lấy được mã QR thanh toán");
+    } finally {
+      setQrLoading(false);
+    }
+  };
 
   const formatDateTime = (value) => {
     if (!value) return "-";
@@ -46,6 +80,34 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
     return s || "-";
   };
 
+  const handleUpdateStatus = async () => {
+    if (!canUpdateStatus) return;
+    if (!newStatus) {
+      showAlert("error", "Vui lòng chọn trạng thái mới");
+      return;
+    }
+
+    try {
+      setUpdatingStatus(true);
+      await HRService.updateSalaryStatus(salary.id, newStatus);
+      showAlert(
+        "success",
+        `Cập nhật trạng thái lương thành ${getStatusLabel(newStatus)} thành công`
+      );
+      if (onStatusUpdated) {
+        await onStatusUpdated();
+      }
+      onClose();
+    } catch (error) {
+      showAlert(
+        "error",
+        error.message || "Cập nhật trạng thái bảng lương thất bại"
+      );
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const currency = (v) => formatCurrencyVND(v || 0);
 
   return (
@@ -60,18 +122,25 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
 
         <div className="modal-content">
           {/* Thông tin nhân viên */}
+          {!hideEmployeeInfo && (
+            <div className="detail-section">
+              <h3>Thông tin nhân viên</h3>
+              <div className="detail-row">
+                <span className="detail-label">Nhân viên:</span>
+                <span className="detail-value">
+                  {employeeName} ({employeeCode})
+                </span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Vị trí:</span>
+                <span className="detail-value">{positionName || "-"}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Kỳ lương & trạng thái */}
           <div className="detail-section">
-            <h3>Thông tin nhân viên</h3>
-            <div className="detail-row">
-              <span className="detail-label">Nhân viên:</span>
-              <span className="detail-value">
-                {employeeName} ({employeeCode})
-              </span>
-            </div>
-            <div className="detail-row">
-              <span className="detail-label">Vị trí:</span>
-              <span className="detail-value">{positionName || "-"}</span>
-            </div>
+            <h3>Thông tin bảng lương</h3>
             <div className="detail-row">
               <span className="detail-label">Thời gian:</span>
               <span className="detail-value">
@@ -215,7 +284,64 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
             </div>
           </div>
 
+          {/* QR thanh toán lương */}
+          {showQr && (
+            <div className="detail-section">
+              <h3>QR thanh toán lương</h3>
+              <div className="detail-row">
+                <button
+                  className="btn primary"
+                  type="button"
+                  onClick={handleViewQr}
+                  disabled={qrLoading}
+                >
+                  {qrLoading ? "Đang lấy QR..." : "Xem mã QR"}
+                </button>
+              </div>
+              {qrError && (
+                <div className="detail-row">
+                  <span className="detail-label">Lỗi:</span>
+                  <span className="detail-value error-text">{qrError}</span>
+                </div>
+              )}
+              {qrUrl && (
+                <div className="detail-row">
+                  <span className="detail-label">Mã QR:</span>
+                  <span className="detail-value">
+                    <img
+                      src={qrUrl}
+                      alt="QR thanh toán lương"
+                      style={{ maxWidth: "260px", borderRadius: "8px" }}
+                    />
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="modal-footer">
+            {canUpdateStatus && (
+              <div className="salary-status-footer">
+                <select
+                  className="salary-status-select"
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                >
+                  <option value="">-- Chọn trạng thái --</option>
+                  <option value="DRAFT">Nháp</option>
+                  <option value="APPROVED">Đã duyệt</option>
+                  <option value="PAID">Đã thanh toán</option>
+                </select>
+                <button
+                  className="btn primary"
+                  type="button"
+                  onClick={handleUpdateStatus}
+                  disabled={updatingStatus}
+                >
+                  {updatingStatus ? "Đang cập nhật..." : "Cập nhật trạng thái"}
+                </button>
+              </div>
+            )}
             <button className="btn cancel" onClick={onClose}>
               Đóng
             </button>

@@ -351,11 +351,44 @@
 
     .modal-footer {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       gap: 12px;
       margin-top: 32px;
       padding-top: 24px;
       border-top: 2px solid #f0f0f0;
+
+      .salary-status-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .salary-status-select {
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          background-color: #f9fafb;
+          min-width: 190px;
+          outline: none;
+          transition: all 0.15s ease;
+
+          &:focus {
+            border-color: #5c6bc0;
+            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.15);
+            background-color: #ffffff;
+          }
+        }
+
+        .btn.primary {
+          background: #10b981;
+          color: #fff;
+
+          &:hover {
+            background: #059669;
+          }
+        }
+      }
     }
   }
 
