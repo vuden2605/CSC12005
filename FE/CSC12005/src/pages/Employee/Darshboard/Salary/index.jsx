@@ -2,12 +2,18 @@ import { useEffect, useState } from "react";
 import "./style.scss";
 import { formatCurrencyVND } from "../../../../Utils/formatCurrency";
 import { EmployeeService } from "../../../../services/EmployeeService";
+import { SalaryDetailModal } from "../../../../components/modals/SalaryDetailModal/SalaryDetailModal";
+import { Pagination } from "../../../../components/Pagination";
 
 export const Salary = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [yearError, setYearError] = useState("");
+  const [selectedSalary, setSelectedSalary] = useState(null);
 
   const [filters, setFilters] = useState({
     month: "",
@@ -17,28 +23,31 @@ export const Salary = () => {
 
   const fetchSalaries = async () => {
     try {
+      setLoading(true);
       const filterPayload = {
-        month: filters.month || null,
-        year: filters.year || null,
-        employeeName: filters.employeeName || null,
-        status: filters.status === "" ? null : filters.status === "true",
+        month: filters.month || undefined,
+        year: filters.year || undefined,
+        status: filters.status || undefined,
       };
 
       const res = await EmployeeService.getMySalaries(filterPayload, {
         page,
-        size: 10,
+        size: pageSize,
       });
 
-      setData(res.content);
-      setTotalPages(res.totalPages);
+      setData(res.content || []);
+      setTotalPages(res.totalPages || 0);
+      setTotalElements(res.totalElements || (res.content ? res.content.length : 0));
     } catch (err) {
       console.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchSalaries();
-  }, [page, filters]);
+  }, [page, pageSize, filters]);
   const FilterReset = () => {
     setFilters({
       month: "",
@@ -46,6 +55,7 @@ export const Salary = () => {
       status: "",
     });
     setYearError("");
+    setPage(0);
   };
 
 
@@ -94,13 +104,14 @@ export const Salary = () => {
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
-          <option value="">Trạng thái</option>
-          <option value="true">Đã thanh toán</option>
-          <option value="false">Đang thanh toán</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="DRAFT">Nháp</option>
+          <option value="APPROVED">Đã duyệt</option>
+          <option value="PAID">Đã thanh toán</option>
         </select>
 
 
-        <button onClick={FilterReset}>Reset</button>
+        <button onClick={FilterReset}>Đặt lại</button>
 
       </div>
 
@@ -113,6 +124,7 @@ export const Salary = () => {
               <th>Thời gian</th>
               <th>Lương</th> <th>Số giờ</th>
               <th>Trạng thái</th>
+              <th>Chi tiết</th>
             </tr>
           </thead>
           <tbody>
@@ -125,19 +137,58 @@ export const Salary = () => {
             ) : (
               data.map((item, index) => (
                 <tr key={item.id}>
-                  <td>{index + 1 + page * 10}</td>
+                  <td>{index + 1 + page * pageSize}</td>
 
                   <td>
                     {item.month}/{item.year}
                   </td>
-                  <td>{formatCurrencyVND(item.totalPay)}</td>
-                  <td>{item.workTime}</td>
                   <td>
-                    <span
-                      className={`status ${item.status ? "done" : "pending"}`}
+                    {formatCurrencyVND(
+                      item.netSalary ||
+                        item.grossSalary ||
+                        item.actualSalary ||
+                        item.baseSalary ||
+                        0
+                    )}
+                  </td>
+                  <td>{
+                    item.attendanceSummary?.totalWorkHours ??
+                    item.workTime ??
+                    0
+                  }</td>
+                  <td>
+                    {(() => {
+                      const status = item.status; // DRAFT, APPROVED, PAID
+
+                      const getStatusLabel = (s) => {
+                        if (s === "DRAFT") return "Nháp";
+                        if (s === "APPROVED") return "Đã duyệt";
+                        if (s === "PAID") return "Đã thanh toán";
+                        return s || "-";
+                      };
+
+                      const getStatusClass = (s) => {
+                        if (s === "PAID") return "done";
+                        if (s === "APPROVED") return "approved";
+                        return "pending";
+                      };
+
+                      return (
+                        <span
+                          className={`status ${getStatusClass(status)}`}
+                        >
+                          {getStatusLabel(status)}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td>
+                    <button
+                      className="btn-view-detail"
+                      onClick={() => setSelectedSalary(item)}
                     >
-                      {item.status ? "Đã thanh toán" : "Đang thanh toán"}
-                    </span>
+                      Xem
+                    </button>
                   </td>
                 </tr>
               ))
@@ -146,29 +197,28 @@ export const Salary = () => {
         </table>
 
         {/* PAGINATION */}
-        <div className="pagination">
-          <button disabled={page === 0} onClick={() => setPage(page - 1)}>
-            Trước
-          </button>
-
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              className={page === i ? "active" : ""}
-              onClick={() => setPage(i)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            disabled={page === totalPages - 1}
-            onClick={() => setPage(page + 1)}
-          >
-            Sau
-          </button>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalElements={totalElements}
+          onPageChange={(newPage) => setPage(newPage)}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setPage(0);
+          }}
+          loading={loading}
+        />
       </div>
+      {selectedSalary && (
+        <SalaryDetailModal
+          salary={selectedSalary}
+          onClose={() => setSelectedSalary(null)}
+          canUpdateStatus={false}
+          showQr={false}
+          hideEmployeeInfo={true}
+        />
+      )}
     </div>
   );
 };

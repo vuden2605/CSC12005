@@ -414,22 +414,37 @@ export const EmployeeService = {
       throw new Error(errMsg);
     }
   },
-  getMySalaries: async (filter, params) => {
+
+  // Lấy bảng lương của chính nhân viên đang đăng nhập
+  // filter: { status, month, year }
+  // pagination: { page, size, sortBy, direction }
+  getMySalaries: async (filter = {}, pagination = {}) => {
     try {
-      const response = await api.post(`/salaries/my`, filter, {
+      const params = {
+        status: filter.status || undefined,
+        month: filter.month || undefined,
+        year: filter.year || undefined,
+        page: pagination.page ?? 0,
+        size: pagination.size ?? 10,
+        sortBy: pagination.sortBy || "id",
+        direction: pagination.direction || "ASC",
+      };
+
+      const response = await api.get(`/salaries/my`, {
         params,
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log("salaries:",response.data.data);
-      return response.data.data;
+
+      console.log("my salaries:", response.data.data);
+      return response.data.data || response.data;
     } catch (error) {
       const errMsg =
         error.response?.data?.message ||
         error.message ||
-        "Error fetching salaries";
-      console.error("Error fetching salaries:", errMsg);
+        "Error fetching my salaries";
+      console.error("Error fetching my salaries:", errMsg);
       throw new Error(errMsg);
     }
   },
