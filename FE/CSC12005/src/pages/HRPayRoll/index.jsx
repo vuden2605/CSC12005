@@ -147,7 +147,7 @@ export const HRPayRoll = () => {
             <option value="PAID">Đã thanh toán</option>
           </select>
 
-          <button onClick={FilterReset}>Reset</button>
+          <button onClick={FilterReset}>Đặt lại</button>
 
           <button onClick={handlePaySalary}>Phát lương</button>
         </div>
