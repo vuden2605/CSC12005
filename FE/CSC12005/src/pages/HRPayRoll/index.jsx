@@ -64,21 +64,47 @@ export const HRPayRoll = () => {
   const { showAlert } = useAlert();
   const handleCreatePayroll = async () => {
     try {
-      await HRService.createPayroll(currentMonth, currentYear);
-      showAlert("success", "Create payroll success");
+      const month = Number(filters.month) || currentMonth;
+      const year = Number(filters.year) || currentYear;
+
+      if (!year || year < 2000 || year > 2100) {
+        showAlert("error", "Năm không hợp lệ (2000 - 2100)");
+        return;
+      }
+
+      if (!month || month < 1 || month > 12) {
+        showAlert("error", "Tháng không hợp lệ (1 - 12)");
+        return;
+      }
+
+      await HRService.createPayroll(month, year);
+      showAlert("success", `Xuất bảng lương tháng ${month}/${year} thành công`);
       fetchSalaries();
     } catch (err) {
-      showAlert("error", err.message);
+      showAlert("error", err.message || "Xuất bảng lương thất bại");
     }
   };
   //thanh toán lương
   const handlePaySalary = async () => {
   try {
-    await HRService.paySalary(currentMonth, currentYear);
-    showAlert("success", "Pay salary successfully");
+    const month = Number(filters.month) || currentMonth;
+    const year = Number(filters.year) || currentYear;
+
+    if (!year || year < 2000 || year > 2100) {
+      showAlert("error", "Năm không hợp lệ (2000 - 2100)");
+      return;
+    }
+
+    if (!month || month < 1 || month > 12) {
+      showAlert("error", "Tháng không hợp lệ (1 - 12)");
+      return;
+    }
+
+    await HRService.paySalary(month, year);
+    showAlert("success", `Thanh toán lương tháng ${month}/${year} thành công`);
     fetchSalaries(); // reload bảng lương
   } catch (err) {
-    showAlert("error", err.message);
+    showAlert("error", err.message || "Thanh toán lương thất bại");
   }
 };
 
@@ -147,12 +173,14 @@ export const HRPayRoll = () => {
             <option value="PAID">Đã thanh toán</option>
           </select>
 
-          <button onClick={FilterReset}>Reset</button>
+          <button onClick={FilterReset}>Đặt lại</button>
 
           <button onClick={handlePaySalary}>Phát lương</button>
         </div>
         <button className="payroll-button" onClick={handleCreatePayroll}>
-          Xuất bảng lương {currentMonth}/{currentYear}
+          Xuất bảng lương {filters.month || currentMonth}/{
+            filters.year || currentYear
+          }
         </button>
       </div>
       {/* TABLE */}
