@@ -99,7 +99,9 @@ export const Salary = () => {
           <option value="false">Đang thanh toán</option>
         </select>
 
-        <button onClick={FilterReset}>Đặt lại</button>
+
+        <button onClick={FilterReset}>Reset</button>
+
       </div>
 
       {/* TABLE */}
