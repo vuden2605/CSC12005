@@ -60,9 +60,51 @@
   border-radius: 10px;
   padding: 16px;
 
-  h3 {
+  .payroll-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 12px;
-    font-weight: 600;
+
+    h3 {
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .bulk-status-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      select {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        font-size: 13px;
+        background-color: #f9fafb;
+      }
+
+      button {
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: none;
+        background: #10b981;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s ease;
+
+        &:hover {
+          background: #059669;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
   }
 
   table {
@@ -71,14 +113,16 @@
 
     th,
     td {
-      padding: 14px;
+      padding: 10px 12px;
       text-align: left;
+      font-size: 13px;
     }
 
     th {
       color: #6b7280;
-      font-size: 13px;
       border-bottom: 1px solid #eee;
+      font-weight: 500;
+      white-space: nowrap;
     }
 
     tr {
@@ -123,6 +167,11 @@
       background: #fde68a;
       color: #92400e;
     }
+
+    &.approved {
+      background: #e0f2fe;
+      color: #075985;
+    }
   }
 }
 
@@ -163,3 +212,10 @@
     font-weight: 600;
   
   }
+
+// checkbox cột chọn
+.payroll-table input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

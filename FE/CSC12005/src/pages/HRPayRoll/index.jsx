@@ -14,6 +14,8 @@ export const HRPayRoll = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [yearError, setYearError] = useState("");
   const [selectedSalary, setSelectedSalary] = useState(null);
+  const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
+  const [bulkStatus, setBulkStatus] = useState("");
 
   const [filters, setFilters] = useState({
     month: "",
@@ -40,6 +42,7 @@ export const HRPayRoll = () => {
       setData(res?.content || []);
       setTotalPages(res?.totalPages || 0);
       setTotalElements(res?.totalElements || 0);
+      setSelectedSalaryIds([]);
     } catch (err) {
       console.error(err.message);
     }
@@ -56,6 +59,33 @@ export const HRPayRoll = () => {
       status: "",
     });
     setYearError("");
+  };
+
+  const toggleSelectAllCurrentPage = () => {
+    const currentPageIds = data.map((item) => item.id);
+    const allSelected =
+      currentPageIds.length > 0 &&
+      currentPageIds.every((id) => selectedSalaryIds.includes(id));
+
+    if (allSelected) {
+      setSelectedSalaryIds((prev) =>
+        prev.filter((id) => !currentPageIds.includes(id))
+      );
+    } else {
+      setSelectedSalaryIds((prev) => {
+        const set = new Set(prev);
+        currentPageIds.forEach((id) => set.add(id));
+        return Array.from(set);
+      });
+    }
+  };
+
+  const toggleSelectOne = (salaryId) => {
+    setSelectedSalaryIds((prev) =>
+      prev.includes(salaryId)
+        ? prev.filter((id) => id !== salaryId)
+        : [...prev, salaryId]
+    );
   };
   // xuất bảng lương
   const now = new Date();
@@ -107,6 +137,28 @@ export const HRPayRoll = () => {
     showAlert("error", err.message || "Thanh toán lương thất bại");
   }
 };
+
+  const handleBulkUpdateStatus = async () => {
+    if (!bulkStatus) {
+      showAlert("error", "Vui lòng chọn trạng thái cần cập nhật");
+      return;
+    }
+    if (!selectedSalaryIds.length) {
+      showAlert("error", "Vui lòng chọn ít nhất một bảng lương");
+      return;
+    }
+
+    try {
+      await HRService.updateSalaryStatus(selectedSalaryIds, bulkStatus);
+      showAlert(
+        "success",
+        `Cập nhật trạng thái ${bulkStatus} cho ${selectedSalaryIds.length} dòng thành công`
+      );
+      fetchSalaries();
+    } catch (err) {
+      showAlert("error", err.message || "Cập nhật trạng thái bảng lương thất bại");
+    }
+  };
 
   return (
     <div className="dashboard-page payroll-page">
@@ -175,7 +227,7 @@ export const HRPayRoll = () => {
 
           <button onClick={FilterReset}>Đặt lại</button>
 
-          <button onClick={handlePaySalary}>Phát lương</button>
+          {/* <button onClick={handlePaySalary}>Phát lương</button> */}
         </div>
         <button className="payroll-button" onClick={handleCreatePayroll}>
           Xuất bảng lương {filters.month || currentMonth}/{
@@ -185,11 +237,39 @@ export const HRPayRoll = () => {
       </div>
       {/* TABLE */}
       <div className="payroll-table">
-        <h3>NHÂN VIÊN</h3>
+        <div className="payroll-table-header">
+          <h3>NHÂN VIÊN</h3>
+          <div className="bulk-status-actions">
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value)}
+            >
+              <option value="">Chọn trạng thái mới</option>
+              <option value="DRAFT">Nháp</option>
+              <option value="APPROVED">Đã duyệt</option>
+              <option value="PAID">Đã thanh toán</option>
+            </select>
+            <button onClick={handleBulkUpdateStatus}>
+              Cập nhật trạng thái
+            </button>
+          </div>
+        </div>
 
         <table>
           <thead>
             <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  onChange={toggleSelectAllCurrentPage}
+                  checked={
+                    data.length > 0 &&
+                    data
+                      .map((item) => item.id)
+                      .every((id) => selectedSalaryIds.includes(id))
+                  }
+                />
+              </th>
               <th>STT</th>
               <th>Nhân viên</th>
               <th>Thời gian</th>
@@ -203,7 +283,7 @@ export const HRPayRoll = () => {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={8} className="no-data">
+                <td colSpan={9} className="no-data">
                   Không có dữ liệu
                 </td>
               </tr>
@@ -232,6 +312,13 @@ export const HRPayRoll = () => {
 
                 return (
                 <tr key={item.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedSalaryIds.includes(item.id)}
+                      onChange={() => toggleSelectOne(item.id)}
+                    />
+                  </td>
                   <td>{index + 1 + page * 10}</td>
                   <td>
                     <div className="emp-info">
@@ -289,6 +376,7 @@ export const HRPayRoll = () => {
         <SalaryDetailModal
           salary={selectedSalary}
           onClose={() => setSelectedSalary(null)}
+          onStatusUpdated={fetchSalaries}
         />
       )}
     </div>

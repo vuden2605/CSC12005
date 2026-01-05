@@ -2,13 +2,18 @@ import React, { useState } from "react";
 import "../Request/style.scss";
 import { formatCurrencyVND } from "../../../Utils/formatCurrency";
 import { HRService } from "../../../services/HRService";
+import { useAlert } from "../../../context/AlertContext";
 
-export const SalaryDetailModal = ({ salary, onClose }) => {
+export const SalaryDetailModal = ({ salary, onClose, onStatusUpdated }) => {
   if (!salary) return null;
 
   const [qrUrl, setQrUrl] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState("");
+  const [newStatus, setNewStatus] = useState(salary.status || "");
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  const { showAlert } = useAlert();
 
   const handleViewQr = async () => {
     if (!salary?.id) return;
@@ -66,6 +71,33 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
     if (s === "APPROVED") return "Đã duyệt";
     if (s === "PAID") return "Đã thanh toán";
     return s || "-";
+  };
+
+  const handleUpdateStatus = async () => {
+    if (!newStatus) {
+      showAlert("error", "Vui lòng chọn trạng thái mới");
+      return;
+    }
+
+    try {
+      setUpdatingStatus(true);
+      await HRService.updateSalaryStatus(salary.id, newStatus);
+      showAlert(
+        "success",
+        `Cập nhật trạng thái lương thành ${getStatusLabel(newStatus)} thành công`
+      );
+      if (onStatusUpdated) {
+        await onStatusUpdated();
+      }
+      onClose();
+    } catch (error) {
+      showAlert(
+        "error",
+        error.message || "Cập nhật trạng thái bảng lương thất bại"
+      );
+    } finally {
+      setUpdatingStatus(false);
+    }
   };
 
   const currency = (v) => formatCurrencyVND(v || 0);
@@ -271,6 +303,26 @@ export const SalaryDetailModal = ({ salary, onClose }) => {
           </div>
 
           <div className="modal-footer">
+            <div className="salary-status-footer">
+              <select
+                className="salary-status-select"
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+              >
+                <option value="">-- Chọn trạng thái --</option>
+                <option value="DRAFT">Nháp</option>
+                <option value="APPROVED">Đã duyệt</option>
+                <option value="PAID">Đã thanh toán</option>
+              </select>
+              <button
+                className="btn primary"
+                type="button"
+                onClick={handleUpdateStatus}
+                disabled={updatingStatus}
+              >
+                {updatingStatus ? "Đang cập nhật..." : "Cập nhật trạng thái"}
+              </button>
+            </div>
             <button className="btn cancel" onClick={onClose}>
               Đóng
             </button>
