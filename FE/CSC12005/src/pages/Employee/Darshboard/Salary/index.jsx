@@ -59,7 +59,7 @@ export const Salary = () => {
           value={filters.month}
           onChange={(e) => setFilters({ ...filters, month: e.target.value })}
         >
-          <option value="">Month</option>
+          <option value="">Tháng</option>
           {[...Array(12)].map((_, i) => (
             <option key={i + 1} value={i + 1}>
               {i + 1}
@@ -69,7 +69,7 @@ export const Salary = () => {
         <div className="year-field">
           <input
             type="number"
-            placeholder="Year"
+            placeholder="Năm"
             min={2000}
             max={2100}
             value={filters.year}
@@ -94,12 +94,12 @@ export const Salary = () => {
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
-          <option value="">Status</option>
-          <option value="true">Done</option>
-          <option value="false">Pending</option>
+          <option value="">Trạng thái</option>
+          <option value="true">Đã thanh toán</option>
+          <option value="false">Đang thanh toán</option>
         </select>
 
-        <button onClick={FilterReset}>reset</button>
+        <button onClick={FilterReset}>Đặt lại</button>
       </div>
 
       {/* TABLE */}
@@ -107,7 +107,7 @@ export const Salary = () => {
         <table>
           <thead>
             <tr>
-              <th>#</th>
+              <th>STT</th>
               <th>Thời gian</th>
               <th>Lương</th> <th>Số giờ</th>
               <th>Trạng thái</th>
@@ -134,7 +134,7 @@ export const Salary = () => {
                     <span
                       className={`status ${item.status ? "done" : "pending"}`}
                     >
-                      {item.status ? "Done" : "Pending"}
+                      {item.status ? "Đã thanh toán" : "Đang thanh toán"}
                     </span>
                   </td>
                 </tr>
@@ -146,7 +146,7 @@ export const Salary = () => {
         {/* PAGINATION */}
         <div className="pagination">
           <button disabled={page === 0} onClick={() => setPage(page - 1)}>
-            Previous
+            Trước
           </button>
 
           {[...Array(totalPages)].map((_, i) => (
@@ -163,7 +163,7 @@ export const Salary = () => {
             disabled={page === totalPages - 1}
             onClick={() => setPage(page + 1)}
           >
-            Next
+            Sau
           </button>
         </div>
       </div>

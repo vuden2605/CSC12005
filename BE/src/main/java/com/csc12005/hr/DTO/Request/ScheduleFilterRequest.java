@@ -1,0 +1,25 @@
+package com.csc12005.hr.DTO.Request;
+
+import com.csc12005.hr.Enums.ScheduleStatus;
+import com.csc12005.hr.Enums.ScheduleTimeSlot;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ScheduleFilterRequest {
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
+    private Long positionId;
+    private ScheduleTimeSlot timeSlot;
+    private ScheduleStatus status;
+    private String location;
+}
