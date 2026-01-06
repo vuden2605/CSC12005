@@ -70,7 +70,8 @@
   .modal-box input[type="date"],
   .modal-box input[type="time"],
   .modal-box input[type="file"],
-  .modal-box textarea {
+  .modal-box textarea,
+  .modal-box select {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid #ddd;
@@ -84,6 +85,24 @@
       outline: none;
       border-color: #5c6bc0;
       box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.1);
+    }
+  }
+
+  .modal-box select {
+    background-color: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%),
+      linear-gradient(135deg, #6b7280 50%, transparent 50%);
+    background-position: calc(100% - 16px) calc(50% - 3px),
+      calc(100% - 11px) calc(50% - 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+
+    option {
+      color: #111827;
     }
   }
   

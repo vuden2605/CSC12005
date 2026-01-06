@@ -50,6 +50,21 @@ export const Requests = () => {
     return typeMap[requestType] || requestType;
   };
 
+  // Map lý do nghỉ phép (enum) sang tiếng Việt
+  const mapLeaveReason = (reason, requestType) => {
+    if (!reason) return "";
+    if (requestType !== "Leave") return reason;
+
+    const reasonMap = {
+      SICK_LEAVE: "Nghỉ ốm",
+      ANNUAL_LEAVE: "Nghỉ phép",
+      MATERNITY_LEAVE: "Nghỉ thai sản",
+      PERSONAL_LEAVE: "Nghỉ việc riêng",
+    };
+
+    return reasonMap[reason] || reason;
+  };
+
   // Map tên hiển thị sang requestType API
   const mapDisplayTypeToApiType = (displayType) => {
     const typeMap = {
@@ -135,7 +150,7 @@ export const Requests = () => {
           createdAt: formatDate(item.createdAt),
           status: statusMapped.status,
           statusText: statusMapped.statusText,
-          reason: item.reason || "",
+          reason: mapLeaveReason(item.reason, item.requestType),
           attachment: item.requestAttachment || "",
         };
       });
