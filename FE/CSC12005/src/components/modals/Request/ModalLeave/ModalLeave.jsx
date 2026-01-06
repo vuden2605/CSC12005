@@ -13,6 +13,13 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const LEAVE_TYPES = [
+    { value: "SICK_LEAVE", label: "Nghỉ ốm" },
+    { value: "ANNUAL_LEAVE", label: "Nghỉ phép" },
+    { value: "MATERNITY_LEAVE", label: "Nghỉ thai sản" },
+    { value: "PERSONAL_LEAVE", label: "Nghỉ việc riêng" },
+  ];
+
   const getMinStartDate = () => {
     const d = new Date();
     d.setDate(d.getDate() + 3);
@@ -62,7 +69,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
     if (form.startDate && form.endDate && form.startDate > form.endDate) {
       newErr.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
     }
-    if (!form.reason.trim()) newErr.reason = "Vui lòng nhập lý do";
+    if (!form.reason) newErr.reason = "Vui lòng chọn lý do";
     if (!file) newErr.file = "Vui lòng chọn file minh chứng";
 
     setErrors(newErr);
@@ -135,12 +142,19 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         />
         {errors.endDate && <p className="error">{errors.endDate}</p>}
 
-        <label>Lý do</label>
-        <textarea
+        <label>Lý do nghỉ phép</label>
+        <select
           value={form.reason}
           onChange={(e) => setForm({ ...form, reason: e.target.value })}
           disabled={loading}
-        />
+        >
+          <option value="">-- Chọn lý do --</option>
+          {LEAVE_TYPES.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
         {errors.reason && <p className="error">{errors.reason}</p>}
 
         <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
