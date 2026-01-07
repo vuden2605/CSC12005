@@ -776,7 +776,7 @@ export const HRService = {
       );
 
       console.log(
-        `✅ Added ${candidateIds.length} candidates to schedule ${scheduleId}`
+        `Added ${candidateIds.length} candidates to schedule ${scheduleId}`
       );
       return response.data;
     } catch (error) {
@@ -784,7 +784,7 @@ export const HRService = {
         error.response?.data?.message ||
         error.message ||
         "Error adding candidates to schedule";
-      console.error("❌ Error adding candidates:", errMsg);
+      console.error("Error adding candidates:", errMsg);
 
       // Parse validation errors if exists
       if (error.response?.data?.errors) {
@@ -809,14 +809,14 @@ export const HRService = {
         }
       );
 
-      console.log(`✅ Removed candidate ${candidateId} from schedule`);
+      console.log(` Removed candidate ${candidateId} from schedule`);
       return response.data;
     } catch (error) {
       const errMsg =
         error.response?.data?.message ||
         error.message ||
         "Error removing candidate from schedule";
-      console.error("❌ Error removing candidate:", errMsg);
+      console.error("Error removing candidate:", errMsg);
 
       // Parse validation errors if exists
       if (error.response?.data?.errors) {
@@ -824,6 +824,28 @@ export const HRService = {
         throw new Error(Object.values(validationErrors).join(", "));
       }
 
+      throw new Error(errMsg);
+    }
+  },
+  importCandidates: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await api.post("/candidates/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Import result:", response.data);
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error importing candidates";
+      console.error(" Error importing candidates:", errMsg);
       throw new Error(errMsg);
     }
   },

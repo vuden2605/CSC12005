@@ -48,7 +48,7 @@ const ScheduleList = () => {
 
   useEffect(() => {
     fetchSchedules();
-  }, [pagination.page, pagination.size,filters]);
+  }, [pagination.page, pagination.size, filters]);
 
   const fetchPositions = async () => {
     try {
@@ -86,7 +86,7 @@ const ScheduleList = () => {
         setTotalElements(response.totalElements || response.content.length);
       } else if (Array.isArray(response)) {
         setSchedules(response);
-        setTotalElements(response. length);
+        setTotalElements(response.length);
       } else {
         setSchedules([]);
         setTotalElements(0);
@@ -107,7 +107,7 @@ const ScheduleList = () => {
 
   const handleReset = () => {
     setFilters({
-      dateFrom:  "",
+      dateFrom: "",
       dateTo: "",
       positionId: null,
       timeSlot: "",
@@ -149,11 +149,10 @@ const ScheduleList = () => {
   const timeSlotOptions = [
     { value: "MORNING", label: "Buổi sáng" },
     { value: "AFTERNOON", label: "Buổi chiều" },
-    { value: "EVENING", label:  "Buổi tối" },
   ];
 
   const statusOptions = [
-    { value:  "SCHEDULED", label: "Đã lên lịch" },
+    { value: "SCHEDULED", label: "Đã lên lịch" },
     { value: "COMPLETED", label: "Đã hoàn thành" },
     { value: "CANCELLED", label: "Đã hủy" },
   ];
@@ -171,8 +170,8 @@ const ScheduleList = () => {
 
   const getStatusClass = (status) => {
     const classes = {
-      SCHEDULED:  "status-scheduled",
-      COMPLETED:  "status-completed",
+      SCHEDULED: "status-scheduled",
+      COMPLETED: "status-completed",
       CANCELLED: "status-cancelled",
     };
     return classes[status] || "status-default";
@@ -180,12 +179,12 @@ const ScheduleList = () => {
 
   const getStatusLabel = (status) => {
     const option = statusOptions.find((opt) => opt.value === status);
-    return option ? option. label : status;
+    return option ? option.label : status;
   };
 
   const getTimeSlotLabel = (timeSlot) => {
     const option = timeSlotOptions.find((opt) => opt.value === timeSlot);
-    return option ? option.label :  timeSlot;
+    return option ? option.label : timeSlot;
   };
 
   const totalPages = Math.ceil(totalElements / pagination.size);
@@ -205,7 +204,6 @@ const ScheduleList = () => {
           >
             + Tạo lịch mới
           </button>
-          <button className="btn export">Xuất ▼</button>
         </div>
       </div>
 
@@ -219,7 +217,7 @@ const ScheduleList = () => {
               <input
                 type="date"
                 id="dateFrom"
-                value={filters. dateFrom}
+                value={filters.dateFrom}
                 onChange={(e) =>
                   setFilters({ ...filters, dateFrom: e.target.value })
                 }
@@ -240,7 +238,7 @@ const ScheduleList = () => {
             </div>
 
             {/* Position */}
-            <div className="filter-item" >
+            <div className="filter-item">
               <label>Vị trí</label>
               <Select
                 options={positionOptions}
@@ -248,13 +246,13 @@ const ScheduleList = () => {
                 isSearchable
                 placeholder="Chọn vị trí..."
                 value={positionOptions.find(
-                  (opt) => opt.value === filters. positionId
+                  (opt) => opt.value === filters.positionId
                 )}
                 styles={customStyles}
                 onChange={(opt) =>
                   setFilters({
                     ...filters,
-                    positionId: opt ?  opt.value : null,
+                    positionId: opt ? opt.value : null,
                   })
                 }
               />
@@ -299,13 +297,16 @@ const ScheduleList = () => {
             </div>
 
             {/* Location */}
-            <div className="filter-item" style={{ width: "180px",marginRight:"10px" }}>
+            <div
+              className="filter-item"
+              style={{ width: "180px", marginRight: "10px" }}
+            >
               <label htmlFor="location">Địa điểm</label>
               <input
                 type="text"
                 id="location"
                 placeholder="Nhập địa điểm..."
-                value={filters. location}
+                value={filters.location}
                 onChange={(e) =>
                   setFilters({ ...filters, location: e.target.value })
                 }
@@ -325,8 +326,6 @@ const ScheduleList = () => {
         </form>
       </div>
 
-     
-
       {/* Error Message */}
       {error && (
         <div className="error-message">
@@ -337,12 +336,12 @@ const ScheduleList = () => {
 
       {/* Table */}
       <div className="table-container">
-        {loading ?  (
+        {loading ? (
           <div className="loading-state">
             <div className="spinner"></div>
             <p>Đang tải dữ liệu...</p>
           </div>
-        ) : schedules.length === 0 ?  (
+        ) : schedules.length === 0 ? (
           <div className="empty-state">
             <i className="icon-inbox"></i>
             <p>Không có dữ liệu</p>
@@ -379,13 +378,11 @@ const ScheduleList = () => {
                       </span>
                     </td>
                     <td>
-                      <span className="location-text">
-                        {schedule.location}
-                      </span>
+                      <span className="location-text">{schedule.location}</span>
                     </td>
                     <td>{schedule.position?.positionName || "N/A"}</td>
                     <td>{schedule.interviewer?.fullName || "Chưa gán"}</td>
-                    
+
                     <td>
                       <span
                         className={`status-badge ${getStatusClass(
@@ -410,7 +407,7 @@ const ScheduleList = () => {
 
             {/* Pagination */}
             <Pagination
-              currentPage={pagination. page}
+              currentPage={pagination.page}
               totalPages={totalPages}
               pageSize={pagination.size}
               totalElements={totalElements}

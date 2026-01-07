@@ -5,7 +5,7 @@
   .modal-body {
     padding: 24px;
     max-height: 70vh;
-    overflow-y:  auto;
+    overflow-y: auto;
   }
 
   .info-section {
@@ -17,7 +17,7 @@
 
     .section-title {
       font-size: 16px;
-      font-weight:  600;
+      font-weight: 600;
       color: #1a1a5e;
       margin-bottom: 16px;
       padding-bottom: 8px;
@@ -71,9 +71,9 @@
       padding: 6px 12px;
       background: #e6f7ff;
       color: #1890ff;
-      border-radius:  12px;
-      font-size:  13px;
-      font-weight:  500;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
     }
 
     .status-badge {
@@ -131,9 +131,9 @@
       }
 
       .candidate-avatar {
-        width:  48px;
+        width: 48px;
         height: 48px;
-        border-radius:  50%;
+        border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         display: flex;
@@ -148,7 +148,7 @@
 
         .candidate-name {
           font-weight: 600;
-          color:  #333;
+          color: #333;
           margin-bottom: 4px;
         }
 
@@ -198,15 +198,15 @@
       input,
       select {
         width: 100%;
-        padding:  10px 12px;
+        padding: 10px 12px;
         border: 1px solid #d9d9d9;
         border-radius: 6px;
         font-size: 14px;
         transition: all 0.3s;
 
         &:focus {
-          outline:  none;
-          border-color:  #1890ff;
+          outline: none;
+          border-color: #1890ff;
           box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
         }
       }
@@ -246,7 +246,7 @@
       padding: 10px 24px;
       border: none;
       border-radius: 6px;
-      font-size:  14px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
@@ -258,7 +258,7 @@
 
       &.btn-secondary {
         background: #f5f5f5;
-        color:  #666;
+        color: #666;
 
         &:hover:not(:disabled) {
           background: #e0e0e0;
@@ -267,7 +267,7 @@
 
       &.btn-primary {
         background: #1890ff;
-        color:  white;
+        color: white;
 
         &:hover:not(:disabled) {
           background: #40a9ff;
@@ -279,7 +279,7 @@
         color: white;
 
         &:hover:not(:disabled) {
-          background:  #ff4d4f;
+          background: #ff4d4f;
         }
       }
     }
@@ -299,13 +299,13 @@
 .readonly-info {
   margin-top: 24px;
   padding-top: 20px;
-  border-top:  2px solid #f0f0f0;
+  border-top: 2px solid #f0f0f0;
 
   .info-notice {
     display: flex;
     gap: 12px;
     padding: 12px 16px;
-    background:  #fffbe6;
+    background: #fffbe6;
     border-left: 4px solid #faad14;
     border-radius: 4px;
     margin-bottom: 16px;
@@ -339,7 +339,7 @@
       gap: 4px;
       padding: 12px;
       background: #fafafa;
-      border-radius:  6px;
+      border-radius: 6px;
 
       label {
         font-size: 13px;
@@ -369,7 +369,7 @@
 
   .empty-icon {
     font-size: 64px;
-    margin-bottom:  16px;
+    margin-bottom: 16px;
     opacity: 0.5;
   }
 
@@ -379,6 +379,99 @@
   }
 }
 
+.candidate-phone {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+// Section header with add button
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .section-title {
+    margin: 0;
+  }
+
+  .btn-add-sm {
+    padding: 6px 14px;
+    background: #1890ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #40a9ff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+    }
+  }
+}
+
+// Candidate actions
+.candidate-card {
+  position: relative;
+
+  .candidate-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-remove-candidate {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #ff4d4f;
+    color: white;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: #f5222d;
+      transform: scale(1.15) rotate(90deg);
+      box-shadow: 0 2px 8px rgba(245, 34, 45, 0.4);
+    }
+  }
+}
+
+// Empty candidates with button
+.empty-candidates {
+  text-align: center;
+  padding: 40px 20px;
+  background: #fafafa;
+  border-radius: 8px;
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    color: #999;
+    font-size: 14px;
+    margin: 0 0 16px 0;
+  }
+
+  .btn {
+    margin-top: 12px;
+  }
+}
+
+// Candidate phone
 .candidate-phone {
   font-size: 13px;
   color: #666;

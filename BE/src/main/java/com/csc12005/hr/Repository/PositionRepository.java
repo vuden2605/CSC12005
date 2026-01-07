@@ -14,4 +14,5 @@ public interface PositionRepository extends JpaRepository<Position,Long> {
 
 	Optional<Position> findByRole(EmployeeRole employeeRole);
 	Optional<Position> findByPositionCode(String positionCode);
+    Optional<Position> findByPositionName(String positionName);
 }

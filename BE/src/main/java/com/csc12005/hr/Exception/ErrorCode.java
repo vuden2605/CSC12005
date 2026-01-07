@@ -63,6 +63,7 @@ public enum ErrorCode {
     INTERVIEWER_HAS_SCHEDULE_CONFLICT(5505,"Interviewer has a scheduling conflict",HttpStatus.BAD_REQUEST),
     CANDIDATE_POSITION_MISMATCH(5506,"Candidate's position does not match the schedule position",HttpStatus.BAD_REQUEST),
     REQUIRED_CANCEL_REASON(5507,"Cancel reason is required",HttpStatus.BAD_REQUEST),
+    CANNOT_CANCEL_SCHEDULE_WITH_NON_INTERVIEWING_CAND(5508,"Cannot cancel schedule with candidates in 'Interviewed' status",HttpStatus.BAD_REQUEST),
     //candidate
     CANDIDATE_NOT_FOUND(5600, "Candidate not found", HttpStatus.NOT_FOUND),
     CANDIDATE_ALREADY_SCHEDULED(5601, "Candidate has already been scheduled", HttpStatus.BAD_REQUEST),
@@ -75,6 +76,13 @@ public enum ErrorCode {
     INVALID_FEEDBACK_LENGTH(5068, "Feedback must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
     CANDIDATE_CANNOT_BE_UPDATED(5069, "Candidate cannot be updated in the current status", HttpStatus.BAD_REQUEST),
     CANDIDATE_CANNOT_BE_HIRED(5070, "Only candidates with 'Interviewed' status can be hired", HttpStatus.BAD_REQUEST),
+    IMPORT_CANDIDATE_FAIL(5071,"Import candidate fail", HttpStatus.BAD_REQUEST),
+    FULLNAME_REQUIRED(5072,"Full name is required", HttpStatus.BAD_REQUEST),
+    EMAIL_REQUIRED(5073,"Email is required", HttpStatus.BAD_REQUEST),
+    EMAIL_INVALID(5074,"Invalid email format", HttpStatus.BAD_REQUEST),
+    PHONE_REQUIRED(5075,"Phone number is required", HttpStatus.BAD_REQUEST),
+    BIRTHDAY_INVALID(5076,"Invalid birthdate format", HttpStatus.BAD_REQUEST),
+    BIRTHDATE_REQUIRED(5077,"Birthdate is required", HttpStatus.BAD_REQUEST),
     //Activity
     START_DATE_TOO_RECENT(4050,"Start date must be earlier than 7 days before today",HttpStatus.BAD_REQUEST),
     REGISTRATION_TOO_LATE(4051,"Registration is no longer allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),
