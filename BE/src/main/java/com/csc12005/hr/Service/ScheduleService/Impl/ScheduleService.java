@@ -1,9 +1,6 @@
 package com.csc12005.hr.Service.ScheduleService.Impl;
 
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.ScheduleCreationRequest;
-import com.csc12005.hr.DTO.Request.ScheduleFilterRequest;
-import com.csc12005.hr.DTO.Request.ScheduleUpdateRequest;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.CandidateResponse;
 import com.csc12005.hr.DTO.Response.ScheduleResponse;
 import com.csc12005.hr.Entity.*;
@@ -268,14 +265,15 @@ public class ScheduleService implements IScheduleService {
         return scheduleResponse;
     }
     public Page<ScheduleResponse> mySchedules(
-            ScheduleFilterRequest request,
+            MyScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO
     ) {
         var myId = securityUtils.getCurrentUserId();
-        Employee employee= employeeRepository.findById(myId).orElseThrow(()-> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
-        Page<Schedule> page = scheduleRepository.filterSchedules(
-                employee.getPosition().getId(),
+        Employee employee= employeeRepository.findById(myId).orElseThrow(()-> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+System.out.println(employee.getPosition().getId());
+        Page<Schedule> page = scheduleRepository.filterMySchedules(
+                employee.getDepartment().getId(),
                 request.getTimeSlot(),
                 request.getStatus(),
                 request.getLocation(),

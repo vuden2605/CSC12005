@@ -30,4 +30,11 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
             @Param("status") CandidateStatus status,
             Pageable pageable
     );
+    @Query("""
+        SELECT c FROM Candidate c
+        LEFT JOIN FETCH c.position
+        WHERE c.position.id = :positionId
+        and c.schedule IS NULL
+    """)
+    List<Candidate> findByPositionId(Long positionId);
 }

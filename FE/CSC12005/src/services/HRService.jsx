@@ -721,7 +721,7 @@ export const HRService = {
   cancelSchedule: async (scheduleId, reason) => {
     try {
       const response = await api.delete(`/schedules/${scheduleId}`, {
-        data: { reason: reason }, // ← Object, NOT plain string
+        data: { reason: reason },
         headers: {
           "Content-Type": "application/json",
         },
@@ -735,6 +735,95 @@ export const HRService = {
         error.message ||
         "Error cancelling schedule";
       console.error("Error cancelling schedule:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  getCandidatesByPosition: async (positionId) => {
+    try {
+      const response = await api.get(`/candidates/position/${positionId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log(
+        `Fetched candidates for position ${positionId}:`,
+        response.data
+      );
+      return response.data.data || [];
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching candidates by position";
+      console.error("Error fetching candidates by position:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  addCandidatesToSchedule: async (scheduleId, candidateIds) => {
+    try {
+      const response = await api.post(
+        `/schedules/add-candidates`,
+        {
+          scheduleId: scheduleId,
+          candidateIds: candidateIds,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(
+        `✅ Added ${candidateIds.length} candidates to schedule ${scheduleId}`
+      );
+      return response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error adding candidates to schedule";
+      console.error("❌ Error adding candidates:", errMsg);
+
+      // Parse validation errors if exists
+      if (error.response?.data?.errors) {
+        const validationErrors = error.response.data.errors;
+        throw new Error(Object.values(validationErrors).join(", "));
+      }
+
+      throw new Error(errMsg);
+    }
+  },
+  removeCandidateFromSchedule: async (candidateId, reason) => {
+    try {
+      const response = await api.delete(
+        `/schedules/candidates/${candidateId}`,
+        {
+          data: {
+            reason: reason,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(`✅ Removed candidate ${candidateId} from schedule`);
+      return response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error removing candidate from schedule";
+      console.error("❌ Error removing candidate:", errMsg);
+
+      // Parse validation errors if exists
+      if (error.response?.data?.errors) {
+        const validationErrors = error.response.data.errors;
+        throw new Error(Object.values(validationErrors).join(", "));
+      }
+
       throw new Error(errMsg);
     }
   },

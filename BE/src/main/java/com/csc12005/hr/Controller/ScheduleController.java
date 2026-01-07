@@ -53,9 +53,9 @@ public class ScheduleController {
     @DeleteMapping("/candidates/{candidateId}")
     public ApiResponse<Void> removeCandidateFromSchedule(
             @PathVariable Long candidateId,
-            @RequestBody String reason
+            @RequestBody CancelRequest request
     ) {
-        scheduleService.removeCandidateFromSchedule(candidateId,reason);
+        scheduleService.removeCandidateFromSchedule(candidateId,request.getReason());
         return ApiResponse.<Void>builder()
                 .message("Remove candidate from schedule successfully")
                 .build();
@@ -88,10 +88,9 @@ public class ScheduleController {
                 .message("Get schedule by id successfully")
                 .build();
     }
-    // filter giống filterSchedules nhưng chỉ lấy lịch của user đăng nhập, không truyền positionId
     @GetMapping("/my-schedules")
     public ApiResponse<Page<ScheduleResponse>> mySchedules(
-            ScheduleFilterRequest request,
+            MyScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO)
     {
         return ApiResponse.<Page<ScheduleResponse>>builder()
@@ -99,5 +98,6 @@ public class ScheduleController {
                 .message("Get my schedules successfully")
                 .build();
     }
+
 
 }

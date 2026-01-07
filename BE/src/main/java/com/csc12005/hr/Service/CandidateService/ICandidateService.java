@@ -17,4 +17,5 @@ public interface ICandidateService {
     public Page<CandidateResponse> filterCandidates(CandidateFilterRequest request, PageRequestDTO pageRequestDTO);
     public CandidateResponse getCandidateById(Long candidateId);
     public EmployeeResponse hireCandidate(Long candidateId);
+    public List<CandidateResponse> getCandidateByPosition(Long positionId);
 }

@@ -1,9 +1,6 @@
 package com.csc12005.hr.Service.ScheduleService;
 
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
-import com.csc12005.hr.DTO.Request.ScheduleCreationRequest;
-import com.csc12005.hr.DTO.Request.ScheduleFilterRequest;
-import com.csc12005.hr.DTO.Request.ScheduleUpdateRequest;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.ScheduleResponse;
 import org.springframework.data.domain.Page;
 
@@ -27,7 +24,7 @@ public interface IScheduleService {
     );
     public ScheduleResponse getScheduleById(Long scheduleId);
     public Page<ScheduleResponse> mySchedules(
-            ScheduleFilterRequest request,
+            MyScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO
     );
 }

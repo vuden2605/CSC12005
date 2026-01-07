@@ -104,6 +104,16 @@ public class CandidateController {
                 .message("Hire candidate successfully")
                 .build();
     }
+    // lấy danh sách ứng viên theo vị trí tuyển dụng mà chưa có lịch
+    @GetMapping("/position/{positionId}")
+    public ApiResponse<List<CandidateResponse>> getCandidateByPositionId(
+            @PathVariable Long positionId
+    ) {
+        return ApiResponse.<List<CandidateResponse>>builder()
+                .data(candidateService.getCandidateByPosition(positionId))
+                .message("Get candidate by position id successfully")
+                .build();
+    }
 
 
 }
