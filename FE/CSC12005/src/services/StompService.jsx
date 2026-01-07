@@ -2,7 +2,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
 import { store } from "../redux";
 import { addNotification, setUnreadCount } from "../redux/slices/notificationSlice";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 class StompService {
   client = null;
 
@@ -14,7 +14,7 @@ class StompService {
   
     this.client = new Client({
       webSocketFactory: () =>
-        new SockJS(`http://localhost:8080/api/ws?token=${accessToken}`),
+        new SockJS(`${API_URL}/ws?token=${accessToken}`),
   
       reconnectDelay: 5000, // ✅ tự reconnect
       heartbeatIncoming: 4000,

@@ -31,9 +31,10 @@ public class SecurityConfig {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
 		httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		httpSecurity.authorizeHttpRequests(request -> request
-				.requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-				.requestMatchers(HttpMethod.POST,"/s3/**").permitAll()
-				.requestMatchers(HttpMethod.GET,"/s3/**").permitAll()
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/s3/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/s3/**").permitAll()
 				.requestMatchers("/ws/**").permitAll()
 				.requestMatchers(
 						"/v3/api-docs/**",
@@ -66,9 +67,12 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of(
-				"http://localhost:5173"
-		)); // FE React
+		configuration.setAllowedOriginPatterns(List.of(
+				"http://3.26.14.201",
+				"http://3.26.14.201:80",
+				"http://localhost:*",
+				"ec2-3-26-14-201.ap-southeast-2.compute.amazonaws.com:80"
+		));
 		configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
