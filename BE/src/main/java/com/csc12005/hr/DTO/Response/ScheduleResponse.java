@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Response;
 
+import com.csc12005.hr.Entity.Candidate;
 import com.csc12005.hr.Enums.CandidateStatus;
 import com.csc12005.hr.Enums.ScheduleStatus;
 import com.csc12005.hr.Enums.ScheduleTimeSlot;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,4 +28,6 @@ public class ScheduleResponse {
     private EmployeeResponse interviewer;
     private PositionResponse position;
     private ScheduleStatus status;
+    private List<CandidateResponse> candidates;
+
 }

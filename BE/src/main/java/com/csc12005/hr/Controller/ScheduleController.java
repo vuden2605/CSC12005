@@ -52,18 +52,20 @@ public class ScheduleController {
     }
     @DeleteMapping("/candidates/{candidateId}")
     public ApiResponse<Void> removeCandidateFromSchedule(
-            @PathVariable Long candidateId
+            @PathVariable Long candidateId,
+            @RequestBody String reason
     ) {
-        scheduleService.removeCandidateFromSchedule(candidateId);
+        scheduleService.removeCandidateFromSchedule(candidateId,reason);
         return ApiResponse.<Void>builder()
                 .message("Remove candidate from schedule successfully")
                 .build();
     }
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<Void> deleteSchedule(
-            @PathVariable Long scheduleId
+            @PathVariable Long scheduleId,
+            @RequestBody CancelRequest request
     ) {
-        scheduleService.cancelSchedule(scheduleId);
+        scheduleService.cancelSchedule(scheduleId,request.getReason());
         return ApiResponse.<Void>builder()
                 .message("Cancel schedule successfully")
                 .build();   }

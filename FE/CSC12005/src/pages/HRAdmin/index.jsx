@@ -16,12 +16,7 @@ export const HRAdmin = () => {
           >
             Quản lý nhân viên
           </button>
-          <button
-            className={`tab ${activeTab === "candidates" ? "active" : ""}`}
-            onClick={() => setActiveTab("candidates")}
-          >
-            Ứng viên
-          </button>
+          
           <button
             className={`tab ${activeTab === "bonus-points" ? "active" : ""}`}
             onClick={() => setActiveTab("bonus-points")}
@@ -34,8 +29,6 @@ export const HRAdmin = () => {
       <div className="dashboard-content">
         {activeTab === "employees" ? (
           <EmployeeList/>
-        ) : activeTab === "candidates" ? (
-          <CandidateList/>
         ) : (
           <div className="bonus-points-placeholder">
             <p>Quản lý điểm thưởng</p>

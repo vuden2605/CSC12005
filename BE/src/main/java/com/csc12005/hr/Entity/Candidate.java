@@ -32,6 +32,8 @@ public class Candidate {
     private String phone;
     private String address;
     private LocalDate birthDate;
+    @Builder.Default
+    private LocalDate createdAt=LocalDate.now();
     private String cv;
 
     @Builder.Default

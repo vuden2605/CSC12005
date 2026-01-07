@@ -13,7 +13,10 @@ import com.csc12005.hr.Repository.CandidateRepository;
 import com.csc12005.hr.Repository.EmployeeRepository;
 import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.CandidateService.ICandidateService;
+import com.csc12005.hr.Service.MailService.IMailService;
+import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +34,15 @@ public class CandidateService implements ICandidateService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
+    private final IMailService mailService;
+    private final S3Service s3ervice;
+
     public CandidateResponse createCandidate(CandidateCreationRequest request){
         Candidate candidate= candidateMapper.toCandidate(request);
         Position position= positionRepository.findById(request.getPositionId()).orElseThrow(()-> new AppException(ErrorCode.POSITION_NOT_FOUND));
         candidate.setPosition(position);
+        String cvUrl= request.getCv()!=null? s3ervice.uploadFile(request.getCv()): null;
+        candidate.setCv(cvUrl);
         Candidate savedCandidate = candidateRepository.save(candidate);
         return candidateMapper.toCandidateResponse(savedCandidate);
     }
@@ -119,29 +127,29 @@ public class CandidateService implements ICandidateService {
         candidate.setPhone(request.getPhone());
         candidate.setAddress(request.getAddress());
         candidate.setBirthDate(request.getBirthDate());
-        candidate.setCv(request.getCv());
+        String cvUrl = request.getCv() != null ? s3ervice.uploadFile(request.getCv()) : candidate.getCv();
+        candidate.setCv(cvUrl);
         Candidate updatedCandidate = candidateRepository.save(candidate);
 
         return candidateMapper.toCandidateResponse(updatedCandidate);
     }
 
-    public List<CandidateResponse> filterCandidates(CandidateFilterRequest request, PageRequestDTO pageRequestDTO) {
+    public Page<CandidateResponse> filterCandidates(CandidateFilterRequest request, PageRequestDTO pageRequestDTO) {
 
         CandidateStatus status = null;
         if (request.getStatus() != null) {
             status = CandidateStatus.valueOf(request.getStatus());
         }
 
-        return candidateRepository.filterCandidates(
+        Page<Candidate> candidateResponses= candidateRepository.filterCandidates(
                         request.getFullName(),
                         request.getEmail(),
                         request.getPositionId(),
                         status,
                         pageRequestDTO.buildPageable()
-                )
-                .stream()
-                .map(candidateMapper::toCandidateResponse)
-                .toList();
+                );
+
+        return candidateResponses.map(candidateMapper::toCandidateResponse);
     }
     public CandidateResponse getCandidateById(Long candidateId) {
         Candidate candidate = candidateRepository.findById(candidateId)
@@ -177,6 +185,12 @@ public class CandidateService implements ICandidateService {
         employeeRepository.save(employee);
         candidate.transitionTo(CandidateStatus.HIRED);
         candidateRepository.save(candidate);
+        // Gửi email chúc mừng
+        mailService.sendInterviewPassedMail(
+                candidate.getEmail(),
+                candidate.getFullName(),
+                candidate.getPosition().getPositionName()
+        );
         return employeeMapper.toEmployeeResponse(employee);
     }
 }

@@ -10,5 +10,6 @@ import java.util.List;
 public interface IPositionService {
 	PositionResponse createPosition(PositionCreationRequest positionCreationRequest);
      List<PositionResponse> getPositionByDepartment(Long DepartmentID);
+     List<PositionResponse> getAllPositions();
 
 }
