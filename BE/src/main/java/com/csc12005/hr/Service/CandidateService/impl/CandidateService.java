@@ -193,5 +193,15 @@ public class CandidateService implements ICandidateService {
         );
         return employeeMapper.toEmployeeResponse(employee);
     }
+    public List<CandidateResponse> getCandidateByPosition(Long positionId){
+        List<Candidate> candidates= candidateRepository.findByPositionId(positionId);
+        if(candidates.isEmpty()){
+            throw new AppException(ErrorCode.CANDIDATE_NOT_FOUND);
+        }
+
+        return candidates.stream()
+                .map(candidateMapper::toCandidateResponse)
+                .toList();
+    }
 }
 

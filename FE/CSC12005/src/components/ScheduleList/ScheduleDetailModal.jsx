@@ -236,7 +236,6 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
         >
           <div className="modal-header">
             <h3>
-              <span className="icon">📅</span>
               {isEditMode ? "Chỉnh sửa lịch phỏng vấn" :  "Chi tiết lịch phỏng vấn"}
             </h3>
             <button className="btn-close" onClick={onClose}>
@@ -251,9 +250,9 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                 <section className="info-section">
                   <h4 className="section-title">Thông tin lịch phỏng vấn</h4>
                   <div className="info-grid">
-                    <div className="info-item">
+                    <div className="info-item" >
                       <label>Ngày phỏng vấn:</label>
-                      <strong className="date-value">📅 {schedule.date}</strong>
+                      <strong className="date-value"> {schedule.date}</strong>
                     </div>
                     <div className="info-item">
                       <label>Khung giờ:</label>
@@ -263,7 +262,7 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                     </div>
                     <div className="info-item full-width">
                       <label>Địa điểm: </label>
-                      <span className="location-value">📍 {schedule.location}</span>
+                      <span className="location-value"> {schedule.location}</span>
                     </div>
                     <div className="info-item">
                       <label>Vị trí tuyển dụng:</label>
@@ -276,7 +275,7 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                     <div className="info-item">
                       <label>Số ứng viên:</label>
                       <span className="candidate-count">
-                        {schedule.candidateCount || 0} ứng viên
+                        {schedule.candidates.length|| 0} ứng viên
                       </span>
                     </div>
                     <div className="info-item">
@@ -302,9 +301,9 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                           </div>
                           <div className="candidate-info">
                             <div className="candidate-name">{candidate.fullName}</div>
-                            <div className="candidate-email">📧 {candidate.email}</div>
+                            <div className="candidate-email"> {candidate.email}</div>
                             {candidate.phone && (
-                              <div className="candidate-phone">📱 {candidate.phone}</div>
+                              <div className="candidate-phone"> {candidate.phone}</div>
                             )}
                           </div>
                           <div className="candidate-status">
@@ -320,7 +319,6 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                   <section className="info-section">
                     <h4 className="section-title">Danh sách ứng viên</h4>
                     <div className="empty-candidates">
-                      <div className="empty-icon">👥</div>
                       <p>Chưa có ứng viên nào được gán vào lịch này</p>
                     </div>
                   </section>
@@ -347,10 +345,10 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
               </>
             ) : (
               /* ========== EDIT MODE ========== */
-              <form className="edit-form">
-                <div className="form-grid">
+              <form className="edit-form" >
+                <div className="form-grid"> 
                   {/* Ngày phỏng vấn */}
-                  <div className={`form-group ${errors.date ? "has-error" : ""}`}>
+                  <div className={`form-group ${errors.date ? "has-error" : ""}`} style={{width:"300px"}}>
                     <label>
                       Ngày phỏng vấn <span className="required">*</span>
                     </label>
@@ -365,7 +363,7 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                   </div>
 
                   {/* Khung giờ */}
-                  <div className={`form-group ${errors.timeSlot ? "has-error" : ""}`}>
+                  <div className={`form-group ${errors.timeSlot ? "has-error" : ""}`} style={{width:"365px"}}>
                     <label>
                       Khung giờ <span className="required">*</span>
                     </label>
@@ -381,7 +379,7 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                   </div>
 
                   {/* Địa điểm */}
-                  <div className={`form-group full-width ${errors.location ? "has-error" : ""}`}>
+                  <div className={`form-group full-width ${errors.location ? "has-error" : ""}`}style={{width:"725px"}}>
                     <label>
                       Địa điểm <span className="required">*</span>
                     </label>
@@ -399,9 +397,8 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                 {/* Read-only fields */}
                 <div className="readonly-info">
                   <div className="info-notice">
-                    <span className="notice-icon">ℹ️</span>
                     <div className="notice-text">
-                      <strong>Lưu ý: </strong> Vị trí tuyển dụng và người phỏng vấn không thể thay
+                      <strong>Lưu ý: </strong>Vị trí tuyển dụng và người phỏng vấn không thể thay
                       đổi sau khi tạo lịch. 
                     </div>
                   </div>
@@ -426,14 +423,14 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                 {schedule.status === "SCHEDULED" && (
                   <>
                     <button className="btn btn-primary" onClick={() => setIsEditMode(true)}>
-                      ✏️ Sửa
+                      Sửa
                     </button>
                     <button
                       className="btn btn-danger"
                       onClick={handleCancelScheduleClick}
                       disabled={loading}
                     >
-                      ❌ Hủy lịch
+                      Hủy lịch
                     </button>
                   </>
                 )}
@@ -447,7 +444,7 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                   Hủy
                 </button>
                 <button className="btn btn-primary" onClick={handleSave} disabled={loading}>
-                  {loading ? "Đang lưu..." : "💾 Lưu"}
+                  {loading ? "Đang lưu..." : "Lưu"}
                 </button>
               </>
             )}

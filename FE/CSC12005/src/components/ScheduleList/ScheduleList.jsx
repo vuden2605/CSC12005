@@ -358,7 +358,6 @@ const ScheduleList = () => {
                   <th>Địa điểm</th>
                   <th>Vị trí</th>
                   <th>Người phỏng vấn</th>
-                  <th>Số ứng viên</th>
                   <th>Trạng thái</th>
                   <th>Hành động</th>
                 </tr>
@@ -386,11 +385,7 @@ const ScheduleList = () => {
                     </td>
                     <td>{schedule.position?.positionName || "N/A"}</td>
                     <td>{schedule.interviewer?.fullName || "Chưa gán"}</td>
-                    <td className="text-center">
-                      <span className="candidate-count">
-                        {schedule.candidateCount || 0}
-                      </span>
-                    </td>
+                    
                     <td>
                       <span
                         className={`status-badge ${getStatusClass(
