@@ -4,6 +4,8 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true, // để gửi cookie refreshToken
 });
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+console.log('API_BASE_URL at build/runtime:', API_BASE_URL);
 
 // request interceptor: gắn accessToken
 api.interceptors.request.use(

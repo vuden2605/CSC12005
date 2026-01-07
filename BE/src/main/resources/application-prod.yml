@@ -1,0 +1,63 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  multipart:
+    max-file-size: 1000MB
+    max-request-size: 1000MB
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/CSC12005_HR?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1d
+
+  data:
+    redis:
+      host: hr-redis
+      port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: csc12005hr@gmail.com
+    password: lfrg lpam pjxh iiyd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+cache:
+  expires:
+    "[user.details]": 1m
+    "[auth.invalidatedTokens]": 24h
+
+jwt:
+  secret: your_jwt_secret_key_12333333333333333333333
+  access-time: 3600000      # 1 hour
+  refresh-time: 86400000    # 24 hours
+
+aws:
+  access-key: AKIAQH3T6CWXA2TWPZ5O
+  secret-key: I2q8iOSEDnAwlcdfrK9Iku0OoFMcCA8+hWVKb+Qk
+  region: ap-southeast-2
+  s3:
+    bucket-name: csc12005
+
+springdoc:
+  swagger-ui:
+    display-request-duration: true

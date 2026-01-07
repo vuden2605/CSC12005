@@ -1,0 +1,53 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: hr-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: CSC12005_HR
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - hr-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: hr-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - hr-network
+
+  backend:
+    build: ./BE
+    container_name: hr-backend
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    networks:
+      - hr-network
+
+  frontend:
+    build: ./FE/CSC12005
+    container_name: hr-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    networks:
+      - hr-network
+
+volumes:
+  mysql_data:
+
+networks:
+  hr-network:
+    driver: bridge
