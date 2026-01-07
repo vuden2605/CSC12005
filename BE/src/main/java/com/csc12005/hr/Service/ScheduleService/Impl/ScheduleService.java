@@ -209,6 +209,12 @@ public class ScheduleService implements IScheduleService {
         if (!LocalDate.now().isBefore(twoDaysAgo)) {
             throw new AppException(ErrorCode.UPDATE_SCHEDULE_TOO_LATE);
         }
+        // Không được hủy lịch có ứng viên có trạng thái khác đang phỏng vấn
+        for (Candidate candidate : schedule.getCandidates()) {
+            if (candidate.getStatus() != CandidateStatus.INTERVIEWING) {
+                throw new AppException(ErrorCode.CANNOT_CANCEL_SCHEDULE_WITH_NON_INTERVIEWING_CAND);
+            }
+        }
         // không được hủy lịch đã hoàn thành
         if (schedule.getStatus() == com.csc12005.hr.Enums.ScheduleStatus.COMPLETED) {
             throw new AppException(ErrorCode.CANNOT_CANCEL_COMPLETED_SCHEDULE);

@@ -114,6 +114,13 @@ public class CandidateController {
                 .message("Get candidate by position id successfully")
                 .build();
     }
+    @PostMapping("/import" )
+    public ApiResponse<ImportResult> importCandidates(@RequestParam ("file") MultipartFile file) {
+        return ApiResponse.<ImportResult>builder()
+                .message("Import candidates successfully")
+                .data(candidateService.importExcel(file))
+                .build();
+    }
 
 
 }

@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { HRService } from "../../services/HRService";
-import "./CancelScheduleModal.scss";
-import { useAlert } from "../../context/AlertContext";
+import "./RemoveCandidateModal.scss";
 
-const CancelScheduleModal = ({ schedule, onClose, onSuccess }) => {
+const RemoveCandidateModal = ({ candidate, onClose, onSuccess }) => {
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { showAlert } = useAlert();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!reason.trim()) {
-      setError("Vui lòng nhập lý do hủy lịch");
+      setError("Vui lòng nhập lý do xóa ứng viên");
       return;
     }
 
@@ -26,78 +24,68 @@ const CancelScheduleModal = ({ schedule, onClose, onSuccess }) => {
       setLoading(true);
       setError("");
 
-      await HRService.cancelSchedule(schedule.id, reason.trim());
-
-      showAlert("success", "Đã hủy lịch phỏng vấn thành công!");
+      // ========== CALL REMOVE CANDIDATE API ==========
+      await HRService.removeCandidateFromSchedule(candidate.id, reason.trim());
 
       if (onSuccess) {
-        onSuccess();
+        onSuccess(candidate.fullName);
       }
 
       onClose();
     } catch (err) {
-      setError();
-      showAlert("error", err.message);
+      console.error("Remove error:", err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const getTimeSlotLabel = (timeSlot) => {
-    const labels = {
-      MORNING: "Buổi sáng (8: 00 - 12:00)",
-      AFTERNOON: "Buổi chiều (13:00 - 17:00)",
-    };
-    return labels[timeSlot] || timeSlot;
-  };
-
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 2000 }}>
       <div
-        className="modal-content cancel-schedule-modal"
+        className="modal-content remove-candidate-modal"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>Xác nhận hủy lịch phỏng vấn</h3>
+          <h3>Xác nhận xóa ứng viên khỏi lịch</h3>
           <button className="btn-close" onClick={onClose}>
             ×
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          <div className="schedule-info">
+          <div className="candidate-info">
             <p>
-              <strong>Ngày: </strong> {schedule.date}
+              <strong>Họ tên:</strong> {candidate.fullName}
             </p>
             <p>
-              <strong>Khung giờ:</strong> {getTimeSlotLabel(schedule.timeSlot)}
+              <strong>Email:</strong> {candidate.email}
             </p>
-            <p>
-              <strong>Địa điểm:</strong> {schedule.location}
-            </p>
-            <p>
-              <strong>Số ứng viên:</strong> {schedule.candidateCount || 0}
-            </p>
+            {candidate.phone && (
+              <p>
+                <strong>SĐT:</strong> {candidate.phone}
+              </p>
+            )}
           </div>
 
           <div className="warning-box">
             <div className="warning-text">
               <strong>Cảnh báo:</strong>
               <p>
-                Hành động này không thể hoàn tác. Tất cả ứng viên sẽ nhận được
-                thông báo hủy lịch.
+                Ứng viên sẽ bị xóa khỏi lịch phỏng vấn và có thể được gán vào
+                lịch khác.
               </p>
             </div>
           </div>
 
           <div className={`form-group ${error ? "has-error" : ""}`}>
             <label htmlFor="reason">
-              Lý do hủy lịch <span className="required">*</span>
+              Lý do xóa <span className="required">*</span>
             </label>
             <textarea
               id="reason"
               rows="4"
-              placeholder="Nhập lý do hủy lịch phỏng vấn (tối thiểu 10 ký tự)..."
+              placeholder="Nhập lý do xóa ứng viên (tối thiểu 10 ký tự)..."
               value={reason}
               onChange={(e) => {
                 setReason(e.target.value);
@@ -117,14 +105,14 @@ const CancelScheduleModal = ({ schedule, onClose, onSuccess }) => {
               onClick={onClose}
               disabled={loading}
             >
-              Quay lại
+              Hủy
             </button>
             <button
               type="submit"
               className="btn btn-danger"
               disabled={loading || !reason.trim()}
             >
-              {loading ? "Đang hủy..." : "Xác nhận hủy"}
+              {loading ? "Đang xử lý..." : "Xác nhận xóa"}
             </button>
           </div>
         </form>
@@ -133,4 +121,4 @@ const CancelScheduleModal = ({ schedule, onClose, onSuccess }) => {
   );
 };
 
-export default CancelScheduleModal;
+export default RemoveCandidateModal;
