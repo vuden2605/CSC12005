@@ -1,8 +1,8 @@
 import React from "react";
 import "../style.scss";
-import CandidateList from "../../../components/CandidateList";
 import InfoCard from "../../../components/InfoCard";
 import { useSelector } from "react-redux";
+import ManagerMySchedules from "./ManagerMySchedules";
 
 export const ManagerCandidates = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -20,7 +20,7 @@ export const ManagerCandidates = () => {
       <h1 className="page-title">Ứng viên của phòng ban</h1>
 
       <div className="employee-list-card">
-        <CandidateList isLeader={true} />
+        <ManagerMySchedules />
       </div>
     </div>
   );

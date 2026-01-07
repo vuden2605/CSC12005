@@ -97,6 +97,17 @@
         background: #fff2f0;
         color: #f5222d;
       }
+
+      // Candidate statuses styled in purple theme
+      &.status-new, // NOT_INTERVIEWED
+      &.status-interviewing, // INTERVIEWING
+      &.status-interviewed, // INTERVIEWED
+      &.status-passed, // PASSED
+      &.status-rejected, // FAILED
+      &.status-hired { // HIRED
+        background: #f3e8ff; // purple-100
+        color: #7c3aed; // purple-600
+      }
     }
   }
 

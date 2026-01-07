@@ -88,6 +88,85 @@ export const ManagerService = {
             throw new Error(errMsg);
         }
     },
+    // Create new evaluation during interviewing
+    createCandidateEvaluation: async (candidateId, payload) => {
+        try {
+            const response = await api.post(
+                `/candidates/evaluate/${candidateId}`,
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error creating candidate evaluation";
+            throw new Error(errMsg);
+        }
+    },
+    // Update existing evaluation (after interviewed or when revising)
+    updateCandidateEvaluation: async (candidateId, payload) => {
+        try {
+            const response = await api.patch(
+                `/candidates/update-evaluation/${candidateId}`,
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error updating candidate evaluation";
+            throw new Error(errMsg);
+        }
+    },
+    // Backward-compatible alias used by UI (defaults to update)
+    evaluateCandidate: async (candidateId, payload) => {
+        return await ManagerService.updateCandidateEvaluation(candidateId, payload);
+    },
+    getMySchedules: async (filters = {}, pagination = {}) => {
+        try {
+            const params = {
+                ...(filters.dateFrom && { dateFrom: filters.dateFrom }),
+                ...(filters.dateTo && { dateTo: filters.dateTo }),
+                ...(filters.timeSlot && { timeSlot: filters.timeSlot }),
+                ...(filters.status && { status: filters.status }),
+                ...(filters.location && { location: filters.location }),
+
+                page: pagination.page ?? 0,
+                size: pagination.size ?? 10,
+                sortBy: pagination.sortBy ?? "id",
+                direction: pagination.direction ?? "ASC",
+            };
+
+            const response = await api.get(`/schedules/my-schedules`, {
+                params,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("Manager - my schedules:", response.data);
+            return response.data.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error fetching my schedules";
+            console.error("Error fetching my schedules:", errMsg);
+            throw new Error(errMsg);
+        }
+    },
     approveRequest: async (requestId, requestType) => {
         const response = await api.put(
           `/requests/${requestId}/approve`,

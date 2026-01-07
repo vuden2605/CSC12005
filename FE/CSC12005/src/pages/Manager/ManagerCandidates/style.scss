@@ -1,0 +1,66 @@
+/* Star rating styles for ManagerCandidateReviewModal */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.star-rating .star {
+  font-size: 30px !important; /* doubled size */
+  line-height: 1;
+  color: #c4c7ce; /* gray - default */
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.star-rating .star:hover {
+  color: #fbbf24; /* hover amber */
+  transform: scale(1.1);
+}
+
+.star-rating .star.active {
+  color: #f59e0b; /* amber - selected */
+}
+
+.star-rating .star-score {
+  margin-left: 6px;
+  font-weight: 600;
+  color: #6b7280; /* gray-600 */
+  font-size: 0.95rem;
+}
+
+/* Center align schedule table columns */
+.schedule-list .schedule-date,
+.schedule-list .schedule-table th,
+.schedule-list .schedule-table td {
+  text-align: center !important;
+  vertical-align: middle;
+justify-content: center;
+}
+
+.schedule-list .schedule-date,
+.schedule-list .time-slot-badge,
+.schedule-list .location-text,
+.schedule-list .status-badge {
+  display: inline-block;
+}
+
+/* Status badge styles (reuse schedule palette) */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-badge.status-new,
+.status-badge.status-interviewing,
+.status-badge.status-interviewed,
+.status-badge.status-passed,
+.status-badge.status-rejected,
+.status-badge.status-hired {
+  background: #f3e8ff; /* purple-100 */
+  color: #7c3aed; /* purple-600 */
+}
