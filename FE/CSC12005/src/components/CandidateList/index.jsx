@@ -224,6 +224,7 @@ const CandidateList = () => {
 
   return (
     <div className="candidate-list">
+
       <div className="page-header">
         <h2 className="page-title">
           <i className="icon-user"></i>
@@ -237,6 +238,7 @@ const CandidateList = () => {
           >
             + Thêm ứng viên mới
           </button>
+
           <button
             className="btn add"
             // onClick={() => setShowImportModal(true)}
