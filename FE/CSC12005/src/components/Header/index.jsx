@@ -32,6 +32,7 @@ export const Header = () => {
     EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
     HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
+      { label: "Đánh giá ứng viên", path: "/manager/candidates" },
       { label: "Quản lý Sự kiện", path: "/hr/events" },
       { label: "Quản lý Lương", path: "/hr/payroll" },
       { label: "Nhân viên/ Ứng viên", path: "/hr/humans" },
@@ -39,8 +40,9 @@ export const Header = () => {
     ],
     MN: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
+      { label: "Đánh giá ứng viên", path: "/manager/candidates" },
       { label: "Quản lý yêu cầu", path: "/manager/requests" },
-      { label: "Quản lý dự án", path: "/manager/projects" },
+      // { label: "Quản lý dự án", path: "/manager/projects" },
       { label: "Quản lý phòng ban", path: "/manager/department" },
     ],
   };

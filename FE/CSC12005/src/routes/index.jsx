@@ -22,6 +22,7 @@ const PrivateRoute = ({ children }) => {
 import { Login } from "../pages/Login";
 import { Admin } from "../pages/Admin";
 import { Manager } from "../pages/Manager";
+import { ManagerCandidates } from "../pages/Manager/ManagerCandidates/ManagerCandidates";
 import { Employee } from "../pages/Employee";
 import { HRAdmin } from "../pages/HRAdmin";
 import { LayoutDefault } from "../LayoutDefault";
@@ -64,6 +65,7 @@ export const routes = [
       { path: "manager", element: <Manager /> },
       { path: "manager/department", element: <Manager /> },
       { path: "manager/projects", element: <ManagerProjects /> },
+      { path: "manager/candidates", element: <ManagerCandidates /> },
       { path: "manager/requests", element: <RequestManager /> },
       { path: "manager/requests/:id", element: <RequestManager /> },
 

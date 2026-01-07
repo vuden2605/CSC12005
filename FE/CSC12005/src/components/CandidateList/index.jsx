@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./style.scss";
 import CandidateDetailModal from "./CandidateDetailModal";
 
-const CandidateList = () => {
+const CandidateList = ({ isLeader = false }) => {
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("Tất cả vị trí");
   const [status, setStatus] = useState("Tất cả trạng thái");
@@ -151,13 +151,24 @@ const CandidateList = () => {
                 >
                   Xem chi tiết
                 </button>
-                {c.status !== "Đã trở thành nhân viên" && (
-                  <button
-                    onClick={() => handleAction("Cập nhật kết quả", c.id)}
-                    className="btn primary"
-                  >
-                    Cập nhật kết quả
-                  </button>
+                {isLeader ? (
+                  c.status === "Đã phỏng vấn" && (
+                    <button
+                      onClick={() => handleAction("Đánh giá / Sửa đánh giá", c.id)}
+                      className="btn primary"
+                    >
+                      Đánh giá / Sửa đánh giá
+                    </button>
+                  )
+                ) : (
+                  c.status !== "Đã trở thành nhân viên" && (
+                    <button
+                      onClick={() => handleAction("Cập nhật kết quả", c.id)}
+                      className="btn primary"
+                    >
+                      Cập nhật kết quả
+                    </button>
+                  )
                 )}
                 {c.status === "Đã trúng tuyển" && (
                   <button
