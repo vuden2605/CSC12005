@@ -2,6 +2,7 @@ package com.csc12005.hr.Repository;
 
 import com.csc12005.hr.Entity.Candidate;
 import com.csc12005.hr.Enums.CandidateStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +23,7 @@ public interface CandidateRepository extends JpaRepository<Candidate,Long> {
       AND (:status IS NULL
            OR c.status = :status)
     """)
-    List<Candidate> filterCandidates(
+    Page<Candidate> filterCandidates(
             @Param("fullName") String fullName,
             @Param("email") String email,
             @Param("positionId") Long positionId,

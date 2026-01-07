@@ -1,6 +1,7 @@
 package com.csc12005.hr.DTO.Response;
 
 import com.csc12005.hr.Entity.Position;
+import com.csc12005.hr.Entity.Schedule;
 import com.csc12005.hr.Enums.CandidateStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -25,6 +26,7 @@ public class CandidateResponse {
     private String phone;
     private String address;
     private LocalDate birthDate;
+    private LocalDate createdAt;
     private String cv;
 
     private CandidateStatus status;
@@ -36,6 +38,8 @@ public class CandidateResponse {
     private Integer ratingCultureFit;
     private BigDecimal ratingAverage;
     private String feedback;
+    //
+    private Schedule schedule;
 
 
     private PositionResponse position;

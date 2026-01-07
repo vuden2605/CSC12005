@@ -24,4 +24,8 @@ public class PositionService implements IPositionService {
         List<Position> list= positionRepository.findByDepartmentId(DepartmentID);
         return list.stream().map(positionMapper::toPositionResponse).toList();
     };
+    public List<PositionResponse> getAllPositions(){
+        List<Position> list= positionRepository.findAll();
+        return list.stream().map(positionMapper::toPositionResponse).toList();
+    };
 }

@@ -1,234 +1,458 @@
-import React, { useState } from "react";
-import "./style.scss";
+import React, { useState, useEffect, use } from "react";
+import { HRService } from "../../services/HRService";
 import CandidateDetailModal from "./CandidateDetailModal";
+import "./style.scss";
+import { PositionService } from "../../services/PositionService";
+import Select from "react-select";
+import AddCandidateModal from "./AddCandidateModal";
+import { useAlert } from "../../context/AlertContext";
+import { Pagination } from "../Pagination";
+const CandidateList = () => {
+  const { showAlert } = useAlert();
+  const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalElements, setTotalElements] = useState(0);
+  const [error, setError] = useState(null);
+  // Filter state
+  const [filters, setFilters] = useState({
+    fullName: "",
+    email: "",
+    positionId: null,
+    status: "",
+  });
 
-const CandidateList = ({ isLeader = false }) => {
-  const [search, setSearch] = useState("");
-  const [position, setPosition] = useState("Tất cả vị trí");
-  const [status, setStatus] = useState("Tất cả trạng thái");
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: 10,
+    sortBy: "createdAt",
+    direction: "DESC",
+  });
 
-  const candidates = [
-    {
-      id: 1,
-      name: "Phạm Văn C",
-      position: "Dev Backend",
-      status: "Đã phỏng vấn",
-    },
-    {
-      id: 2,
-      name: "Phạm Thị D",
-      position: "Dev Frontend",
-      status: "Đã trúng tuyển",
-    },
-    {
-      id: 3,
-      name: "Nguyễn Văn A",
-      position: "Dev Tester",
-      status: "Không đạt",
-    },
-    {
-      id: 4,
-      name: "Trịnh T",
-      position: "Dev Backend",
-      status: "Chưa phỏng vấn",
-    },
-    {
-      id: 5,
-      name: "Lê Duẫn",
-      position: "Dev Backend",
-      status: "Đã trở thành nhân viên",
-    },
-    {
-      id: 6,
-      name: "Phạm Văn Đóm",
-      position: "Dev Backend",
-      status: "Đã phỏng vấn",
-    },
-    {
-      id: 7,
-      name: "Phạm Thị Jack",
-      position: "Dev Frontend",
-      status: "Đã trúng tuyển",
-    },
-    {
-      id: 8,
-      name: "Nguyễn Văn Thiên An",
-      position: "Dev Tester",
-      status: "Không đạt",
-    },
-    {
-      id: 9,
-      name: "Trịnh Bé Sol",
-      position: "Dev Backend",
-      status: "Đã trúng tuyển",
-    },
-    {
-      id: 10,
-      name: "Lê Duẫn KICM",
-      position: "Dev Backend",
-      status: "Đã trở thành nhân viên",
-    },
+  // Modal state
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // Positions
+  const [positions, setPositions] = useState([]);
+  const fetchPositions = async () => {
+    try {
+      const data = await PositionService.getAll();
+      setPositions(data);
+      console.log("position", data);
+      console.log("Fetched positions:", data);
+    } catch (err) {
+      console.error("Failed to fetch positions:", err);
+    } finally {
+    }
+  };
+  useEffect(() => {
+    fetchPositions();
+  }, []);
+
+  const positionOptions = positions.map((p) => ({
+    value: p.id,
+    label: p.positionName || p.name,
+  }));
+  const customStyles = {
+    container: (base) => ({
+      ...base,
+      width: "250px",
+    }),
+    menuList: (base) => ({
+      ...base,
+      maxHeight: "150px",
+    }),
+  };
+  ///-------------------
+  const statusOptions = [
+    { value: "NOT_INTERVIEWED", label: "Chưa phỏng vấn" },
+    { value: "INTERVIEWING", label: "Đang phỏng vấn" },
+    { value: "INTERVIEWED", label: "Đã phỏng vấn" },
+    { value: "PASSED", label: "Đạt" },
+    { value: "FAILED", label: "Không đạt" },
+    { value: "HIRED", label: "Đã thành nhân viên" },
   ];
 
-  const filtered = candidates.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) &&
-      (position === "Tất cả vị trí" || c.position === position) &&
-      (status === "Tất cả trạng thái" || c.status === status)
-  );
+  useEffect(() => {
+    fetchCandidates();
+  }, [pagination.page, pagination.size, filters]);
 
-  const handleAction = (type, id) => {
-    console.log(`${type} ứng viên ID:`, id);
+  const fetchCandidates = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Remove empty filters
+      const cleanFilters = Object.entries(filters).reduce(
+        (acc, [key, value]) => {
+          if (value !== "" && value !== null && value !== undefined) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const response = await HRService.filterCandidates(
+        cleanFilters,
+        pagination
+      );
+
+      console.log("Full response structure:", response);
+      console.log("Response keys:", Object.keys(response || {}));
+
+      // ========== XỬ LÝ RESPONSE ==========
+      if (response && response.content && Array.isArray(response.content)) {
+        // ✅ PAGINATED RESPONSE từ backend
+        console.log(
+          "Using paginated response - totalElements:",
+          response.totalElements
+        );
+
+        const allCandidates = response.content;
+        const notInterviewedCandidates = allCandidates.filter(
+          (candidate) => candidate.status === "NOT_INTERVIEWED"
+        );
+
+        setCandidates(allCandidates);
+        setTotalElements(response.totalElements || allCandidates.length);
+
+        console.log(
+          `Total:  ${response.totalElements}, Not interviewed: ${notInterviewedCandidates.length}`
+        );
+      } else if (Array.isArray(response)) {
+        // ✅ ARRAY RESPONSE
+        console.log("Using array response - length:", response.length);
+
+        const notInterviewedCandidates = response.filter(
+          (candidate) => candidate.status === "NOT_INTERVIEWED"
+        );
+
+        setCandidates(response);
+        setTotalElements(response.length);
+
+        console.log(
+          `Total: ${response.length}, Not interviewed: ${notInterviewedCandidates.length}`
+        );
+      } else {
+        console.log("No valid response");
+        setCandidates([]);
+        setTotalElements(0);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to fetch candidates");
+      console.error("Fetch candidates error:", err);
+
+      setCandidates([]);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+    }
   };
-  // State cho phân trang
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // số nhân viên mỗi trang
-
-  // Tính toán phân trang
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedCandidates = filtered.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-
-  // Khi đổi trang
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setPagination({ ...pagination, page: 0 });
+    fetchCandidates();
   };
-  // modal detail
-  const [showDetail, setShowDetail] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const handleClickDetail = (id) => {
-    const candidate = candidates.find((c) => c.id === id);
+
+  const handleReset = () => {
+    setFilters({
+      fullName: "",
+      email: "",
+      positionId: null,
+      status: "",
+    });
+    setPagination({
+      page: 0,
+      size: 10,
+      sortBy: "createdAt",
+      direction: "DESC",
+    });
+  };
+
+  const handleViewDetails = (candidate) => {
     setSelectedCandidate(candidate);
-    setShowDetail(true);
+    setIsModalVisible(true);
   };
+  //-----------------------------create--------------
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const handleOpenAddModal = () => {
+    setIsAddModalVisible(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalVisible(false);
+  };
+
+  const handleAddSuccess = (newCandidate) => {
+    showAlert("success", "Thêm ứng viên thành công!");
+    setIsAddModalVisible(false);
+    fetchCandidates(); // Refresh list
+  };
+  const handleUpdateSuccess = (newCandidate) => {
+    showAlert("success", "Sửa thông tin ứng viên thành công!");
+    fetchCandidates(); // Refresh list
+  };
+  //----------------------------------------
+  const handlePageChange = (newPage) => {
+    setPagination({ ...pagination, page: newPage });
+  };
+
+  const handlePageSizeChange = (e) => {
+    setPagination({ ...pagination, size: parseInt(e.target.value), page: 0 });
+  };
+
+  const getStatusClass = (status) => {
+    const classes = {
+      NOT_INTERVIEWED: "status-new",
+      HIRED: "status-screening",
+      INTERVIEWING: "status-interviewing",
+      INTERVIEWED: "status-interviewed",
+      PASSED: "status-passed",
+      FAILED: "status-rejected",
+    };
+    return classes[status] || "status-default";
+  };
+
+  const getStatusLabel = (status) => {
+    const option = statusOptions.find((opt) => opt.value === status);
+    return option ? option.label : status;
+  };
+
+  const totalPages = Math.ceil(totalElements / pagination.size);
+
   return (
     <div className="candidate-list">
-      <h2>Danh sách Ứng viên Tuyển dụng</h2>
 
-      <div className="filter-bar">
-        <input
-          type="text"
-          placeholder="Tìm ứng viên..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select value={position} onChange={(e) => setPosition(e.target.value)}>
-          <option>Tất cả vị trí</option>
-          <option>Dev Backend</option>
-          <option>Dev Frontend</option>
-          <option>Dev Tester</option>
-        </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option>Tất cả trạng thái</option>
-          <option>Đã phỏng vấn</option>
-          <option>Đã trúng tuyển</option>
-          <option>Không đạt</option>
-          <option>Chưa phỏng vấn</option>
-          <option>Đã trở thành nhân viên</option>
-        </select>
-      </div>
-
-      <table className="candidate-table">
-        <thead>
-          <tr>
-            <th>Tên ứng viên</th>
-            <th>Vị trí ứng tuyển</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedCandidates.map((c) => (
-            <tr key={c.id}>
-              <td>{c.name}</td>
-              <td>{c.position}</td>
-              <td>{c.status}</td>
-              <td className="actions">
-                <button
-                  onClick={() => handleClickDetail(c.id)}
-                  className="btn light"
-                >
-                  Xem chi tiết
-                </button>
-                {isLeader ? (
-                  c.status === "Đã phỏng vấn" && (
-                    <button
-                      onClick={() => handleAction("Đánh giá / Sửa đánh giá", c.id)}
-                      className="btn primary"
-                    >
-                      Đánh giá / Sửa đánh giá
-                    </button>
-                  )
-                ) : (
-                  c.status !== "Đã trở thành nhân viên" && (
-                    <button
-                      onClick={() => handleAction("Cập nhật kết quả", c.id)}
-                      className="btn primary"
-                    >
-                      Cập nhật kết quả
-                    </button>
-                  )
-                )}
-                {c.status === "Đã trúng tuyển" && (
-                  <button
-                    onClick={() => handleAction("Tạo Hồ sơ Nhân viên", c.id)}
-                    className="btn outline"
-                  >
-                    Tạo Hồ sơ Nhân viên
-                  </button>
-                )}
-                <button
-                  onClick={() => handleAction("Tải xuống CV", c.id)}
-                  className="btn light"
-                >
-                  Tải xuống CV
-                </button>
-                <button
-                  onClick={() => handleAction("Chỉnh sửa", c.id)}
-                  className="btn warning"
-                >
-                  Chỉnh sửa
-                </button>
-                {/* <button onClick={() => handleAction("Vô hiệu hóa", c.id)} className="btn danger">
-                  Vô hiệu hóa
-                </button> */}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </button>
-
-        {[...Array(totalPages)].map((_, i) => (
+      <div className="page-header">
+        <h2 className="page-title">
+          <i className="icon-user"></i>
+          Danh sách ứng viên
+        </h2>
+        <div className="actions">
           <button
-            key={i + 1}
-            className={currentPage === i + 1 ? "active" : ""}
-            onClick={() => handlePageChange(i + 1)}
+            className="btn add"
+            onClick={handleOpenAddModal}
+            disabled={loading}
           >
-            {i + 1}
+            + Thêm ứng viên mới
           </button>
-        ))}
 
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          &gt;
-        </button>
+          <button
+            className="btn add"
+            // onClick={() => setShowImportModal(true)}
+            disabled={loading}
+          >
+            + Thêm ứng viên từ file
+          </button>
+          <button className="btn export">Xuất ▼</button>
+        </div>
       </div>
-      <CandidateDetailModal
-        visible={showDetail}
-        onClose={() => setShowDetail(false)}
-        candidate={selectedCandidate}
-      />
+
+      {/* Filter Section */}
+      <div className="filter-section">
+        <form onSubmit={handleSearch}>
+          <div className="filter-grid">
+            <div className="filter-item" style={{ width: "250px" }}>
+              <label htmlFor="fullName">Tìm theo tên</label>
+              <input
+                type="text"
+                id="fullName"
+                placeholder="Nhập tên ứng viên..."
+                value={filters.fullName}
+                onChange={(e) =>
+                  setFilters({ ...filters, fullName: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="filter-item" style={{ width: "250px" }}>
+              <label htmlFor="email">Tìm theo email</label>
+              <input
+                type="text"
+                id="email"
+                placeholder="Nhập email..."
+                value={filters.email}
+                onChange={(e) =>
+                  setFilters({ ...filters, email: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="filter-item">
+              <label htmlFor="positionId">Vị trí</label>
+              <Select
+                options={positionOptions}
+                isClearable
+                isSearchable
+                placeholder="Chọn vị trí..."
+                value={positionOptions.find(
+                  (opt) => opt.value === filters.positionId
+                )}
+                styles={customStyles}
+                onChange={(opt) =>
+                  setFilters({
+                    ...filters,
+                    positionId: opt ? opt.value : null,
+                  })
+                }
+              />
+            </div>
+
+            <div className="filter-item">
+              <label htmlFor="status">Trạng thái</label>
+              <select
+                id="status"
+                value={filters.status}
+                onChange={(e) =>
+                  setFilters({ ...filters, status: e.target.value })
+                }
+              >
+                <option value="">Tất cả trạng thái</option>
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="filter-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleReset}
+            >
+              Đặt lại
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Statistics */}
+      {/* <div className="statistics">
+        <span className="total-count">
+          Tổng số ứng viên mới: <strong>{totalNotInterviewed}</strong>
+        </span>
+      </div> */}
+
+      {/* Error Message */}
+      {error && (
+        <div className="error-message">
+          <i className="icon-alert"></i>
+          {error}
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="table-container">
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Đang tải dữ liệu...</p>
+          </div>
+        ) : candidates.length === 0 ? (
+          <div className="empty-state">
+            <i className="icon-inbox"></i>
+            <p>Không có dữ liệu</p>
+          </div>
+        ) : (
+          <>
+            <table className="candidate-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Họ và tên</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Vị trí</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày tạo</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidates.map((candidate, index) => (
+                  <tr key={candidate.id}>
+                    <td className="text-center">
+                      {pagination.page * pagination.size + index + 1}
+                    </td>
+                    <td>
+                      <div className="candidate-name">
+                        <i className="icon-user-small"></i>
+                        <strong>{candidate.fullName}</strong>
+                      </div>
+                    </td>
+                    <td>{candidate.email}</td>
+                    <td>{candidate.phone || "N/A"}</td>
+                    <td>{candidate.position?.positionName || "N/A"}</td>
+                    <td>
+                      <span
+                        className={`status-badge ${getStatusClass(
+                          candidate.status
+                        )}`}
+                      >
+                        {getStatusLabel(candidate.status)}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      {candidate.createdAt ? (
+                        <span className="rating-badge">
+                          {candidate.createdAt}
+                        </span>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-view"
+                        onClick={() => handleViewDetails(candidate)}
+                      >
+                        Xem
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={totalPages}
+              pageSize={pagination.size}
+              totalElements={totalElements}
+              onPageChange={handlePageChange}
+              onPageSizeChange={(newSize) =>
+                setPagination({ ...pagination, size: newSize, page: 0 })
+              }
+              loading={loading}
+            />
+          </>
+        )}
+      </div>
+
+      {/* Detail Modal */}
+      {isModalVisible && (
+        <CandidateDetailModal
+          candidate={selectedCandidate}
+          onClose={() => {
+            setIsModalVisible(false);
+            setSelectedCandidate(null);
+          }}
+          onUpdate={handleUpdateSuccess}
+        />
+      )}
+      {isAddModalVisible && (
+        <AddCandidateModal
+          positions={positions}
+          onClose={handleCloseAddModal}
+          onSuccess={handleAddSuccess}
+        />
+      )}
     </div>
   );
 };

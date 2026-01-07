@@ -14,6 +14,7 @@ public interface ScheduleMapper {
     @Mapping(target = "interviewer", ignore = true)
     Schedule toSchedule(ScheduleCreationRequest scheduleCreationRequest);
     @Mapping(target = "interviewer", source = "interviewer")
+    @Mapping(target = "candidates", ignore = true)
     ScheduleResponse toScheduleResponse(Schedule schedule);
 
 }

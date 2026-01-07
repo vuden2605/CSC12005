@@ -45,7 +45,7 @@ import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
 
 import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
 import { ManagerProjects } from "../pages/Manager/ManagerProjects";
-
+import { HRCandidate } from "../pages/HRCandidate";
 
 export const routes = [
   // Redirect root
@@ -100,6 +100,8 @@ export const routes = [
       },
 
       { path: "hr/humans", element: <HRAdmin /> },
+      { path: "hr/candidates", element: <HRCandidate /> },
+
       { path: "hr/events", element: <EventPageHR /> },
       { path: "hr/payroll", element: <HRPayRoll /> },
       { path: "hr/bonus-points", element: <BonusPointsAdmin /> },
