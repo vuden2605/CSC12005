@@ -1,0 +1,266 @@
+.import-candidates-modal {
+  max-width: 600px;
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .info-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: #e6f7ff;
+    border-left: 4px solid #1890ff;
+    border-radius: 4px;
+    margin-bottom: 24px;
+
+    .info-icon {
+      font-size: 24px;
+    }
+
+    .info-content {
+      flex: 1;
+
+      strong {
+        color: #0050b3;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      ol {
+        margin: 8px 0;
+        padding-left: 20px;
+        font-size: 13px;
+        color: #666;
+        line-height: 1.6;
+
+        li {
+          margin: 6px 0;
+        }
+      }
+    }
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+
+      .required {
+        color: #f5222d;
+      }
+    }
+
+    .file-input-wrapper {
+      input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          border-color: #1890ff;
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 12px;
+        background: #f0f5ff;
+        border-radius: 4px;
+
+        .file-icon {
+          font-size: 20px;
+        }
+
+        .file-name {
+          flex: 1;
+          font-weight: 500;
+          color: #333;
+        }
+
+        .file-size {
+          font-size: 12px;
+          color: #999;
+        }
+      }
+    }
+
+    &.has-error {
+      input {
+        border-color: #f5222d;
+      }
+    }
+
+    .error-text {
+      display: block;
+      margin-top: 8px;
+      color: #f5222d;
+      font-size: 12px;
+    }
+  }
+
+  .import-result {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+    &.success {
+      background: #f6ffed;
+      border: 1px solid #b7eb8f;
+    }
+
+    &.error {
+      background: #fff2f0;
+      border: 1px solid #ffccc7;
+    }
+
+    .result-icon {
+      font-size: 32px;
+    }
+
+    .result-content {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 12px 0;
+        font-size: 16px;
+      }
+
+      .result-stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 12px;
+
+        .stat {
+          display: flex;
+          gap: 8px;
+          font-size: 14px;
+
+          .stat-label {
+            color: #666;
+          }
+
+          .stat-value {
+            font-weight: 700;
+          }
+
+          &.success-stat .stat-value {
+            color: #52c41a;
+          }
+
+          &.error-stat .stat-value {
+            color: #f5222d;
+          }
+        }
+      }
+
+      .error-details {
+        margin-top: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 4px;
+
+        strong {
+          display: block;
+          margin-bottom: 8px;
+          color: #f5222d;
+        }
+
+        ul {
+          margin: 0;
+          padding-left: 20px;
+
+          li {
+            font-size: 13px;
+            color: #666;
+            margin: 4px 0;
+          }
+        }
+      }
+
+      .success-message {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #52c41a;
+        font-style: italic;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      &.btn-secondary {
+        background: #f5f5f5;
+        color: #666;
+
+        &:hover:not(:disabled) {
+          background: #e0e0e0;
+        }
+      }
+
+      &.btn-primary {
+        background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #40a9ff 0%, #69c0ff 100%);
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .import-candidates-modal {
+    max-width: 95%;
+
+    .result-stats {
+      flex-direction: column;
+      gap: 8px !important;
+    }
+
+    .modal-footer {
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+}

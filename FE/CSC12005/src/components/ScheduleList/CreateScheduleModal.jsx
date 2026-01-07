@@ -6,6 +6,17 @@ import "./CreateScheduleModal.scss";
 import { useAlert } from "../../context/AlertContext";
 
 const CreateScheduleModal = ({ onClose, onSuccess }) => {
+  const customStyles = {
+    container: (base) => ({
+      ...base,
+      width: "200px",
+    }),
+    menuList: (base) => ({
+      ...base,
+      maxHeight: "150px",
+    }),
+  };
+
   const [loading, setLoading] = useState(false);
   const [positions, setPositions] = useState([]);
   const [errors, setErrors] = useState({});
@@ -32,7 +43,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
   };
 
   const timeSlotOptions = [
-    { value: "MORNING", label:  "Buổi sáng (8:00 - 12:00)" },
+    { value: "MORNING", label: "Buổi sáng (8:00 - 12:00)" },
     { value: "AFTERNOON", label: "Buổi chiều (13:00 - 17:00)" },
   ];
 
@@ -53,7 +64,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
     if (!formData.date) {
       newErrors.date = "Ngày phỏng vấn là bắt buộc";
     } else {
-      const selectedDate = new Date(formData. date);
+      const selectedDate = new Date(formData.date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -66,7 +77,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
       newErrors.timeSlot = "Khung giờ là bắt buộc";
     }
 
-    if (!formData.location. trim()) {
+    if (!formData.location.trim()) {
       newErrors.location = "Địa điểm là bắt buộc";
     }
 
@@ -75,7 +86,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
     }
 
     setErrors(newErrors);
-    return Object. keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -99,7 +110,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
       onClose();
     } catch (error) {
       console.error("Create schedule error:", error);
-    showAlert("error",error.message);
+      showAlert("error", error.message);
     } finally {
       setLoading(false);
     }
@@ -117,9 +128,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>
-            Tạo lịch phỏng vấn
-          </h3>
+          <h3>Tạo lịch phỏng vấn</h3>
           <button className="btn-close" onClick={onClose}>
             ×
           </button>
@@ -128,7 +137,10 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="form-grid">
             {/* Ngày phỏng vấn */}
-            <div className={`form-group ${errors.date ? "has-error" : ""}`}>
+            <div
+              className={`form-group ${errors.date ? "has-error" : ""}`}
+              style={{ width: "300px" }}
+            >
               <label>
                 Ngày phỏng vấn <span className="required">*</span>
               </label>
@@ -143,7 +155,10 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
             </div>
 
             {/* Khung giờ */}
-            <div className={`form-group ${errors.timeSlot ? "has-error" : ""}`}>
+            <div
+              className={`form-group ${errors.timeSlot ? "has-error" : ""}`}
+              style={{ width: "350px" }}
+            >
               <label>
                 Khung giờ <span className="required">*</span>
               </label>
@@ -159,7 +174,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
                   </option>
                 ))}
               </select>
-              {errors. timeSlot && (
+              {errors.timeSlot && (
                 <span className="error-text">{errors.timeSlot}</span>
               )}
             </div>
@@ -169,6 +184,7 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
               className={`form-group full-width ${
                 errors.location ? "has-error" : ""
               }`}
+              style={{ width: "725px" }}
             >
               <label>
                 Địa điểm <span className="required">*</span>
@@ -202,10 +218,11 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
                 onChange={(selected) => {
                   setFormData({
                     ...formData,
-                    positionId: selected?. value || null,
+                    positionId: selected?.value || null,
                   });
                   setErrors({ ...errors, positionId: null });
                 }}
+                styles={customStyles}
                 placeholder="Chọn vị trí"
                 isClearable
                 isSearchable
@@ -218,8 +235,8 @@ const CreateScheduleModal = ({ onClose, onSuccess }) => {
 
           <div className="form-info">
             <div className="info-text">
-              Lịch phỏng vấn sẽ được tạo cho vị trí đã chọn.  Bạn có thể gán ứng
-              viên vào lịch này sau. 
+              Lịch phỏng vấn sẽ được tạo cho vị trí đã chọn. Bạn có thể gán ứng
+              viên vào lịch này sau.
             </div>
           </div>
 

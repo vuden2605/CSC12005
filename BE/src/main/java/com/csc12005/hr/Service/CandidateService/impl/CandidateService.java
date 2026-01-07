@@ -3,8 +3,10 @@ package com.csc12005.hr.Service.CandidateService.impl;
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.CandidateResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
+import com.csc12005.hr.DTO.Response.ImportError;
+import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.Entity.*;
-import com.csc12005.hr.Enums.CandidateStatus;
+import com.csc12005.hr.Enums.*;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.CandidateMapper;
@@ -15,15 +17,23 @@ import com.csc12005.hr.Repository.PositionRepository;
 import com.csc12005.hr.Service.CandidateService.ICandidateService;
 import com.csc12005.hr.Service.MailService.IMailService;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
+import com.csc12005.hr.Utils.ExcelUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -195,13 +205,97 @@ public class CandidateService implements ICandidateService {
     }
     public List<CandidateResponse> getCandidateByPosition(Long positionId){
         List<Candidate> candidates= candidateRepository.findByPositionId(positionId);
-        if(candidates.isEmpty()){
-            throw new AppException(ErrorCode.CANDIDATE_NOT_FOUND);
-        }
 
         return candidates.stream()
                 .map(candidateMapper::toCandidateResponse)
                 .toList();
+    }
+    public ImportResult importExcel(MultipartFile file) {
+        int successCount = 0;
+        List<ImportError> importErrors = new ArrayList<>();
+        List<Candidate> candidates = new ArrayList<>();
+
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                String positionName = ExcelUtils.getString(row.getCell(6));
+                String fullName = ExcelUtils.getString(row.getCell(0));
+                String email = ExcelUtils.getString(row.getCell(1));
+                String gender = ExcelUtils.getString(row.getCell(2));
+                String phone = ExcelUtils.getString(row.getCell(3));
+                String address = ExcelUtils.getString(row.getCell(4));
+                LocalDate birthDate = ExcelUtils.getLocalDate(row.getCell(5));
+
+
+                try {
+
+                    Position position = positionRepository
+                            .findByPositionName(ExcelUtils.getString(row.getCell(6)))
+                            .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+
+                    if (fullName == null || fullName.isBlank()) {
+                        throw new AppException(ErrorCode.FULLNAME_REQUIRED);
+                    }
+
+                    if (email == null || email.isBlank()) {
+                        throw new AppException(ErrorCode.EMAIL_REQUIRED);
+                    }
+
+                    if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                        throw new AppException(ErrorCode.EMAIL_INVALID);
+                    }
+
+                    if (phone == null || phone.isBlank()) {
+                        throw new AppException(ErrorCode.PHONE_REQUIRED);
+                    }
+
+                    if (birthDate == null) {
+                        throw new AppException(ErrorCode.BIRTHDAY_INVALID);
+                    }
+
+                    if (birthDate.isAfter(LocalDate.now())) {
+                        throw new AppException(ErrorCode.BIRTHDAY_INVALID);
+                    }
+
+                    Candidate candidate = Candidate.builder()
+                            .fullName(fullName)
+                            .email(email)
+                            .gender(gender)
+                            .phone(phone)
+                            .address(address)
+                            .birthDate(birthDate)
+                            .position(position)
+                            .build();
+                    candidates.add(candidate);
+                    successCount++;
+                } catch (Exception ex) {
+                    importErrors.add(
+                            ImportError.builder()
+                                    .code(ErrorCode.IMPORT_CANDIDATE_FAIL.getCode())
+                                    .message("Dòng " + (i + 1) + ": " + ex.getMessage())
+                                    .build()
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.FILE_INVALID_FORMAT);
+        }
+
+        if (!candidates.isEmpty()) {
+            candidateRepository.saveAll(candidates);
+        }
+
+        return ImportResult.builder()
+                .successRow(successCount)
+                .importErrors(importErrors)
+                .isSuccess(true)
+                .build();
     }
 }
 
