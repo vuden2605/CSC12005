@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { HRService } from "../../../services/HRService";
 import ManagerCandidateReviewModal from "./ManagerCandidateReviewModal";
 import "../../../components/ScheduleList/ScheduleDetailModal.scss";
+import { useAlert } from "../../../context/AlertContext";
 
 const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     fetchScheduleDetails();
@@ -22,7 +24,7 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
       setSchedule(data);
     } catch (err) {
       console.error("Fetch schedule error:", err);
-      setError(err.message || "Không thể tải chi tiết lịch phỏng vấn");
+      setError(err.message); // ← LƯU LỖI VÀO STATE
     } finally {
       setLoading(false);
     }
@@ -45,11 +47,10 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
     switch (status) {
       case "SCHEDULED":
         return "Đã lên lịch";
-      case "COMPLETED":
+      case "COMPLETED": 
         return "Đã hoàn thành";
       case "CANCELLED":
         return "Đã hủy";
-      // Candidate statuses
       case "NOT_INTERVIEWED":
         return "Chưa phỏng vấn";
       case "INTERVIEWING":
@@ -81,19 +82,21 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
     return classes[status] || "status-default";
   };
 
+  // ========== LOADING STATE ==========
   if (loading && !schedule) {
     return (
       <div className="modal-overlay">
         <div className="modal-content">
           <div className="loading-state">
             <div className="spinner" />
-            <p>Đang tải thông tin lịch phỏng vấn...</p>
+            <p>Đang tải thông tin lịch phỏng vấn... </p>
           </div>
         </div>
       </div>
     );
   }
 
+  // ========== ERROR STATE (SỬA) ==========
   if (error) {
     return (
       <div className="modal-overlay" onClick={onClose}>
@@ -112,9 +115,20 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
 
   if (!schedule) return null;
 
+  // ========== HANDLERS (SỬA) ==========
   const handleReviewUpdated = async () => {
     await fetchScheduleDetails();
     if (onUpdate) onUpdate();
+  };
+
+  const handleReviewSuccess = () => {
+    setSelectedCandidate(null); // ← Đóng modal đánh giá
+    showAlert("success", "Đánh giá ứng viên thành công");
+    handleReviewUpdated(); // ← Refresh data
+  };
+
+  const handleCloseReviewModal = () => {
+    setSelectedCandidate(null); // ← Chỉ đóng modal đánh giá, KHÔNG đóng modal detail
   };
 
   return (
@@ -153,16 +167,10 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                   <label>Vị trí tuyển dụng:</label>
                   <strong>{schedule.position?.positionName || "N/A"}</strong>
                 </div>
-                {/* <div className="info-item">
-                  <label>Người phỏng vấn:</label>
-                  <span>{schedule.interviewer?.fullName || "Chưa gán"}</span>
-                </div> */}
                 <div className="info-item">
                   <label>Trạng thái:</label>
                   <span
-                    className={`status-badge ${getStatusClass(
-                      schedule.status
-                    )}`}
+                    className={`status-badge ${getStatusClass(schedule.status)}`}
                   >
                     {getStatusLabel(schedule.status)}
                   </span>
@@ -174,7 +182,7 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
               <h4 className="section-title">Danh sách ứng viên</h4>
               {schedule.candidates && schedule.candidates.length > 0 ? (
                 <div className="candidates-list">
-                  {schedule.candidates.map((candidate) => (
+                  {schedule. candidates.map((candidate) => (
                     <div key={candidate.id} className="candidate-card">
                       <div className="candidate-avatar">
                         {candidate.fullName?.charAt(0).toUpperCase()}
@@ -184,7 +192,7 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                           {candidate.fullName}
                         </div>
                         <div className="candidate-email">{candidate.email}</div>
-                        {candidate.phone && (
+                        {candidate. phone && (
                           <div className="candidate-phone">{candidate.phone}</div>
                         )}
                       </div>
@@ -243,8 +251,8 @@ const ManagerScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
       {selectedCandidate && (
         <ManagerCandidateReviewModal
           candidate={selectedCandidate}
-          onClose={() => setSelectedCandidate(null)}
-          onUpdated={handleReviewUpdated}
+          onClose={handleCloseReviewModal} // ← Đóng review modal
+          onUpdated={handleReviewSuccess} // ← Success callback
         />
       )}
     </>

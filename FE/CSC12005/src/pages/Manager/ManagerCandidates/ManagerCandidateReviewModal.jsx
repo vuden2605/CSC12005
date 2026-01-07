@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ManagerService } from "../../../services/ManagerService";
 import "./style.scss";
+import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal"; 
 
 const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -14,7 +15,13 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
     problemSolving: 3,
     feedback: "",
   });
-
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
   if (!candidate) return null;
 
   // Prefill điểm nếu backend đã có kết quả đánh giá trước đó
@@ -89,22 +96,30 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleSubmit = async (e) => {
+  // ========== HANDLE SUBMIT WITH CONFIRM MODAL (UPDATED) ==========
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
 
-    const confirmMessage = "Xác nhận lưu đánh giá?";
+    // Mở ConfirmModal thay vì window.confirm
+    setConfirmModal({
+      isOpen: true,
+      type: "info",
+      title: "Xác nhận lưu đánh giá",
+      message: `Bạn có chắc chắn muốn lưu đánh giá cho ứng viên "${candidate.fullName}"?\n\nThao tác này không thể hoàn tác.`,
+      onConfirm: handleConfirmSave,
+    });
+  };
 
-    if (!window.confirm(confirmMessage)) return;
-
+  // ========== ACTUAL SAVE LOGIC (NEW) ==========
+  const handleConfirmSave = async () => {
     try {
       setLoading(true);
+      setConfirmModal({ ...confirmModal, isOpen: false });
 
-      // Gửi đánh giá chi tiết sang backend
       const payload = {
         ratingTechnical: Number(form.technical),
-        ratingCommunication: Number(form.communication),
+        ratingCommunication:  Number(form.communication),
         ratingProblemSolving: Number(form.problemSolving),
         ratingExperience: Number(form.experience),
         ratingCultureFit: Number(form.cultureFit),
@@ -114,7 +129,7 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
       const alreadyEvaluated = [
         candidate.ratingTechnical,
         candidate.ratingCommunication,
-        candidate.ratingProblemSolving,
+        candidate. ratingProblemSolving,
         candidate.ratingExperience,
         candidate.ratingCultureFit,
       ].some((v) => typeof v === "number");
@@ -122,9 +137,9 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
       const shouldCreate = candidate.status === "INTERVIEWING" && !alreadyEvaluated;
 
       if (shouldCreate) {
-        await ManagerService.createCandidateEvaluation(candidate.id, payload);
+        await ManagerService.createCandidateEvaluation(candidate. id, payload);
       } else {
-        await ManagerService.updateCandidateEvaluation(candidate.id, payload);
+        await ManagerService. updateCandidateEvaluation(candidate.id, payload);
       }
 
       if (onUpdated) onUpdated();
@@ -137,7 +152,14 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
     }
   };
 
+  // ========== HANDLE CANCEL CONFIRM (NEW) ==========
+  const handleCancelConfirm = () => {
+    setConfirmModal({ ... confirmModal, isOpen: false });
+  };
+
+
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
@@ -337,6 +359,16 @@ const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
         </div>
       </div>
     </div>
+       <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        type={confirmModal. type}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={handleCancelConfirm}
+        loading={loading}
+      />
+    </>
   );
 };
 

@@ -36,7 +36,7 @@
 .schedule-list .schedule-table td {
   text-align: center !important;
   vertical-align: middle;
-justify-content: center;
+  justify-content: center;
 }
 
 .schedule-list .schedule-date,
@@ -55,11 +55,31 @@ justify-content: center;
   font-weight: 500;
 }
 
-.status-badge.status-new,
-.status-badge.status-interviewing,
-.status-badge.status-interviewed,
-.status-badge.status-passed,
-.status-badge.status-rejected,
+.status-badge.status-new {
+  background: #f3f4f6; /* gray-100 */
+  color: #6b7280; /* gray-600 */
+}
+
+.status-badge.status-interviewing {
+  background: #fef3c7; /* amber-100 */
+  color: #d97706; /* amber-600 */
+}
+
+.status-badge.status-interviewed {
+  background: #dbeafe; /* blue-100 */
+  color: #2563eb; /* blue-600 */
+}
+
+.status-badge.status-passed {
+  background: #d1fae5; /* green-100 */
+  color: #059669; /* green-600 */
+}
+
+.status-badge.status-rejected {
+  background: #fee2e2; /* red-100 */
+  color: #dc2626; /* red-600 */
+}
+
 .status-badge.status-hired {
   background: #f3e8ff; /* purple-100 */
   color: #7c3aed; /* purple-600 */
