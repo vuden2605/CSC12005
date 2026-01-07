@@ -88,7 +88,8 @@ export const Login = () => {
           </div>
           <h1 style={{ color: "white" }}>Human Resource Portal</h1>
           <p>
-            Nền tảng quản trị nhân sự giúp tối ưu hóa quy trình và kết nối
+            Nền tảng quản trị nhân sự giúp tối ưu hóa quy trình và kết nối nhân
+            viên trong toàn hệ thống.
           </p>
 
           <ul>
