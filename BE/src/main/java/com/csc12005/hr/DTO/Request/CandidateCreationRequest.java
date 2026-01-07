@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class CandidateCreationRequest {
     private String address;
     @NotNull(message = "REQUIRED_BIRTH_DATE")
     private LocalDate birthDate;
-    private String cv;
+    private MultipartFile cv;
     @NotNull(message = "REQUIRED_POSITION_ID")
     private Long positionId;
 }

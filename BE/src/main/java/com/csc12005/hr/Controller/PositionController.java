@@ -28,4 +28,11 @@ public class PositionController {
                 .data(positionService.getPositionByDepartment(id))
                 .build();
     }
+    @GetMapping("/positions")
+    public ApiResponse<List<PositionResponse>> getAllPositions() {
+        return ApiResponse.<List<PositionResponse>>builder()
+                .message("get all positions")
+                .data(positionService.getAllPositions())
+                .build();
+    }
 }

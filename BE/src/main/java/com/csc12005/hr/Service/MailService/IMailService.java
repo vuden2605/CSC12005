@@ -8,4 +8,11 @@ public interface IMailService {
             String candidateName,
             Schedule schedule
     );
+    void sendCandidateRemovedMail(String toEmail, String candidateName, Schedule schedule, String reason);
+
+    void sendScheduleCancelledMail(String toEmail, String candidateName, Schedule schedule, String reason);
+
+    void sendInterviewPassedMail(String toEmail, String candidateName, String positionName);
+    void sendScheduleUpdatedMail(String toEmail, String candidateName, Schedule oldSchedule, Schedule newSchedule);
+
 }

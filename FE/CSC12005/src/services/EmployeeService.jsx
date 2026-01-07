@@ -55,9 +55,11 @@ export const EmployeeService = {
       });
       return response.data.data;
     } catch (error) {
-
       const status = error.response?.status;
-      let errMsg = error.response?.data?.message || error.message || "Error fetching current user";
+      let errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching current user";
       // Ẩn thông tin backend nội bộ và hiển thị thông điệp thân thiện
       if ((status && status >= 500) || /redis/i.test(errMsg)) {
         errMsg = "Máy chủ đang gặp sự cố, vui lòng thử lại sau.";
@@ -85,22 +87,19 @@ export const EmployeeService = {
     }
   },
 
-
   createRequest: async (requestData, requestType) => {
     const formData = new FormData();
     formData.append("requestType", requestType);
-  
+
     Object.entries(requestData).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         formData.append(key, value);
       }
     });
-  
+
     const response = await api.post("/requests", formData);
     return response.data.data;
   },
-  
-  
 
   getRequests: async (params = {}) => {
     try {
@@ -293,13 +292,12 @@ export const EmployeeService = {
   getRequestDetail: async (requestId, requestType) => {
     try {
       const response = await api.get(`/requests/${requestId}`, {
-        params: { requestType }
+        params: { requestType },
       });
       return response.data.data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.message ||
-        "Error fetching request detail"
+        error.response?.data?.message || "Error fetching request detail"
       );
     }
   },
@@ -324,8 +322,10 @@ export const EmployeeService = {
 
       return response.data.data || response.data;
     } catch (error) {
-
-      const errMsg = error.response?.data?.message || error.message || "Error fetching point histories";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching point histories";
       console.error("Error fetching point histories:", errMsg);
       throw new Error(errMsg);
     }
@@ -338,8 +338,10 @@ export const EmployeeService = {
       });
       return response.data.data || response.data;
     } catch (error) {
-
-      const errMsg = error.response?.data?.message || error.message || "Error fetching total points";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching total points";
       console.error("Error fetching total points:", errMsg);
       throw new Error(errMsg);
     }
@@ -347,12 +349,18 @@ export const EmployeeService = {
   // Tổng điểm nhận trong tháng hiện tại
   getMyTotalReceivedMonth: async () => {
     try {
-      const response = await api.get(`/point-histories/me/total-received/month`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await api.get(
+        `/point-histories/me/total-received/month`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       return response.data.data || response.data;
     } catch (error) {
-      const errMsg = error.response?.data?.message || error.message || "Error fetching monthly received points";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching monthly received points";
       console.error("Error fetching monthly received points:", errMsg);
       throw new Error(errMsg);
     }
@@ -360,13 +368,18 @@ export const EmployeeService = {
   // Tổng điểm nhận trong năm hiện tại
   getMyTotalReceivedYear: async () => {
     try {
-      const response = await api.get(`/point-histories/me/total-received/year`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await api.get(
+        `/point-histories/me/total-received/year`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       return response.data.data || response.data;
     } catch (error) {
-
-      const errMsg = error.response?.data?.message || error.message || "Error fetching yearly received points";
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching yearly received points";
       console.error("Error fetching yearly received points:", errMsg);
       throw new Error(errMsg);
     }
@@ -374,15 +387,12 @@ export const EmployeeService = {
   // Lấy yêu cầu đổi điểm của nhân viên (giống HR nhưng không dùng /all)
   getMyPointExchangeRequests: async (params = {}) => {
     try {
-      const response = await api.get(
-        `/point-exchanges`,
-        {
-          params,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await api.get(`/point-exchanges`, {
+        params,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return response.data.data || response.data;
     } catch (error) {
       const errMsg =
@@ -399,11 +409,9 @@ export const EmployeeService = {
     try {
       const payload = { points };
       if (note) payload.note = note;
-      const response = await api.post(
-        "/point-exchanges",
-        payload,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await api.post("/point-exchanges", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
       return response.data.data || response.data;
     } catch (error) {
       const errMsg =

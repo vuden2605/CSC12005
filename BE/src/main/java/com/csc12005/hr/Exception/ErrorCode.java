@@ -61,6 +61,8 @@ public enum ErrorCode {
     DATE_IN_PAST(5502,"Schedule date cannot be in the past",HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_COMPLETED_SCHEDULE(5504,"Cannot cancel a completed schedule",HttpStatus.BAD_REQUEST),
     INTERVIEWER_HAS_SCHEDULE_CONFLICT(5505,"Interviewer has a scheduling conflict",HttpStatus.BAD_REQUEST),
+    CANDIDATE_POSITION_MISMATCH(5506,"Candidate's position does not match the schedule position",HttpStatus.BAD_REQUEST),
+    REQUIRED_CANCEL_REASON(5507,"Cancel reason is required",HttpStatus.BAD_REQUEST),
     //candidate
     CANDIDATE_NOT_FOUND(5600, "Candidate not found", HttpStatus.NOT_FOUND),
     CANDIDATE_ALREADY_SCHEDULED(5601, "Candidate has already been scheduled", HttpStatus.BAD_REQUEST),

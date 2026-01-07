@@ -19,8 +19,8 @@ public interface IScheduleService {
             Long scheduleId,
             ScheduleUpdateRequest scheduleUpdateRequest
     );
-    public void removeCandidateFromSchedule(Long candidateId);
-    public void cancelSchedule(Long scheduleId);
+    public void removeCandidateFromSchedule(Long candidateId,String reason);
+    public void cancelSchedule(Long scheduleId, String reason);
     public Page<ScheduleResponse> filterSchedules(
             ScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO

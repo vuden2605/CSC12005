@@ -25,7 +25,7 @@ import java.util.List;
 public class CandidateController {
 	private final ICandidateService candidateService;
     @PostMapping("")
-    public ApiResponse<CandidateResponse> createCandidate(@RequestBody CandidateCreationRequest request)
+    public ApiResponse<CandidateResponse> createCandidate( @ModelAttribute @Valid CandidateCreationRequest request)
     {
         return ApiResponse.<CandidateResponse>builder()
                 .data(candidateService.createCandidate(request))
@@ -58,7 +58,7 @@ public class CandidateController {
     @PatchMapping("/{id}")
     public ApiResponse<CandidateResponse> updateCandidate(
             @PathVariable Long id,
-            @RequestBody CandidateUpdateRequest request)
+            @ModelAttribute @Valid CandidateUpdateRequest request)
     {
         return ApiResponse.<CandidateResponse>builder()
                 .data(candidateService.updateCandidate(id,request))
@@ -77,10 +77,10 @@ public class CandidateController {
     }
     // filter candidate
     @GetMapping("")
-    public ApiResponse<List<CandidateResponse>> filterCandidates(
+    public ApiResponse<Page<CandidateResponse>> filterCandidates(
             CandidateFilterRequest request,PageRequestDTO pageRequestDTO
     ) {
-        return ApiResponse.<List<CandidateResponse>>builder()
+        return ApiResponse.<Page<CandidateResponse>>builder()
                 .data(candidateService.filterCandidates(request,pageRequestDTO))
                 .message("Filter candidates successfully")
                 .build();
