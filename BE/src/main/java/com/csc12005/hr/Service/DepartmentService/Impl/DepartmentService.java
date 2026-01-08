@@ -5,12 +5,13 @@ import com.csc12005.hr.DTO.Response.DepartmentResponse;
 import com.csc12005.hr.Entity.Department;
 import com.csc12005.hr.Mapper.DepartmentMapper;
 import com.csc12005.hr.Repository.DepartmentRepository;
+import com.csc12005.hr.Service.DepartmentService.IDepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class DepartmentService {
+public class DepartmentService implements IDepartmentService {
 	private final DepartmentRepository departmentRepository;
 	private final DepartmentMapper departmentMapper;
 	public DepartmentResponse createDepartment(DepartmentCreationRequest departmentCreationRequest) {

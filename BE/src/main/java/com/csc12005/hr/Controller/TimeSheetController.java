@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.ImportResult;
 import com.csc12005.hr.DTO.Response.TimeSheetResponse;
 import com.csc12005.hr.Entity.TimeSheet;
+import com.csc12005.hr.Service.TimeSheetService.ITimeSheetService;
 import com.csc12005.hr.Service.TimeSheetService.Impl.TimeSheetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class TimeSheetController {
-	private final TimeSheetService timeSheetService;
+	private final ITimeSheetService timeSheetService;
 	@PostMapping(
 			value = "/timesheets/import",
 			consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

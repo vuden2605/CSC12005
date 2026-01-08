@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
 import com.csc12005.hr.Entity.PointHistory;
+import com.csc12005.hr.Service.PointHistoryService.IPointHistoryService;
 import com.csc12005.hr.Service.PointHistoryService.Impl.PointHistoryService;
 import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/point-histories")
 @RequiredArgsConstructor
 public class PointHistoryController {
-	private final PointHistoryService pointHistoryService;
+	private final IPointHistoryService pointHistoryService;
 	private final SecurityUtils securityUtils;
 	@GetMapping("/monthly-candidates")
 	public ApiResponse<List<EmployeeResponse>> getMonthlyCandidates() {

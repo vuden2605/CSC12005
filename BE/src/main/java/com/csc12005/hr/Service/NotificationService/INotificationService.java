@@ -11,6 +11,9 @@ public interface INotificationService {
 	void handleActivityCreated(ActivityCreated activityCreated);
 	void handleWFHRequestCreated(WFHRequestCreated wfhRequestCreated);
 	void handleTimeSheetRequestCreated(TimeSheetRequestCreated timeSheetRequestCreated);
+	void handleScheduleCreated(ScheduleCreated scheduleCreated);
+	void handleScheduleUpdated(ScheduleUpdated scheduleUpdated);
+	void handleScheduleDeleted(ScheduleDeleted scheduleDeleted);
 	Page<Notification> getNotifications(PageRequestDTO pageRequestDTO);
 	void markAsRead(Long notificationId);
 	int countUnreadNotifications();

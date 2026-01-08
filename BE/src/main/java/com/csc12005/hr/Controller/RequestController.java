@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Request.RequestFilter;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Enums.RequestType;
+import com.csc12005.hr.Service.RequestService.IRequestService;
 import com.csc12005.hr.Service.RequestService.Impl.RequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/requests")
 public class RequestController {
-	private final RequestService requestService;
+	private final IRequestService requestService;
 	@GetMapping("/by-manager")
 	public ApiResponse<Page<RequestResponse>> getRequests (
 			PageRequestDTO pageRequest,

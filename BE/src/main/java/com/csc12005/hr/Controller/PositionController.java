@@ -3,6 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.PositionCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.PositionResponse;
+import com.csc12005.hr.Service.PositionService.IPositionService;
 import com.csc12005.hr.Service.PositionService.Impl.PositionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class PositionController {
-	private final PositionService positionService;
+	private final IPositionService positionService;
 	@PostMapping("/positions")
 	public ApiResponse<PositionResponse> createPosition(@RequestBody @Valid PositionCreationRequest positionCreationRequest) {
 		return ApiResponse.<PositionResponse>builder()

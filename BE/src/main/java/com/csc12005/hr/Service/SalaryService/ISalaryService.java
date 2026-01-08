@@ -21,4 +21,6 @@ public interface ISalaryService {
             MySalaryFilterRequest request,
             PageRequestDTO pageRequestDTO    );
     void updateStatus(UpdateSalaryStatus request);
+
+	String generateQRPayRoll(Long salaryId);
 }

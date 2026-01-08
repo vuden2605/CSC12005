@@ -8,9 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public interface ITimeSheetService {
 	ImportResult importTimeSheetExcel(TimeSheetCreationRequest request);
 	Page<TimeSheetResponse> myTimeSheets(PageRequestDTO pageRequestDTO, LocalDate fromDate, LocalDate toDate);
+
+	List<TimeSheetResponse> getAllTimeSheets();
 }

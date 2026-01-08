@@ -7,6 +7,7 @@ import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ImportResult;
+import com.csc12005.hr.Service.EmployeeService.IEmployeeService;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import com.csc12005.hr.Service.EmployeeService.impl.EmployeeService;
 import com.csc12005.hr.Utils.SecurityUtils;
@@ -27,7 +28,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/employees")
 public class EmployeeController {
-	private final EmployeeService employeeService;
+	private final IEmployeeService employeeService;
 	private final SecurityUtils securityUtils;
 	@PostMapping
 //	@PreAuthorize("hasRole('ADMIN') OR hasRole('HR')")

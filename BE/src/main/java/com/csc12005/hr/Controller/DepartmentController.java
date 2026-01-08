@@ -3,6 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.DepartmentCreationRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.DepartmentResponse;
+import com.csc12005.hr.Service.DepartmentService.IDepartmentService;
 import com.csc12005.hr.Service.DepartmentService.Impl.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class DepartmentController {
-	private final DepartmentService departmentService;
+	private final IDepartmentService departmentService;
 	@PostMapping("/departments")
 	public ApiResponse<DepartmentResponse> createDepartment(@RequestBody DepartmentCreationRequest departmentCreationRequest) {
 		return ApiResponse.<DepartmentResponse>builder()

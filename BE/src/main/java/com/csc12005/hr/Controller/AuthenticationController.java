@@ -4,6 +4,7 @@ import com.csc12005.hr.DTO.Request.LoginRequest;
 import com.csc12005.hr.DTO.Request.LogoutRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.AuthenticationResponse;
+import com.csc12005.hr.Service.AuthenticationService.IAuthenticationService;
 import com.csc12005.hr.Service.AuthenticationService.impl.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthenticationController {
-	private final AuthenticationService authenticationService;
+	private final IAuthenticationService authenticationService;
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {

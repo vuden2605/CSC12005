@@ -8,6 +8,7 @@ import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.PointExchangeResponse;
 import com.csc12005.hr.Entity.PointExchange;
 import com.csc12005.hr.Enums.PointExchangeStatus;
+import com.csc12005.hr.Service.PointExchangeService.IPointExchangeService;
 import com.csc12005.hr.Service.PointExchangeService.Impl.PointExchangeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/point-exchanges")
 public class PointExchangeController {
-	private final PointExchangeService pointExchangeService;
+	private final IPointExchangeService pointExchangeService;
 	@GetMapping
 	public ApiResponse<Page<PointExchangeResponse>> myPointExchanges(PageRequestDTO pageRequestDTO, PointExchangeFilterRequest pointExchangeFilterRequest) {
 		Page<PointExchangeResponse> responses = pointExchangeService.myPointExchanges(pageRequestDTO, pointExchangeFilterRequest);

@@ -3,7 +3,9 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.SalaryResponse;
+import com.csc12005.hr.Service.MonthlyAttendanceSummaryService.IMonthlyAttendanceSummaryService;
 import com.csc12005.hr.Service.MonthlyAttendanceSummaryService.impl.MonthlyAttendanceSummaryService;
+import com.csc12005.hr.Service.SalaryService.ISalaryService;
 import com.csc12005.hr.Service.SalaryService.Impl.SalaryService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/salaries")
 public class SalaryController {
-    private final SalaryService salaryService;
-    private final MonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
+    private final ISalaryService salaryService;
+    private final IMonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
     @PostMapping
     public ApiResponse<Void> createAll(@RequestBody SalaryCreationRequest request)
     {

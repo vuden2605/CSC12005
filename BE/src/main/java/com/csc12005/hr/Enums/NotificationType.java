@@ -5,5 +5,6 @@ public enum NotificationType {
 	TIMESHEET,
 	SALARY,
 	REVIEW,
-	ACTIVITY
+	ACTIVITY,
+	SCHEDULE
 }

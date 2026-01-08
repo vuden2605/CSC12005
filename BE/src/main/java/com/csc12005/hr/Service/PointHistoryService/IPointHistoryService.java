@@ -1,6 +1,8 @@
 package com.csc12005.hr.Service.PointHistoryService;
 
+import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
+import com.csc12005.hr.DTO.Response.PointHistoryResponse;
 import com.csc12005.hr.Entity.Employee;
 import org.springframework.stereotype.Service;
 
@@ -13,4 +15,6 @@ public interface IPointHistoryService {
 	int getTotalReceivedPointsInMonth(Long userId);
 	int getTotalReceivedPointsInYear(Long userId);
 	int getCurrentTotalPoints(Long userId);
+
+	List<PointHistoryResponse> myPointsHistory(Long userId, PageRequestDTO pageRequestDTO);
 }

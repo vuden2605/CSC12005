@@ -16,6 +16,7 @@ import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.Lint;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,8 @@ public class ScheduleService implements IScheduleService {
     private final IMailService mailService;
     private final SecurityUtils securityUtils;
     private final CandidateMapper candidateMapper;
-
+	private final ApplicationEventPublisher applicationEventPublisher;
+	@Transactional
     public ScheduleResponse createSchedule(ScheduleCreationRequest scheduleCreationRequest)
     {
         // tạo lịch trước 5 ngày
@@ -66,7 +68,15 @@ public class ScheduleService implements IScheduleService {
         // lưu người phỏng vấn
         schedule.setInterviewer(employee);
         schedule.setPosition(position);
-        return scheduleMapper.toScheduleResponse(scheduleRepository.save(schedule));
+
+        Schedule save =  scheduleRepository.save(schedule);
+        applicationEventPublisher.publishEvent(
+				new ScheduleCreated(
+						save.getId(),
+						employee.getId()
+				)
+		);
+		return scheduleMapper.toScheduleResponse(save);
     }
     @Transactional
     public void addCandidatesToSchedule(
@@ -117,6 +127,7 @@ public class ScheduleService implements IScheduleService {
             );
         }
     }
+    @Transactional
     public ScheduleResponse updateSchedule(
             Long scheduleId,
             ScheduleUpdateRequest scheduleUpdateRequest
@@ -149,7 +160,13 @@ public class ScheduleService implements IScheduleService {
         existingSchedule. setLocation(scheduleUpdateRequest. getLocation());
 
         Schedule updatedSchedule = scheduleRepository. save(existingSchedule);
-
+        applicationEventPublisher.publishEvent(
+        		new ScheduleUpdated(
+						updatedSchedule.getId(),
+						updatedSchedule.getInterviewer().getId(),
+						updatedSchedule.getDate()
+				)
+        );
         // ← GỬI EMAIL CHO TẤT CẢ CANDIDATES TRONG LỊCH
         List<Candidate> candidates = updatedSchedule.getCandidates();
 
@@ -239,6 +256,13 @@ public class ScheduleService implements IScheduleService {
         //cập nhật trạng thiái lịch thành CANCELLED
         schedule.setStatus(com.csc12005.hr.Enums.ScheduleStatus.CANCELLED);
         scheduleRepository.save(schedule);
+        applicationEventPublisher.publishEvent(
+            new ScheduleDeleted(
+		            schedule.getId(),
+		            schedule.getInterviewer().getId(),
+		            schedule.getDate()
+            )
+        );
     }
     public Page<ScheduleResponse> filterSchedules(
             ScheduleFilterRequest request,

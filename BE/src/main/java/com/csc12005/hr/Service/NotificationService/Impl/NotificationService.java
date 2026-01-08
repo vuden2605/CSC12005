@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService implements INotificationService {
@@ -70,6 +72,49 @@ public class NotificationService implements INotificationService {
 		);
 		webSocketService.sendToUser(timeSheetRequestCreated.getManagerId(), savedNotification);
 	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleScheduleCreated(ScheduleCreated scheduleCreated) {
+		Notification notification = createNotification(
+				scheduleCreated.getManagerId(),
+				"Lịch phỏng vấn mới",
+				String.format("Bạn có một lịch phỏng vấn mới, nhấn vào để xem chi tiết."),
+				NotificationType.SCHEDULE,
+				scheduleCreated.getId()
+		);
+		webSocketService.sendToUser(scheduleCreated.getManagerId(), notification);
+	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleScheduleUpdated(ScheduleUpdated scheduleUpdated) {
+		Notification notification = createNotification(
+				scheduleUpdated.getManagerId(),
+				"Cập nhật lịch phỏng vấn",
+				String.format("Lịch phỏng vấn của bạn vào ngày %s đã được cập nhật, nhấn để xem ngay.", scheduleUpdated.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))),
+				NotificationType.SCHEDULE,
+				scheduleUpdated.getId()
+		);
+		webSocketService.sendToUser(scheduleUpdated.getManagerId(), notification);
+	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleScheduleDeleted(ScheduleDeleted scheduleDeleted) {
+		Notification notification = createNotification(
+				scheduleDeleted.getManagerId(),
+				"Lịch phỏng vấn đã bị hủy",
+				String.format("Lịch phỏng vấn của bạn vào ngày %s đã bị hủy, nhấn để xem ngay.", scheduleDeleted.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))),
+				NotificationType.SCHEDULE,
+				scheduleDeleted.getId()
+		);
+		webSocketService.sendToUser(scheduleDeleted.getManagerId(), notification);
+	}
+
 	@Override
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -104,5 +149,6 @@ public class NotificationService implements INotificationService {
 		Long userId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 		return notificationRepository.countNotificationsUnread(userId);
 	}
+
 
 }

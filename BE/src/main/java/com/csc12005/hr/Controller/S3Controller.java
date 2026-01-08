@@ -3,6 +3,7 @@ package com.csc12005.hr.Controller;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
+import com.csc12005.hr.Service.S3Service.IS3Service;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -14,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 public class S3Controller {
-	private final S3Service s3Service;
+	private final IS3Service s3Service;
 	@PostMapping(
 		value = "/s3/upload",
 		consumes = MediaType.MULTIPART_FORM_DATA_VALUE
