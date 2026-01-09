@@ -17,6 +17,8 @@ const getNotificationRoute = (type, referenceId) => {
 
     case "ACTIVITY":
       return `/employee/dashboard/event`;    
+    case "SCHEDULE":
+      return `/manager/candidates`;
 
     default:
       return null;

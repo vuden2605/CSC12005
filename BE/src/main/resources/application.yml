@@ -53,5 +53,10 @@ springdoc:
   swagger-ui:
     display-request-duration: true
 app:
-    frontend-url: http://localhost:3000
+    frontend-url:
+      urls:
+        - "http://localhost:3000"
+        - "http://localhost:5173"
+        - "http://localhost:5174"
     password-default: 123456
+

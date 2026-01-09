@@ -63,3 +63,9 @@ springdoc:
     display-request-duration: true
 app:
     password-default: 123456
+    frontend-url:
+      urls:
+        - "http://csc12005.me"
+        - "https://csc12005.me"
+        - "3.26.14.201"
+

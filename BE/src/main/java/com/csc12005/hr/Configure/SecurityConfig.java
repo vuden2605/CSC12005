@@ -26,6 +26,7 @@ import java.util.List;
 public class SecurityConfig {
 	private final CustomJwtDecoder customJwtDecoder;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final ExtenderFrontendUrlProperties extenderFrontendUrlProperties;
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -67,12 +68,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOriginPatterns(List.of(
-				"http://3.26.14.201",
-				"http://3.26.14.201:80",
-				"http://localhost:*",
-				"ec2-3-26-14-201.ap-southeast-2.compute.amazonaws.com:80"
-		));
+		configuration.setAllowedOriginPatterns(extenderFrontendUrlProperties.getUrls());
 		configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
