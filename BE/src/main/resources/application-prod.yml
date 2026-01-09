@@ -61,3 +61,5 @@ aws:
 springdoc:
   swagger-ui:
     display-request-duration: true
+app:
+    password-default: 123456
