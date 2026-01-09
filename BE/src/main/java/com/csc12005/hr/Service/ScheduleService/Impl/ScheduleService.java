@@ -119,14 +119,11 @@ public class ScheduleService implements IScheduleService {
         // (4) save all candidate
         candidateRepository.saveAll(candidates);
         // send mail
-        for (Candidate candidate : candidates) {
-            mailService.sendInterviewScheduleMail(
-                    candidate.getEmail(),
-                    candidate.getFullName(),
-                    schedule
-            );
-        }
+        applicationEventPublisher.publishEvent(
+				new CandidateCreatedEvent(candidates, schedule)
+		);
     }
+
     @Transactional
     public ScheduleResponse updateSchedule(
             Long scheduleId,
@@ -169,20 +166,9 @@ public class ScheduleService implements IScheduleService {
         );
         // ← GỬI EMAIL CHO TẤT CẢ CANDIDATES TRONG LỊCH
         List<Candidate> candidates = updatedSchedule.getCandidates();
-
-        for (Candidate candidate : candidates) {
-            try {
-                mailService.sendScheduleUpdatedMail(
-                        candidate.getEmail(),
-                        candidate.getFullName(),
-                        oldSchedule,      // Lịch cũ
-                        updatedSchedule   // Lịch mới
-                );
-            } catch (Exception e) {
-                log.error( e.getMessage());
-                // Không throw exception để các email khác vẫn được gửi
-            }
-        }
+		applicationEventPublisher.publishEvent(
+			new ScheduleUpdatedSendMailEvent(candidates, oldSchedule, updatedSchedule)
+		);
         return scheduleMapper.toScheduleResponse(updatedSchedule);
     }
 
@@ -201,14 +187,10 @@ public class ScheduleService implements IScheduleService {
         if (!LocalDate.now().isBefore(twoDaysAgo)) {
             throw new AppException(ErrorCode.UPDATE_SCHEDULE_TOO_LATE);
         }
-        // Gởi email trước khi xóa
-        mailService.sendCandidateRemovedMail(
-                candidate.getEmail(),
-                candidate.getFullName(),
-                candidate.getSchedule(),
-                reason
-        );
 
+        applicationEventPublisher.publishEvent(
+            new CandidateRemoveEmailEvent(candidate, reason)
+        );
         candidate.setSchedule(null);
         candidate.transitionTo(CandidateStatus.NOT_INTERVIEWED);
 
@@ -245,14 +227,9 @@ public class ScheduleService implements IScheduleService {
         }
         candidateRepository.saveAll(candidates);
         // Gửi email cho TẤT CẢ candidates
-        for (Candidate candidate : candidates) {
-            mailService.sendScheduleCancelledMail(
-                    candidate.getEmail(),
-                    candidate.getFullName(),
-                    schedule,
-                    reason
-            );
-        }
+        applicationEventPublisher.publishEvent(
+            new CancelScheduleEvent(candidates, reason, schedule)
+        );
         //cập nhật trạng thiái lịch thành CANCELLED
         schedule.setStatus(com.csc12005.hr.Enums.ScheduleStatus.CANCELLED);
         scheduleRepository.save(schedule);

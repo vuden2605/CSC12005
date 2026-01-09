@@ -1,5 +1,7 @@
 package com.csc12005.hr.Service.MailService. impl;
 
+import com.csc12005.hr.DTO.Request.*;
+import com.csc12005.hr.Entity.Candidate;
 import com.csc12005.hr.Entity.Schedule;
 import com.csc12005.hr.Service.MailService.IMailService;
 import jakarta.mail.internet.MimeMessage;
@@ -10,9 +12,12 @@ import org.springframework. mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util. Locale;
 
 @Service
@@ -26,7 +31,6 @@ public class MailService implements IMailService {
             DateTimeFormatter.ofPattern("'Ngày' dd 'tháng' MM 'năm' yyyy", new Locale("vi", "VN"));
 
     // ==================== 1. THƯ MỜI PHỎNG VẤN ====================
-    @Async
     @Override
     public void sendInterviewScheduleMail(String toEmail, String candidateName, Schedule schedule) {
         try {
@@ -42,7 +46,6 @@ public class MailService implements IMailService {
     }
 
     // ==================== 2. XÓA KHỎI DANH SÁCH ====================
-    @Async
     @Override
     public void sendCandidateRemovedMail(String toEmail, String candidateName, Schedule schedule, String reason) {
         try {
@@ -58,7 +61,6 @@ public class MailService implements IMailService {
     }
 
     // ==================== 3. HỦY LỊCH PHỎNG VẤN ====================
-    @Async
     @Override
     public void sendScheduleCancelledMail(String toEmail, String candidateName, Schedule schedule, String reason) {
         try {
@@ -74,7 +76,6 @@ public class MailService implements IMailService {
     }
 
     // ==================== 4. THÔNG BÁO ĐẠT ====================
-    @Async
     @Override
     public void sendInterviewPassedMail(String toEmail, String candidateName, String positionName) {
         try {
@@ -109,7 +110,6 @@ public class MailService implements IMailService {
         mailSender.send(mimeMessage);
     }
     // ==================== 5. CẬP NHẬT LỊCH PHỎNG VẤN ====================
-    @Async
     @Override
     public void sendScheduleUpdatedMail(String toEmail, String candidateName, Schedule oldSchedule, Schedule newSchedule) {
         try {
@@ -816,4 +816,59 @@ public class MailService implements IMailService {
                 </div>
                 """;
     }
+    @Override
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleCandidateCreated(CandidateCreatedEvent candidateCreatedEvent) {
+	    List<Candidate> candidates = candidateCreatedEvent.getCandidates();
+	    for (Candidate candidate : candidates) {
+		    sendInterviewScheduleMail(
+				    candidate.getEmail(),
+				    candidate.getFullName(),
+				    candidateCreatedEvent.getSchedule()
+		    );
+	    }
+    }
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleScheduleUpdated(ScheduleUpdatedSendMailEvent event) {
+		List<Candidate> candidates = event.getCandidates();
+		for (Candidate candidate : candidates) {
+			sendScheduleUpdatedMail(
+					candidate.getEmail(),
+					candidate.getFullName(),
+					event.getOldSchedule(),
+					event.getNewSchedule()
+			);
+		}
+	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleCandidateRemovedEmail(CandidateRemoveEmailEvent event) {
+		Candidate candidate = event.getCandidate();
+		sendCandidateRemovedMail(
+				candidate.getEmail(),
+				candidate.getFullName(),
+				candidate.getSchedule(),
+				event.getReason()
+		);
+	}
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleCancelSchedule(CancelScheduleEvent event) {
+		List<Candidate> candidates = event.getCandidates();
+		for (Candidate candidate : candidates) {
+			sendScheduleCancelledMail(
+					candidate.getEmail(),
+					candidate.getFullName(),
+					event.getSchedule(),
+					event.getReason()
+			);
+		}
+	}
+
 }

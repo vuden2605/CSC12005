@@ -27,4 +27,5 @@ public interface IScheduleService {
             MyScheduleFilterRequest request,
             PageRequestDTO pageRequestDTO
     );
+
 }
