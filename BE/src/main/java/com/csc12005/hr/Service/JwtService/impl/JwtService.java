@@ -8,6 +8,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService implements IJwtService {
 	@Value("${jwt.secret}")
 	private String secretKey;
@@ -69,11 +71,13 @@ public class JwtService implements IJwtService {
 					.getBody();
 			String tokenId = claims.getId();
 			if (tokenCacheService.isTokenInvalidated(tokenId)) {
+				log.info("Token with ID {} has been invalidated", tokenId);
 				throw new JwtException("Token has been invalidated");
 			}
 			return claims;
 		}
 		catch (JwtException e) {
+			log.info("Token verification failed: {}", e.getMessage());
 			throw new JwtException("Invalid or expired token",e);
 		}
 	}

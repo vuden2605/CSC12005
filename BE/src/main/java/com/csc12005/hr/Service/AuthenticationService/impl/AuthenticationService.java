@@ -14,6 +14,7 @@ import com.csc12005.hr.Service.JwtService.impl.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService implements IAuthenticationService {
 	private final EmployeeRepository employeeRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -46,20 +48,22 @@ public class AuthenticationService implements IAuthenticationService {
 		if (refreshToken == null || refreshToken.isEmpty()) {
 			throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
 		}
+
 		Claims claims = jwtService.verifyToken(refreshToken);
 		String acId = claims.get("acId", String.class);
 		String refreshTokenId = claims.getId();
-		if (tokenCacheService.isTokenInvalidated(refreshTokenId)) {
-			throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
-		}
-		tokenCacheService.invalidateTokens(
-			acId,
-			refreshTokenId,
-			claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+
 		Employee employee = employeeRepository.findById(Long.parseLong(claims.getSubject()))
 				.orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
+
 		String newAccessToken = jwtService.generateAccessToken(employee);
 		String newRefreshToken = jwtService.generateRefreshToken(employee);
+
+		tokenCacheService.invalidateTokens(
+				acId,
+				refreshTokenId,
+				claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+
 		return AuthenticationResponse.builder()
 				.accessToken(newAccessToken)
 				.refreshToken(newRefreshToken)

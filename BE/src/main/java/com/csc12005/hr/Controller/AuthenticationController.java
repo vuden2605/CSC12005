@@ -8,6 +8,7 @@ import com.csc12005.hr.Service.AuthenticationService.IAuthenticationService;
 import com.csc12005.hr.Service.AuthenticationService.impl.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Slf4j
 public class AuthenticationController {
 	private final IAuthenticationService authenticationService;
 
@@ -33,7 +35,15 @@ public class AuthenticationController {
 
 	@PostMapping("/refresh-token")
 	public ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@CookieValue(value = "refreshToken", required = true) String refreshToken) {
-		AuthenticationResponse authResponse = authenticationService.refreshToken(refreshToken);
+		log.info("Refresh token received: {}", refreshToken);
+		AuthenticationResponse authResponse;
+		try {
+			authResponse = authenticationService.refreshToken(refreshToken);
+		}
+		catch(Exception e) {
+			log.info("Error refreshing token: {}", e.getMessage());
+			throw e;
+		}
 		return ResponseEntity.ok()
 				.header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(authResponse.getRefreshToken()).toString())
 				.body(ApiResponse.<AuthenticationResponse>builder()
@@ -57,9 +67,9 @@ public class AuthenticationController {
 	private ResponseCookie buildRefreshTokenCookie(String refreshToken) {
 		return ResponseCookie.from("refreshToken", refreshToken)
 				.httpOnly(true)
-				.secure(false)
-				.path("/api/auth/refresh-token")
-				.sameSite("Strict")
+				.secure(true)
+				.path("/")
+				.sameSite("Lax")
 				.maxAge(7 * 24 * 60 * 60)
 				.build();
 	}
@@ -67,8 +77,8 @@ public class AuthenticationController {
 		return ResponseCookie.from("refreshToken", "")
 				.httpOnly(true)
 				.secure(false)
-				.path("/api/auth/refresh-token")
-				.sameSite("Strict")
+				.path("/")
+				.sameSite("Lax")
 				.maxAge(0)
 				.build();
 	}
