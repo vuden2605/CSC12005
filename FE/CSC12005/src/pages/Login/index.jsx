@@ -51,6 +51,9 @@ export const Login = () => {
       setStatus("loading");
       console.log("form data", formData);
       const res = await AuthService.login(formData.username, formData.password);
+      if (!res?.data?.accessToken) {
+        throw new Error("Sai tên đăng nhập hoặc mật khẩu, vui lòng thử lại.");
+      }
       console.log("res", res);
       const accessToken = res.data.accessToken;
       localStorage.setItem("accessToken", accessToken);

@@ -27,7 +27,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(authResponse.getRefreshToken()).toString())
 				.body(ApiResponse.<AuthenticationResponse>builder()
-						.message("Access token refreshed successfully")
+						.message("Login successfully")
 						.data(authResponse)
 						.build()
 				);
