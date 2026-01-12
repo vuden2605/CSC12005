@@ -17,7 +17,6 @@ export const SalaryDetailModal = ({
   const [qrUrl, setQrUrl] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState("");
-  const [newStatus, setNewStatus] = useState(salary.status || "");
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const { showAlert } = useAlert();
@@ -74,25 +73,41 @@ export const SalaryDetailModal = ({
   } = salary;
 
   const getStatusLabel = (s) => {
-    if (s === "DRAFT") return "Nháp";
+    if (s === "DRAFT") return "Chờ duyệt";
     if (s === "APPROVED") return "Đã duyệt";
     if (s === "PAID") return "Đã thanh toán";
     return s || "-";
   };
 
+  const getAllowedNewStatuses = () => {
+    // Chờ duyệt (DRAFT) -> chỉ cho phép chuyển sang Đã duyệt
+    if (status === "DRAFT") return ["APPROVED"];
+    // Đã duyệt (APPROVED) -> chỉ cho phép chuyển sang Đã thanh toán
+    if (status === "APPROVED") return ["PAID"];
+    // Đã thanh toán (PAID) hoặc trạng thái khác -> không cho cập nhật
+    return [];
+  };
+
+  const allowedNewStatuses = getAllowedNewStatuses();
+
   const handleUpdateStatus = async () => {
     if (!canUpdateStatus) return;
-    if (!newStatus) {
-      showAlert("error", "Vui lòng chọn trạng thái mới");
+    if (!allowedNewStatuses.length) {
+      showAlert(
+        "error",
+        "Trạng thái hiện tại không được phép cập nhật"
+      );
       return;
     }
 
+    const targetStatus = allowedNewStatuses[0];
+
     try {
       setUpdatingStatus(true);
-      await HRService.updateSalaryStatus(salary.id, newStatus);
+      await HRService.updateSalaryStatus(salary.id, targetStatus);
       showAlert(
         "success",
-        `Cập nhật trạng thái lương thành ${getStatusLabel(newStatus)} thành công`
+        `Cập nhật trạng thái lương thành ${getStatusLabel(targetStatus)} thành công`
       );
       if (onStatusUpdated) {
         await onStatusUpdated();
@@ -322,24 +337,24 @@ export const SalaryDetailModal = ({
           <div className="modal-footer">
             {canUpdateStatus && (
               <div className="salary-status-footer">
-                <select
-                  className="salary-status-select"
-                  value={newStatus}
-                  onChange={(e) => setNewStatus(e.target.value)}
-                >
-                  <option value="">-- Chọn trạng thái --</option>
-                  <option value="DRAFT">Nháp</option>
-                  <option value="APPROVED">Đã duyệt</option>
-                  <option value="PAID">Đã thanh toán</option>
-                </select>
+                {allowedNewStatuses.length === 0 ? (
+                  <span className="detail-value">
+                    Trạng thái hiện tại không thể cập nhật.
+                  </span>
+                ) : (
                 <button
                   className="btn primary"
                   type="button"
                   onClick={handleUpdateStatus}
-                  disabled={updatingStatus}
+                  disabled={updatingStatus || allowedNewStatuses.length === 0}
                 >
-                  {updatingStatus ? "Đang cập nhật..." : "Cập nhật trạng thái"}
+                  {updatingStatus
+                    ? "Đang cập nhật..."
+                    : allowedNewStatuses[0] === "APPROVED"
+                    ? "Cập nhật sang Đã duyệt"
+                    : "Cập nhật sang Đã thanh toán"}
                 </button>
+                )}
               </div>
             )}
             <button className="btn cancel" onClick={onClose}>

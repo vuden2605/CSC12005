@@ -15,7 +15,6 @@ export const HRPayRoll = () => {
   const [yearError, setYearError] = useState("");
   const [selectedSalary, setSelectedSalary] = useState(null);
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
-  const [bulkStatus, setBulkStatus] = useState("");
 
   const [filters, setFilters] = useState({
     month: "",
@@ -87,15 +86,52 @@ export const HRPayRoll = () => {
         : [...prev, salaryId]
     );
   };
+
+  const getAllowedBulkStatuses = () => {
+    const selectedItems = data.filter((item) =>
+      selectedSalaryIds.includes(item.id)
+    );
+
+    if (!selectedItems.length) return [];
+
+    if (selectedItems.some((item) => item.status === "PAID")) {
+      return [];
+    }
+
+    let allowedSet = null;
+
+    selectedItems.forEach((item) => {
+      let itemAllowed = [];
+      // Chờ duyệt (DRAFT) chỉ được chuyển sang Đã duyệt (APPROVED)
+      if (item.status === "DRAFT") itemAllowed = ["APPROVED"];
+      // Đã duyệt (APPROVED) chỉ được chuyển sang Đã thanh toán (PAID)
+      else if (item.status === "APPROVED") itemAllowed = ["PAID"];
+
+      if (allowedSet === null) {
+        allowedSet = new Set(itemAllowed);
+      } else {
+        const nextSet = new Set();
+        itemAllowed.forEach((status) => {
+          if (allowedSet.has(status)) nextSet.add(status);
+        });
+        allowedSet = nextSet;
+      }
+    });
+
+    return allowedSet ? Array.from(allowedSet) : [];
+  };
   // xuất bảng lương
   const now = new Date();
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
   const { showAlert } = useAlert();
   const handleCreatePayroll = async () => {
     try {
-      const month = Number(filters.month) || currentMonth;
-      const year = Number(filters.year) || currentYear;
+      // Chỉ cho phép xuất bảng lương tháng trước
+      const month = previousMonth;
+      const year = previousYear;
 
       if (!year || year < 2000 || year > 2100) {
         showAlert("error", "Năm không hợp lệ (2000 - 2100)");
@@ -117,8 +153,9 @@ export const HRPayRoll = () => {
   //thanh toán lương
   const handlePaySalary = async () => {
   try {
-    const month = Number(filters.month) || currentMonth;
-    const year = Number(filters.year) || currentYear;
+    // Thanh toán lương cũng cố định cho tháng trước
+    const month = previousMonth;
+    const year = previousYear;
 
     if (!year || year < 2000 || year > 2100) {
       showAlert("error", "Năm không hợp lệ (2000 - 2100)");
@@ -139,20 +176,40 @@ export const HRPayRoll = () => {
 };
 
   const handleBulkUpdateStatus = async () => {
-    if (!bulkStatus) {
-      showAlert("error", "Vui lòng chọn trạng thái cần cập nhật");
-      return;
-    }
     if (!selectedSalaryIds.length) {
       showAlert("error", "Vui lòng chọn ít nhất một bảng lương");
       return;
     }
 
+    const selectedItems = data.filter((item) =>
+      selectedSalaryIds.includes(item.id)
+    );
+
+    if (selectedItems.some((item) => item.status === "PAID")) {
+      showAlert(
+        "error",
+        "Có bảng lương đã thanh toán, không thể cập nhật trạng thái"
+      );
+      return;
+    }
+
+    const allowedStatuses = getAllowedBulkStatuses();
+
+    if (!allowedStatuses.length) {
+      showAlert(
+        "error",
+        "Không có trạng thái hợp lệ để cập nhật cho các bảng lương đã chọn"
+      );
+      return;
+    }
+
+    const targetStatus = allowedStatuses[0];
+
     try {
-      await HRService.updateSalaryStatus(selectedSalaryIds, bulkStatus);
+      await HRService.updateSalaryStatus(selectedSalaryIds, targetStatus);
       showAlert(
         "success",
-        `Cập nhật trạng thái ${bulkStatus} cho ${selectedSalaryIds.length} dòng thành công`
+        `Cập nhật trạng thái cho ${selectedSalaryIds.length} dòng thành công`
       );
       fetchSalaries();
     } catch (err) {
@@ -220,7 +277,7 @@ export const HRPayRoll = () => {
           >
 
             <option value="">Tất cả trạng thái</option>
-            <option value="DRAFT">Nháp</option>
+            <option value="DRAFT">Chờ duyệt</option>
             <option value="APPROVED">Đã duyệt</option>
             <option value="PAID">Đã thanh toán</option>
           </select>
@@ -230,29 +287,28 @@ export const HRPayRoll = () => {
           {/* <button onClick={handlePaySalary}>Phát lương</button> */}
         </div>
         <button className="payroll-button" onClick={handleCreatePayroll}>
-          Xuất bảng lương {filters.month || currentMonth}/{
-            filters.year || currentYear
-          }
+          Xuất bảng lương tháng trước ({previousMonth}/{previousYear})
         </button>
       </div>
       {/* TABLE */}
       <div className="payroll-table">
         <div className="payroll-table-header">
           <h3>NHÂN VIÊN</h3>
-          <div className="bulk-status-actions">
-            <select
-              value={bulkStatus}
-              onChange={(e) => setBulkStatus(e.target.value)}
-            >
-              <option value="">Chọn trạng thái mới</option>
-              <option value="DRAFT">Nháp</option>
-              <option value="APPROVED">Đã duyệt</option>
-              <option value="PAID">Đã thanh toán</option>
-            </select>
-            <button onClick={handleBulkUpdateStatus}>
-              Cập nhật trạng thái
-            </button>
-          </div>
+          {selectedSalaryIds.length > 0 && (
+            <div className="bulk-status-actions">
+              {getAllowedBulkStatuses().length === 0 ? (
+                <span className="no-bulk-update">
+                  Không thể cập nhật trạng thái cho các dòng đã chọn
+                </span>
+              ) : (
+                <button onClick={handleBulkUpdateStatus}>
+                  {getAllowedBulkStatuses()[0] === "APPROVED"
+                    ? "Cập nhật sang Đã duyệt"
+                    : "Cập nhật sang Đã thanh toán"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <table>
@@ -292,7 +348,7 @@ export const HRPayRoll = () => {
                 const status = item.status; // DRAFT, APPROVED, PAID
 
                 const getStatusLabel = (s) => {
-                  if (s === "DRAFT") return "Nháp";
+                  if (s === "DRAFT") return "Chờ duyệt";
                   if (s === "APPROVED") return "Đã duyệt";
                   if (s === "PAID") return "Đã thanh toán";
                   return s || "-";
