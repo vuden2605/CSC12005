@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class AddCandidatesToScheduleRequest {
     @NotNull(message = "REQUIRED_SCHEDULE_ID")
     private Long scheduleId;
