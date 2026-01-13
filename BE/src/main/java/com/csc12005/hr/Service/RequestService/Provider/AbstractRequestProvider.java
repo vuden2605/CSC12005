@@ -14,6 +14,7 @@ import com.csc12005.hr.Repository.RequestRepository;
 import com.csc12005.hr.Service.S3Service.IS3Service;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.SecurityUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -55,7 +56,7 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		return requestMapper.toRequestResponse(requestRepository.save(request));
 	}
 
-	protected abstract RequestResponse doCreateRequest(
+	public abstract RequestResponse doCreateRequest(
 			RequestCreationRequest request,
 			Employee employee,
 			String attachmentUrl

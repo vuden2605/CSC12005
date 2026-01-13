@@ -7,6 +7,7 @@ import com.csc12005.hr.Repository.NotificationRepository;
 import com.csc12005.hr.Service.NotificationService.INotificationService;
 import com.csc12005.hr.Service.WebSocketService.Impl.WebSocketService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService implements INotificationService {
 	private final NotificationRepository notificationRepository;
 	private final WebSocketService webSocketService;
@@ -33,7 +35,7 @@ public class NotificationService implements INotificationService {
 				.build();
 		return notificationRepository.save(notification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleLeaveRequestCreated(LeaveRequestCreated leaveRequestCreated) {
@@ -46,10 +48,11 @@ public class NotificationService implements INotificationService {
 		);
 		webSocketService.sendToUser(leaveRequestCreated.getManagerId(), savedNotification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleWFHRequestCreated(WFHRequestCreated wfhRequestCreated) {
+		log.info("Received WFHRequestCreated event for request id: {}", wfhRequestCreated.getRequestId());
 		Notification savedNotification = createNotification(
 				wfhRequestCreated.getManagerId(),
 				"Đơn làm việc tại nhà",
@@ -59,7 +62,7 @@ public class NotificationService implements INotificationService {
 		);
 		webSocketService.sendToUser(wfhRequestCreated.getManagerId(), savedNotification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleTimeSheetRequestCreated(TimeSheetRequestCreated timeSheetRequestCreated) {
@@ -73,7 +76,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(timeSheetRequestCreated.getManagerId(), savedNotification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleCreated(ScheduleCreated scheduleCreated) {
@@ -87,7 +90,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleCreated.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleUpdated(ScheduleUpdated scheduleUpdated) {
@@ -101,7 +104,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleUpdated.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleDeleted(ScheduleDeleted scheduleDeleted) {
@@ -115,7 +118,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleDeleted.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleActivityCreated(ActivityCreated activityCreated) {

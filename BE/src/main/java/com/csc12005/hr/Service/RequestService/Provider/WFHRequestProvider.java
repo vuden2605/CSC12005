@@ -20,6 +20,7 @@ import com.csc12005.hr.Repository.WFHRequestRepository;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class WFHRequestProvider extends AbstractRequestProvider{
 	private final WFHRequestMapper wfhRequestMapper;
 	private final WFHRequestRepository wFhRequestRepository;
@@ -57,7 +59,6 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 	}
 
 	@Override
-	@Transactional
 	public RequestResponse approveRequest(Long requestId) {
 		Long currentUserId = securityUtils.getCurrentUserId();
 		WFHRequest wfhRequest = wFhRequestRepository.findById(requestId)
@@ -98,9 +99,8 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 						.orElseThrow(() -> new AppException(ErrorCode.WFH_REQUEST_NOT_FOUND))
 		);
 	}
-	@Transactional
 	@Override
-	protected RequestResponse doCreateRequest(RequestCreationRequest request, Employee employee, String attachmentUrl) {
+	public RequestResponse doCreateRequest(RequestCreationRequest request, Employee employee, String attachmentUrl) {
 		validateDateRange(request.getStartDate(), request.getEndDate());
 		WFHRequest wfhRequest = wfhRequestMapper.toWFHRequest(request);
 		setCommonFields(wfhRequest, employee, attachmentUrl, RequestType.WorkFromHome);
@@ -110,6 +110,7 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 				.managerId(employee.getManager().getId())
 				.employeeName(employee.getFullName())
 				.build());
+		log.info("published WFHRequestCreated event for request id: {}", savedWFHRequest.getId());
 		return wfhRequestMapper.toWFHResponse(savedWFHRequest);
 	}
 }

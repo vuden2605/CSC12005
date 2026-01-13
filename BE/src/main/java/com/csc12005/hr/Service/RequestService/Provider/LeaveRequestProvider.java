@@ -61,9 +61,8 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 		return RequestType.Leave;
 	}
 
-	@Transactional
 	@Override
-	protected RequestResponse doCreateRequest(
+	public RequestResponse doCreateRequest(
 			RequestCreationRequest request,
 			Employee employee,
 			String attachmentUrl
@@ -82,7 +81,6 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 		);
 		return leaveRequestMapper.toLeaveRequestResponse(saved);
 	}
-	@Transactional
 	@Override
 	public RequestResponse approveRequest(Long requestId) {
 		LeaveRequest leaveRequest = leaveRequestRepository.findById(requestId)

@@ -12,6 +12,7 @@ import com.csc12005.hr.Service.RequestService.IRequestService;
 import com.csc12005.hr.Service.RequestService.Provider.IRequestProvider;
 import com.csc12005.hr.Service.RequestService.Provider.RequestProviderFactory;
 import com.csc12005.hr.Utils.SecurityUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +28,19 @@ public class RequestService implements IRequestService {
 	private final SecurityUtils securityUtils;
 
 	@Override
+	@Transactional
 	public RequestResponse createRequest(RequestCreationRequest request, RequestType requestType) {
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.createRequest(request);
 	}
 
+	@Transactional
 	public RequestResponse approveRequest(Long requestId, RequestType requestType) {
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.approveRequest(requestId);
 	}
 
+	@Transactional
 	public RequestResponse rejectRequest(Long requestId, RequestType requestType) {
 
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
