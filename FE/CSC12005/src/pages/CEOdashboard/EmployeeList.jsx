@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "reactstrap";
 import { HRService } from "../../services/HRService";
 
-// Hiển thị danh sách nhân viên, có thể lọc theo phòng ban sau này
+// Hiển thị danh sách nhân viên
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,9 @@ const EmployeeList = () => {
         setLoading(true);
         setError("");
         const data = await HRService.getAllEmp();
-        setEmployees(Array.isArray(data) ? data : data || []);
+
+        // đảm bảo luôn là array
+        setEmployees(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message || "Không thể tải danh sách nhân viên");
       } finally {
@@ -46,19 +48,23 @@ const EmployeeList = () => {
         <tbody>
           {employees.map((employee) => (
             <tr key={employee.id}>
-              <td>{employee.fullName || employee.name}</td>
+              {/* ❗ FIX CHÍNH: không dùng employee.name */}
+              <td>{employee.fullName ?? "—"}</td>
+
               <td>
                 {typeof employee.department === "object"
-                  ? employee.department?.name
-                  : employee.department}
+                  ? employee.department?.name ?? "—"
+                  : employee.department ?? "—"}
               </td>
+
               <td>
                 {typeof employee.position === "object"
-                  ? employee.position?.positionName
-                  : employee.position}
+                  ? employee.position?.positionName ?? "—"
+                  : employee.position ?? "—"}
               </td>
             </tr>
           ))}
+
           {employees.length === 0 && (
             <tr>
               <td colSpan={3} className="text-center">

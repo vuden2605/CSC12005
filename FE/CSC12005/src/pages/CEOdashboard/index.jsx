@@ -1,114 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import EmployeeList from '../../components/EmployeeList';
-import CompanyActivityList from './CompanyActivityList';
-import ProjectCreateModal from './ProjectCreateModal';
-import { Button } from 'reactstrap';
-import { CEOService } from '../../services/CEOService';
-import './style.scss';
+import React, { useState } from "react";
+import "./style.scss";
+import InfoCard from "../../components/InfoCard";
+import EmployeeList from "./EmployeeList";
+import CompanyActivityList from "./CompanyActivityList";
+import ProjectCreateModal from "./ProjectCreateModal";
+import ActivityDetailModal from "./ActivityDetailModal";
 
 const CEODashboard = () => {
-const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-const [companyStats, setCompanyStats] = useState(null);
-const [employeesByDepartment, setEmployeesByDepartment] = useState([]);
-const [projectOverview, setProjectOverview] = useState(null);
-const [activityStats, setActivityStats] = useState(null);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("employees");
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
-const toggleProjectModal = () => setIsProjectModalOpen(!isProjectModalOpen);
+  const tabs = [
+    { id: "employees", label: "Xem nhân viên mỗi phòng ban" },
+    { id: "createProject", label: "Tạo project" },
+    { id: "activities", label: "Xem hoạt động của cty" },
+    { id: "activityDetail", label: "Xem chi tiết hoạt động" },
+  ];
 
-useEffect(() => {
-    const fetchCEOData = async () => {
-        try {
-            setLoading(true);
-            setError(null);
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
-            const [stats, employeesDept, projects, activities] = await Promise.all([
-                CEOService.getCompanyStats(),
-                CEOService.getEmployeesByDepartment(),
-                CEOService.getProjectOverview(),
-                CEOService.getActivityStats()
-            ]);
+  const handleSelectActivity = (activity) => {
+    setSelectedActivity(activity);
+    setActiveTab("activityDetail");
+  };
 
-            setCompanyStats(stats);
-            setEmployeesByDepartment(employeesDept);
-            setProjectOverview(projects);
-            setActivityStats(activities);
-        } catch (err) {
-            setError(err.message);
-            console.error('Error fetching CEO data:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleProjectCreated = () => {
+    // Có thể refresh data hoặc show notification ở đây
+    console.log("Project created successfully");
+  };
 
-    fetchCEOData();
-}, []);
+  return (
+    <div className="dashboard-page">
+      {/* Header Section - Fetch thông tin CEO từ API */}
+      <InfoCard />
+      
+      <h3 className="section-title">Thao tác nhanh</h3>
+      <div className="tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`tab ${activeTab === tab.id ? "active" : ""}`}
+            onClick={() => handleTabClick(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-return (
-    <div>
-    <h1>CEO Dashboard</h1>
-
-      {/* Company Overview Section */}
-    <section>
-        <h2>Company Overview</h2>
-        {loading && <div>Loading company data...</div>}
-        {error && <div>Error: {error}</div>}
-        {companyStats && (
-            <div>
-                <p>Total Employees: {companyStats.totalEmployees}</p>
-                <p>Total Departments: {companyStats.totalDepartments}</p>
-                <p>Total Projects: {companyStats.totalProjects}</p>
-                <p>Total Activities: {companyStats.totalActivities}</p>
-            </div>
+      <div className="dashboard-content">
+        {activeTab === "employees" && (
+          <div>
+            <h2>Xem nhân viên mỗi phòng ban</h2>
+            <EmployeeList />
+          </div>
         )}
-        {employeesByDepartment.length > 0 && (
-            <div>
-                <h3>Employees by Department</h3>
-                {employeesByDepartment.map((dept) => (
-                    <p key={dept.departmentId}>{dept.departmentName}: {dept.employeeCount} employees</p>
-                ))}
-            </div>
+
+        {activeTab === "createProject" && (
+          <div>
+            <h2>Tạo project</h2>
+            <ProjectCreateModal 
+              isOpen={true} 
+              toggle={() => {}} 
+              onProjectCreated={handleProjectCreated}
+              inline={true}
+            />
+          </div>
         )}
-        {projectOverview && (
-            <div>
-                <h3>Project Overview</h3>
-                <p>Active Projects: {projectOverview.activeProjects}</p>
-                <p>Completed Projects: {projectOverview.completedProjects}</p>
-                <p>Total Budget: {projectOverview.totalBudget}</p>
-            </div>
+
+        {activeTab === "activities" && (
+          <div>
+            <h2>Xem hoạt động của cty</h2>
+            <CompanyActivityList onSelectActivity={handleSelectActivity} />
+          </div>
         )}
-        {activityStats && (
-            <div>
-                <h3>Activity Statistics</h3>
-                <p>Total Activities: {activityStats.totalActivities}</p>
-                <p>Upcoming Activities: {activityStats.upcomingActivities}</p>
-                <p>Completed Activities: {activityStats.completedActivities}</p>
-            </div>
+
+        {activeTab === "activityDetail" && (
+          <div>
+            <h2>Xem chi tiết hoạt động</h2>
+            {selectedActivity ? (
+              <ActivityDetailModal 
+                activity={selectedActivity} 
+                isOpen={true} 
+                toggle={() => setActiveTab("activities")}
+                inline={true}
+              />
+            ) : (
+              <div className="placeholder-text">
+                Vui lòng chọn một hoạt động từ tab "Xem hoạt động của cty" để xem chi tiết.
+              </div>
+            )}
+          </div>
         )}
-    </section>
-
-      {/* Employee List Section */}
-    <section>
-        <h2>Employees by Department</h2>
-        <EmployeeList />
-    </section>
-
-      {/* Create Project Button */}
-    <Button color="primary" onClick={toggleProjectModal}>
-        Create New Project
-    </Button>
-
-      {/* Company Activity Section */}
-    <section>
-        <h2>Company Activities</h2>
-        <CompanyActivityList />
-    </section>
-
-      {/* Modal for Creating Project */}
-    <ProjectCreateModal isOpen={isProjectModalOpen} toggle={toggleProjectModal} />
+      </div>
     </div>
-);
+  );
 };
 
 export default CEODashboard;

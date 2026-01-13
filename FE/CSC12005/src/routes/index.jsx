@@ -61,6 +61,7 @@ export const routes = [
     ),
     children: [
       { path: "admin", element: <Admin /> },
+      { path: "ceo-dashboard", element: <CEODashboard /> },
       { path: "ceo/dashboard", element: <CEODashboard /> },
 
       { path: "manager", element: <Manager /> },
