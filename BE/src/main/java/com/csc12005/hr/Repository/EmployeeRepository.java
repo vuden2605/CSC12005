@@ -2,6 +2,7 @@ package com.csc12005.hr.Repository;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Enums.SalaryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,16 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	Optional<Employee> findByEmployeeCode(String employeeCode);
 	Page<Employee> findByManagerId(Long managerId, Pageable pageable);
     Page<Employee> findByDepartmentId(Long departmentId, Pageable pageable);
+    @Query("""
+ SELECT e FROM Employee e
+ WHERE (:employeeName IS NULL OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :employeeName, '%')))
+   AND (:departmentId IS NULL OR e.department.id = :departmentId)
+   AND (:status IS NULL OR e.status = :status)
+     AND e.employeeCode NOT IN ('admin', 'CEO', 'HR-HEAD')
+            
+""")
+    Page<Employee> filterEmployee( @Param("employeeName") String employeeName,
+                                   @Param("departmentId") Long departmentId,
+                                   @Param("status") Boolean status,
+                                   Pageable pageable);
 }

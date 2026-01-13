@@ -8,9 +8,9 @@ export const HRAdmin = () => {
   return (
     <div className="dashboard-page">
       <div className="tabs-section">
-        <h3 className="section-title">Thao tác nhanh</h3>
+        {/* <h3 className="section-title">Thao tác nhanh</h3> */}
         <div className="tabs">
-          <button
+          {/* <button
             className={`tab ${activeTab === "employees" ? "active" : ""}`}
             onClick={() => setActiveTab("employees")}
           >
@@ -22,20 +22,18 @@ export const HRAdmin = () => {
             onClick={() => setActiveTab("bonus-points")}
           >
             Quản lý điểm
-          </button>
+          </button> */}
         </div>
       </div>
 
       <div className="dashboard-content">
         {activeTab === "employees" ? (
-          <EmployeeList/>
+          <EmployeeList />
         ) : (
           <div className="bonus-points-placeholder">
             <p>Quản lý điểm thưởng</p>
-            {/* TODO: Thêm component quản lý điểm ở đây */}
           </div>
         )}
-        
       </div>
     </div>
   );

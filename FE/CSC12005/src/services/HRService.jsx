@@ -1,20 +1,43 @@
 import api from "../api/axios";
 
 export const HRService = {
-  getAllEmp: async () => {
+  getAllEmp: async (filters = {}, pagination = {}) => {
     try {
-      const response = await api.get(`/employees`, {
+      const params = {
+        // Filter params
+        employeeName: filters.employeeName || undefined,
+        departmentId: filters.departmentId || undefined,
+        status: filters.status !== undefined ? filters.status : undefined,
+
+        // Pagination params
+        page: pagination.page ?? 0,
+        size: pagination.size ?? 10,
+        sortBy: pagination.sortBy || "createdAt",
+        direction: pagination.direction || "DESC",
+      };
+
+      // Remove undefined values
+      Object.keys(params).forEach((key) => {
+        if (params[key] === undefined) {
+          delete params[key];
+        }
+      });
+
+      const response = await api.get("/employees", {
+        params,
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      console.log("✅ Fetched employees:", response.data);
       return response.data.data;
     } catch (error) {
       const errMsg =
         error.response?.data?.message ||
         error.message ||
-        "Error fetching all emp";
-      console.error("Error fetching all emp:", errMsg);
+        "Error fetching employees";
+      console.error("❌ Error fetching employees:", errMsg);
       throw new Error(errMsg);
     }
   },

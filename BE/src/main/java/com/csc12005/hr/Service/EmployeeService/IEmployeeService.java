@@ -1,9 +1,6 @@
 package com.csc12005.hr.Service.EmployeeService;
 
-import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
-import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
-import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ImportResult;
 import org.springframework.data.domain.Page;
@@ -16,7 +13,7 @@ public interface IEmployeeService {
     public EmployeeResponse getMyInfo(Long userId);
     public EmployeeResponse updateUser(EmployeeUpdateRequest employeeUpdateRequest, Long id);
     public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest employeeHRUpdateRequest, Long id);
-    public List<EmployeeResponse> getAll();
+    public Page<EmployeeResponse> getAll(EmployeeFilterRequest employeeFilterRequest, PageRequestDTO pageRequestDTO);
     public EmployeeResponse updateStatus(Long id);
 	ImportResult  importExcel(MultipartFile file);
 

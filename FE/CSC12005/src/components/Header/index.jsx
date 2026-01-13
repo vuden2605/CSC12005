@@ -33,11 +33,15 @@ export const Header = () => {
     HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Đánh giá ứng viên", path: "/manager/candidates" },
+      { label: "Quản lý yêu cầu", path: "/manager/requests" },
+
+      { label: "Quản lý phòng ban", path: "/manager/department" },
+
       { label: "Quản lý Sự kiện", path: "/hr/events" },
       { label: "Quản lý yêu cầu", path: "/manager/requests" },
       { label: "Quản lý Lương", path: "/hr/payroll" },
       { label: "Nhân viên", path: "/hr/humans" },
-            { label: "Ứng viên", path: "/hr/candidates" },
+      { label: "Ứng viên", path: "/hr/candidates" },
 
       { label: "Quản lý điểm", path: "/hr/bonus-points" },
     ],

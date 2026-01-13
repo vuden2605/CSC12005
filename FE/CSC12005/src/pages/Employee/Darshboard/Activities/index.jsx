@@ -197,7 +197,6 @@ export const Activities = () => {
 
     try {
       if (activity.isRegistered) {
-        
         await EmployeeService.cancelActivity(activityId);
         showAlert("success", "Hủy đăng ký thành công");
       } else {
@@ -339,8 +338,8 @@ export const Activities = () => {
               <option value="OPEN_FOR_REGISTRATION">Đang mở đăng ký</option>
               <option value="REGISTRATION_CLOSED">Đã đóng đăng ký</option>
               <option value="COMPLETED">Đã hoàn thành</option>
-              <option value="CANCELLED">Đã hủy</option>
-              <option value="DRAFT">Nháp</option>
+              {/* <option value="CANCELLED">Đã hủy</option>
+              <option value="DRAFT">Nháp</option> */}
             </select>
           </div>
 
@@ -424,12 +423,11 @@ export const Activities = () => {
                           0}
                       </td>
                       <td className="quantity-cell">
-                        {
-                          (activity.maxParticipants ??
-                            activity.count ??
-                            activity.totalSlot ??
-                            activity.slots) ?? "N/A"
-                        }
+                        {activity.maxParticipants ??
+                          activity.count ??
+                          activity.totalSlot ??
+                          activity.slots ??
+                          "N/A"}
                       </td>
                       <td className="registered-count-cell">
                         {activity.registeredCount || 0}

@@ -43,7 +43,7 @@ cache:
     "[auth.invalidatedTokens]": 24h
 jwt:
     secret: your_jwt_secret_key_12333333333333333333333
-    access-time: 3600000 # 1 hour in milliseconds
+    access-time: 360000000 # 1 hour in milliseconds
     refresh-time: 864000000 # 24 hours in milliseconds
 aws:
     access-key: AKIAQH3T6CWXA2TWPZ5O
