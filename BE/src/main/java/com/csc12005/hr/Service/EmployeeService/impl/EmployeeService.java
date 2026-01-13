@@ -1,9 +1,6 @@
 package com.csc12005.hr.Service.EmployeeService.impl;
 
-import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
-import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
-import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ImportError;
 import com.csc12005.hr.DTO.Response.ImportResult;
@@ -122,37 +119,125 @@ public class EmployeeService implements IEmployeeService {
 	}
 	@CachePut(value = "employeeCache", key = "#id")
 	public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id) {
-		// Tìm employee
-		Employee employee = employeeRepository.findById(id)
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        // Tìm employee
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
-		// Update basic fields
-		employeeMapper.updateEmployeeFromDto(request, employee);
+        // ========== Update thông tin cá nhân ==========
+        employee. setFullName(request.getFullName());
+        employee.setGender(request.getGender());
+        employee.setEmail(request.getEmail());
+        employee.setPhone(request.getPhone());
+        employee.setBirthDate(request.getBirthDate());
+        employee.setNationalCode(request.getNationalCode());
+        employee.setTaxCode(request.getTaxCode());
+        employee.setAddress(request.getAddress());
 
-		// Update department nếu có
-		if (request.getDepartmentId() != null) {
-			Department department = departmentRepository.findById(request.getDepartmentId())
-					.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
-			employee.setDepartment(department);
+        // ========== Update thông tin liên hệ khẩn cấp ==========
+        if (request.getEmergencyContactName() != null) {
+            employee.setEmergencyContactName(request.getEmergencyContactName());
+        }
+        if (request.getEmergencyContactPhone() != null) {
+            employee.setEmergencyContactPhone(request.getEmergencyContactPhone());
+        }
+        if (request.getEmergencyContactRelationship() != null) {
+            employee.setEmergencyContactRelationship(request.getEmergencyContactRelationship());
+        }
 
-			// Optional: Update manager nếu đổi department
-			Employee manager = department.getManager();
-			if (manager != null) {
-				employee.setManager(manager);
-			}
-		}
+        // ========== Update thông tin cá nhân bổ sung ==========
+        if (request.getPlaceOfBirth() != null) {
+            employee.setPlaceOfBirth(request.getPlaceOfBirth());
+        }
+        if (request.getNationality() != null) {
+            employee. setNationality(request.getNationality());
+        }
+        if (request.getReligion() != null) {
+            employee. setReligion(request.getReligion());
+        }
+        if (request.getPermanentAddress() != null) {
+            employee.setPermanentAddress(request. getPermanentAddress());
+        }
+        if (request.getMaritalStatus() != null) {
+            employee.setMaritalStatus(request.getMaritalStatus());
+        }
 
-		// Update position nếu có
-		if (request.getPositionId() != null) {
-			Position position = positionRepository.findById(request.getPositionId())
-					.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
-			employee.setPosition(position);
-		}
+        // ========== Update thông tin học vấn ==========
+        if (request. getEducationLevel() != null) {
+            employee.setEducationLevel(request.getEducationLevel());
+        }
+        if (request.getMajor() != null) {
+            employee.setMajor(request.getMajor());
+        }
+        if (request.getUniversity() != null) {
+            employee.setUniversity(request.getUniversity());
+        }
+        if (request.getGraduationYear() != null) {
+            employee. setGraduationYear(request.getGraduationYear());
+        }
+        if (request.getDegree() != null) {
+            employee.setDegree(request.getDegree());
+        }
+        if (request.getNumberOfDependents() != null) {
+            employee. setNumberOfDependents(request.getNumberOfDependents());
+        }
 
-		// Save và return với department & position đầy đủ
-		employee = employeeRepository.save(employee);
-		return employeeMapper.toEmployeeResponse(employee);
-	}
+        // ========== Update thông tin ngân hàng ==========
+        employee. setBankName(request.getBankName());
+        employee.setBankAccount(request.getBankAccount());
+        if (request.getBankBranch() != null) {
+            employee.setBankBranch(request.getBankBranch());
+        }
+
+        // ========== Update thông tin công việc ==========
+        employee.setBaseSalary(request.getBaseSalary());
+
+        if (request.getHireDate() != null) {
+            employee.setHireDate(request.getHireDate());
+        }
+        if (request. getContractStartDate() != null) {
+            employee.setContractStartDate(request.getContractStartDate());
+        }
+        if (request.getContractEndDate() != null) {
+            employee.setContractEndDate(request.getContractEndDate());
+        }
+        if (request.getContractType() != null) {
+            employee.setContractType(request.getContractType());
+        }
+        if (request.getWorkSchedule() != null) {
+            employee.setWorkSchedule(request. getWorkSchedule());
+        }
+
+        // ========== Update bảo hiểm ==========
+        if (request.getSocialInsuranceNumber() != null) {
+            employee.setSocialInsuranceNumber(request.getSocialInsuranceNumber());
+        }
+        if (request.getHealthInsuranceNumber() != null) {
+            employee.setHealthInsuranceNumber(request.getHealthInsuranceNumber());
+        }
+
+        // ========== Update Department ==========
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+            employee.setDepartment(department);
+
+            // Optional: Update manager nếu đổi department
+            Employee manager = department.getManager();
+            if (manager != null) {
+                employee.setManager(manager);
+            }
+        }
+
+        // ========== Update Position ==========
+        if (request.getPositionId() != null) {
+            Position position = positionRepository.findById(request.getPositionId())
+                    .orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+            employee.setPosition(position);
+        }
+
+        employee = employeeRepository.save(employee);
+        return employeeMapper.toEmployeeResponse(employee);
+    }
 
 	public Page<EmployeeResponse> getEmployeesByDepartment(Long departmentId, PageRequestDTO pageRequestDTO) {
 		Pageable pageable = pageRequestDTO.buildPageable();
@@ -170,9 +255,14 @@ public class EmployeeService implements IEmployeeService {
 		return employees.map(employeeMapper::toEmployeeResponse);
 	}
 
-	public List<EmployeeResponse> getAll() {
-		List<Employee> employeeList = employeeRepository.findAll();
-		return employeeList.stream().map(employeeMapper::toEmployeeResponse).toList();
+	public Page<EmployeeResponse> getAll(EmployeeFilterRequest request,  PageRequestDTO pageRequestDTO) {
+        Page<Employee> page = employeeRepository.filterEmployee(
+                request.getEmployeeName(),
+                request.getDepartmentId(),
+                request.getStatus(),
+                pageRequestDTO.buildPageable()
+        );
+		return page.map(employeeMapper::toEmployeeResponse);
 	}
 
 	public EmployeeResponse updateStatus(Long id) {

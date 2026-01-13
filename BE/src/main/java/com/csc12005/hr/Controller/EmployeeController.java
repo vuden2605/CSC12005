@@ -1,9 +1,6 @@
 package com.csc12005.hr.Controller;
 
-import com.csc12005.hr.DTO.Request.EmployeeCreationRequest;
-import com.csc12005.hr.DTO.Request.EmployeeHRUpdateRequest;
-import com.csc12005.hr.DTO.Request.EmployeeUpdateRequest;
-import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.ImportResult;
@@ -88,10 +85,11 @@ public class EmployeeController {
 
     }
     @GetMapping()
-    public ApiResponse<List<EmployeeResponse>> getAllEmp() {
-        return ApiResponse.<List<EmployeeResponse>>builder()
+    public ApiResponse<Page<EmployeeResponse>> getAllEmp(EmployeeFilterRequest request, PageRequestDTO pageRequestDTO
+    ) {
+        return ApiResponse.<Page<EmployeeResponse>>builder()
                 .message("get all emp")
-                .data(employeeService.getAll())
+                .data(employeeService.getAll(request, pageRequestDTO))
                 .build();
     }
     @PostMapping("/import" )

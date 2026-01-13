@@ -7,6 +7,7 @@ import { EmployeeService } from "../../services/EmployeeService";
 import "./style.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux";
+import { useAlert } from "../../context/AlertContext";
 const roleRedirects = {
   ADMIN: "/admin",
   MN: "/employee/dashboard/info",
@@ -20,7 +21,7 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | success
-
+  const { showAlert } = useAlert();
   // validate form
   const isFormValid = useMemo(() => {
     if (!formData.username || !formData.password) return false;
@@ -51,9 +52,7 @@ export const Login = () => {
       setStatus("loading");
       console.log("form data", formData);
       const res = await AuthService.login(formData.username, formData.password);
-      if (!res?.data?.accessToken) {
-        throw new Error("Sai tên đăng nhập hoặc mật khẩu, vui lòng thử lại.");
-      }
+
       console.log("res", res);
       const accessToken = res.data.accessToken;
       localStorage.setItem("accessToken", accessToken);
@@ -62,11 +61,11 @@ export const Login = () => {
 
       dispatch(setUser(userRes)); // lưu user vào Redux
       setStatus("success");
-      console.log("role", userRes.role);
+      showAlert("success", "Đăng nhập thành công!");
       const redirectPath = roleRedirects[userRes.position.role] || "/";
       navigate(redirectPath, { replace: true });
     } catch (error) {
-      setErrorMessage(error.message || "Đăng nhập thất bại, vui lòng thử lại.");
+      showAlert("error", error.message);
       setStatus("idle");
     }
   };
