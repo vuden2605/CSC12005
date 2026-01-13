@@ -36,12 +36,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.Validator;
+import jakarta.validation.ConstraintViolation;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class EmployeeService implements IEmployeeService {
 	private final PasswordEncoder passwordEncoder;
 	private final S3Service s3Service;
 	private final SecurityUtils securityUtils;
+	private final Validator validator;
 
 	private String generateEmployeeCode(Department department) {
 		long count = employeeRepository.countByDepartment(department.getId());
@@ -63,35 +64,68 @@ public class EmployeeService implements IEmployeeService {
 		return department.getDepartmentCode() + "_" + sequenceFormatted;
 	}
 
-	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
-		if (employeeRepository.existsByEmail(employeeCreationRequest.getEmail())) {
+	private Department getDepartmentOrThrow(Long departmentId) {
+		return departmentRepository.findById(departmentId)
+				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+	}
+
+	private Position getPositionOrThrow(Long positionId) {
+		return positionRepository.findById(positionId)
+				.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
+	}
+
+	private void validateNewEmployeeBusiness(EmployeeCreationRequest dto) {
+		if (employeeRepository.existsByEmail(dto.getEmail())) {
 			throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
 		}
-		Department department = departmentRepository.findById(employeeCreationRequest.getDepartmentId())
-				.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
-		Position position = positionRepository.findById(employeeCreationRequest.getPositionId())
-				.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
-		String employeeCode = generateEmployeeCode(department);
-		Employee employee = employeeMapper.toEmployee(employeeCreationRequest);
+
+		if (dto.getDepartmentId() == null || !departmentRepository.existsById(dto.getDepartmentId())) {
+			throw new AppException(ErrorCode.DEPARTMENT_NOT_FOUND);
+		}
+		if (dto.getPositionId() == null || !positionRepository.existsById(dto.getPositionId())) {
+			throw new AppException(ErrorCode.POSITION_NOT_FOUND);
+		}
+	}
+	private void validateEmployeeCreationRequest(EmployeeCreationRequest dto) {
+		var violations = validator.validate(dto);
+		if (!violations.isEmpty()) {
+			log.info("Validation errors: {}", violations);
+			String errorKey = violations.iterator().next().getMessage();
+			ErrorCode errorCode;
+			try {
+				errorCode = ErrorCode.valueOf(errorKey);
+			} catch (IllegalArgumentException ex) {
+				errorCode = ErrorCode.INVALID_INPUT;
+			}
+			throw new AppException(errorCode);
+		}
+		validateNewEmployeeBusiness(dto);
+	}
+	private Employee buildEmployeeFromCreationRequest(EmployeeCreationRequest dto,
+	                                                  Department department,
+	                                                  Position position) {
+		Employee employee = employeeMapper.toEmployee(dto);
 		employee.setDepartment(department);
 		employee.setPosition(position);
+
+		String employeeCode = generateEmployeeCode(department);
 		employee.setEmployeeCode(employeeCode);
 		employee.setPassword(passwordEncoder.encode(employeeCode));
-		// Set manager info
+
 		Employee manager = department.getManager();
 		if (manager != null) {
 			employee.setManager(manager);
 		}
 
-		EmployeeResponse employeeResponse =
-				employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
+		return employee;
+	}
 
-		if (manager != null) {
-			employeeResponse.setManagerName(manager.getFullName());
-			employeeResponse.setManagerId(manager.getId());
-			employeeResponse.setManagerCode(manager.getEmployeeCode());
-		}
-		return employeeResponse;
+	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
+		validateNewEmployeeBusiness(employeeCreationRequest);
+		Department department = getDepartmentOrThrow(employeeCreationRequest.getDepartmentId());
+		Position position = getPositionOrThrow(employeeCreationRequest.getPositionId());
+		Employee employee = buildEmployeeFromCreationRequest(employeeCreationRequest, department, position);
+		return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
 	}
 	@Cacheable(value = "employeeCache", key ="#userId")
 	public EmployeeResponse getMyInfo(Long userId) {
@@ -205,55 +239,9 @@ public class EmployeeService implements IEmployeeService {
 					Position position = positionRepository
 							.findByPositionCode(ExcelUtils.getString(row.getCell(17)))
 							.orElseThrow(() -> new AppException(ErrorCode.POSITION_NOT_FOUND));
-
-					String employeeCode = generateEmployeeCode(department);
-
-					String email = ExcelUtils.getString(row.getCell(1));
-					if(employeeRepository.existsByEmail(email)) {
-						throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
-					}
-					Long baseSalaryValue = ExcelUtils.getLong(row.getCell(9));
-					BigDecimal baseSalary = baseSalaryValue != null
-							? BigDecimal.valueOf(baseSalaryValue)
-							: BigDecimal.ZERO;
-					Employee employee = Employee.builder()
-							.fullName(ExcelUtils.getString(row.getCell(0)))
-							.email(email)
-							.phone(ExcelUtils.getString(row.getCell(2)))
-							.address(ExcelUtils.getString(row.getCell(3)))
-							.birthDate(ExcelUtils.getLocalDate(row.getCell(4)))
-							.nationalCode(ExcelUtils.getString(row.getCell(5)))
-							.taxCode(ExcelUtils.getString(row.getCell(6)))
-							.bankName(ExcelUtils.getString(row.getCell(7)))
-							.bankAccount(ExcelUtils.getString(row.getCell(8)))
-							.baseSalary(baseSalary)
-							.permanentAddress(ExcelUtils.getString(row.getCell(10)))
-							.maritalStatus(MaritalStatus.valueOf(ExcelUtils.getString(row.getCell(11))))
-							.educationLevel(EducationLevel.valueOf(ExcelUtils.getString(row.getCell(12))))
-							.major(ExcelUtils.getString(row.getCell(13)))
-							.university(ExcelUtils.getString(row.getCell(14)))
-							.gender(ExcelUtils.getString(row.getCell(15)))
-							.hireDate(ExcelUtils.getLocalDate(row.getCell(18)))
-							.degree(ExcelUtils.getString(row.getCell(19)))
-							.graduationYear(Objects.requireNonNull(ExcelUtils.getLong(row.getCell(20))).intValue())
-							.nationality(ExcelUtils.getString(row.getCell(21)))
-							.placeOfBirth(ExcelUtils.getString(row.getCell(22)))
-							.religion(ExcelUtils.getString(row.getCell(23)))
-							.emergencyContactName(ExcelUtils.getString(row.getCell(24)))
-							.emergencyContactPhone(ExcelUtils.getString(row.getCell(25)))
-							.emergencyContactRelationship(ExcelUtils.getString(row.getCell(26)))
-							.contractStartDate(ExcelUtils.getLocalDate(row.getCell(27)))
-							.contractEndDate(ExcelUtils.getLocalDate(row.getCell(28)))
-							.contractType(ContractType.valueOf(ExcelUtils.getString(row.getCell(29))))
-							.workSchedule(WorkSchedule.valueOf(ExcelUtils.getString(row.getCell(30))))
-							.bankBranch(ExcelUtils.getString(row.getCell(31)))
-							.employeeCode(employeeCode)
-							.department(department)
-							.position(position)
-							.password(passwordEncoder.encode(employeeCode))
-							.manager(department.getManager())
-							.employeeCode(generateEmployeeCode(department))
-							.build();
+					EmployeeCreationRequest dto = buildCreationRequestFromRow(row, department, position);
+					validateEmployeeCreationRequest(dto);
+					Employee employee = buildEmployeeFromCreationRequest(dto, department, position);
 					employee.setCreatedBy(employeeRepository.getReferenceById(currentUserId));
 					employee.setUpdatedBy(employeeRepository.getReferenceById(currentUserId));
 					employees.add(employee);
@@ -262,7 +250,7 @@ public class EmployeeService implements IEmployeeService {
 					importErrors.add(
 							ImportError.builder()
 									.code(ErrorCode.IMPORT_EMPLOYEE_FAIL.getCode())
-									.message("Dòng " + (i + 1) + ": " + ex.getMessage())
+									.message("Dòng " + i + ": " + ex.getMessage())
 									.build()
 					);
 				}
@@ -281,6 +269,52 @@ public class EmployeeService implements IEmployeeService {
 				.importErrors(importErrors)
 				.isSuccess(true)
 				.build();
+	}
+	private EmployeeCreationRequest buildCreationRequestFromRow(Row row, Department department, Position position) {
+		EmployeeCreationRequest dto = new EmployeeCreationRequest();
+
+		dto.setFullName(ExcelUtils.getString(row.getCell(0)));
+		dto.setEmail(ExcelUtils.getString(row.getCell(1)));
+		dto.setPhone(ExcelUtils.getString(row.getCell(2)));
+		dto.setAddress(ExcelUtils.getString(row.getCell(3)));
+		dto.setBirthDate(ExcelUtils.getLocalDate(row.getCell(4)));
+		dto.setNationalCode(ExcelUtils.getString(row.getCell(5)));
+		dto.setTaxCode(ExcelUtils.getString(row.getCell(6)));
+		dto.setBankName(ExcelUtils.getString(row.getCell(7)));
+		dto.setBankAccount(ExcelUtils.getString(row.getCell(8)));
+		Long baseSalaryValue = ExcelUtils.getLong(row.getCell(9));
+		BigDecimal baseSalary = baseSalaryValue != null
+				? BigDecimal.valueOf(baseSalaryValue)
+				: BigDecimal.ZERO;
+		dto.setBaseSalary(baseSalary);
+		dto.setPermanentAddress(ExcelUtils.getString(row.getCell(10)));
+		dto.setMaritalStatus(MaritalStatus.valueOf(ExcelUtils.getString(row.getCell(11))));
+		dto.setEducationLevel(EducationLevel.valueOf(ExcelUtils.getString(row.getCell(12))));
+		dto.setMajor(ExcelUtils.getString(row.getCell(13)));
+		dto.setUniversity(ExcelUtils.getString(row.getCell(14)));
+		dto.setGender(ExcelUtils.getString(row.getCell(15)));
+		dto.setHireDate(ExcelUtils.getLocalDate(row.getCell(18)));
+		dto.setDegree(ExcelUtils.getString(row.getCell(19)));
+		Long graduationYearValue = ExcelUtils.getLong(row.getCell(20));
+		if (graduationYearValue != null) {
+			dto.setGraduationYear(graduationYearValue.intValue());
+		}
+		dto.setNationality(ExcelUtils.getString(row.getCell(21)));
+		dto.setPlaceOfBirth(ExcelUtils.getString(row.getCell(22)));
+		dto.setReligion(ExcelUtils.getString(row.getCell(23)));
+		dto.setEmergencyContactName(ExcelUtils.getString(row.getCell(24)));
+		dto.setEmergencyContactPhone(ExcelUtils.getString(row.getCell(25)));
+		dto.setEmergencyContactRelationship(ExcelUtils.getString(row.getCell(26)));
+		dto.setContractStartDate(ExcelUtils.getLocalDate(row.getCell(27)));
+		dto.setContractEndDate(ExcelUtils.getLocalDate(row.getCell(28)));
+		dto.setContractType(ContractType.valueOf(ExcelUtils.getString(row.getCell(29))));
+		dto.setWorkSchedule(WorkSchedule.valueOf(ExcelUtils.getString(row.getCell(30))));
+		dto.setBankBranch(ExcelUtils.getString(row.getCell(31)));
+
+		dto.setDepartmentId(department.getId());
+		dto.setPositionId(position.getId());
+
+		return dto;
 	}
 	@CacheEvict(value = "employeeCache", key = "#id")
 	public void deleteEmployee(Long id) {
