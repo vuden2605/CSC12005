@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import "./style.scss";
 import { HRService } from "../../services/HRService";
 import { formatCurrencyVND } from "../../Utils/formatCurrency";
@@ -15,6 +16,8 @@ export const HRPayRoll = () => {
   const [yearError, setYearError] = useState("");
   const [selectedSalary, setSelectedSalary] = useState(null);
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
+  const [hasPrevMonthPayroll, setHasPrevMonthPayroll] = useState(false);
+  const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
 
   const [filters, setFilters] = useState({
     month: "",
@@ -22,6 +25,44 @@ export const HRPayRoll = () => {
     employeeName: "",
     status: "",
   });
+
+  // xuất bảng lương
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
+  // Kiểm tra xem tháng trước đã có bảng lương chưa để disable nút
+  useEffect(() => {
+    const checkPrevPayroll = async () => {
+      try {
+        setCheckingPrevMonthPayroll(true);
+        const res = await HRService.getAllSalaries({
+          month: previousMonth,
+          year: previousYear,
+          page: 0,
+          size: 1,
+          sortBy: "id",
+          direction: "ASC",
+        });
+
+        const total =
+          res?.totalElements ??
+          (Array.isArray(res?.content) ? res.content.length : 0);
+        setHasPrevMonthPayroll(total > 0);
+      } catch (err) {
+        console.error(
+          "Error checking previous month payroll:",
+          err.message
+        );
+      } finally {
+        setCheckingPrevMonthPayroll(false);
+      }
+    };
+
+    checkPrevPayroll();
+  }, [previousMonth, previousYear]);
 
   const fetchSalaries = async () => {
     try {
@@ -50,6 +91,7 @@ export const HRPayRoll = () => {
   useEffect(() => {
     fetchSalaries();
   }, [page, pageSize, filters]);
+
   const FilterReset = () => {
     setFilters({
       month: "",
@@ -120,12 +162,20 @@ export const HRPayRoll = () => {
 
     return allowedSet ? Array.from(allowedSet) : [];
   };
-  // xuất bảng lương
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+  
+  const getStatusLabel = (s) => {
+    if (s === "DRAFT") return "Chờ duyệt";
+    if (s === "APPROVED") return "Đã duyệt";
+    if (s === "PAID") return "Đã thanh toán";
+    return s || "-";
+  };
+
+  const getStatusClass = (s) => {
+    if (s === "PAID") return "done";
+    if (s === "APPROVED") return "approved";
+    return "pending"; // DRAFT hoặc khác
+  };
+
   const { showAlert } = useAlert();
   const handleCreatePayroll = async () => {
     try {
@@ -145,6 +195,7 @@ export const HRPayRoll = () => {
 
       await HRService.createPayroll(month, year);
       showAlert("success", `Xuất bảng lương tháng ${month}/${year} thành công`);
+  setHasPrevMonthPayroll(true);
       fetchSalaries();
     } catch (err) {
       showAlert("error", err.message || "Xuất bảng lương thất bại");
@@ -174,6 +225,66 @@ export const HRPayRoll = () => {
     showAlert("error", err.message || "Thanh toán lương thất bại");
   }
 };
+
+  const handleExportExcel = async () => {
+    try {
+      const queryParams = {
+        status: filters.status || undefined,
+        month: filters.month || undefined,
+        year: filters.year || undefined,
+        employeeName: filters.employeeName || undefined,
+        page: 0,
+        size: totalElements || 1000,
+        sortBy: "id",
+        direction: "ASC",
+      };
+
+      const res = await HRService.getAllSalaries(queryParams);
+      const rows = res?.content || res || [];
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+        showAlert("warning", "Không có dữ liệu để xuất Excel");
+        return;
+      }
+
+      const exportData = rows.map((item, index) => {
+        const displaySalary =
+          item.netSalary ||
+          item.grossSalary ||
+          item.actualSalary ||
+          item.baseSalary ||
+          0;
+
+        const workHours =
+          item.attendanceSummary?.totalWorkHours ?? item.workTime ?? 0;
+
+        return {
+          STT: index + 1,
+          MaNhanVien: item.employeeCode,
+          TenNhanVien: item.employeeName,
+          Thang: item.month,
+          Nam: item.year,
+          ViTri: item.positionName,
+          Luong: displaySalary,
+          SoGio: workHours,
+          TrangThai: getStatusLabel(item.status),
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "BangLuong");
+
+      const monthLabel = filters.month || "all";
+      const yearLabel = filters.year || "all";
+      const fileName = `bang-luong-${monthLabel}-${yearLabel}.xlsx`;
+
+      XLSX.writeFile(workbook, fileName);
+      showAlert("success", "Xuất Excel bảng lương thành công");
+    } catch (err) {
+      showAlert("error", err.message || "Xuất Excel bảng lương thất bại");
+    }
+  };
 
   const handleBulkUpdateStatus = async () => {
     if (!selectedSalaryIds.length) {
@@ -286,9 +397,26 @@ export const HRPayRoll = () => {
 
           {/* <button onClick={handlePaySalary}>Phát lương</button> */}
         </div>
-        <button className="payroll-button" onClick={handleCreatePayroll}>
-          Xuất bảng lương tháng trước ({previousMonth}/{previousYear})
-        </button>
+        <div style={{ display: "flex", gap: 12 }}>
+          <button
+            className="payroll-button"
+            onClick={handleCreatePayroll}
+            disabled={hasPrevMonthPayroll || checkingPrevMonthPayroll}
+          >
+            {hasPrevMonthPayroll
+              ? `Đã xuất bảng lương tháng ${previousMonth}/${previousYear}`
+              : checkingPrevMonthPayroll
+              ? "Đang kiểm tra bảng lương..."
+              : `Xuất bảng lương tháng trước (${previousMonth}/${previousYear})`}
+          </button>
+          <button
+            className="payroll-button"
+            style={{ background: "#10b981" }}
+            onClick={handleExportExcel}
+          >
+            Xuất Excel
+          </button>
+        </div>
       </div>
       {/* TABLE */}
       <div className="payroll-table">
@@ -346,19 +474,6 @@ export const HRPayRoll = () => {
             ) : (
               data.map((item, index) => {
                 const status = item.status; // DRAFT, APPROVED, PAID
-
-                const getStatusLabel = (s) => {
-                  if (s === "DRAFT") return "Chờ duyệt";
-                  if (s === "APPROVED") return "Đã duyệt";
-                  if (s === "PAID") return "Đã thanh toán";
-                  return s || "-";
-                };
-
-                const getStatusClass = (s) => {
-                  if (s === "PAID") return "done";
-                  if (s === "APPROVED") return "approved";
-                  return "pending"; // DRAFT hoặc khác
-                };
 
                 const displaySalary =
                   item.netSalary || item.grossSalary || item.actualSalary || item.baseSalary || 0;

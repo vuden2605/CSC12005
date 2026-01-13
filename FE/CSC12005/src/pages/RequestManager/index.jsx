@@ -30,7 +30,8 @@ export const RequestManager = () => {
   const [showChooseTypeModal, setShowChooseTypeModal] = useState(false);
   const [selectedRequestType, setSelectedRequestType] = useState(null);
   const [selectedWFHRequestId, setSelectedWFHRequestId] = useState(null);
-  const [selectedTimeSheetRequestId, setSelectedTimeSheetRequestId] = useState(null);
+  const [selectedTimeSheetRequestId, setSelectedTimeSheetRequestId] =
+    useState(null);
   const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState(null);
 
   // API data states
@@ -47,10 +48,10 @@ export const RequestManager = () => {
   // Map requestType từ API sang tên hiển thị
   const mapRequestType = (requestType) => {
     const typeMap = {
-      "WorkFromHome": "Làm việc tại nhà",
-      "Leave": "Nghỉ phép",
-      "Attendance": "Chấm công",
-      "TimeSheet": "Chấm công",
+      WorkFromHome: "Làm việc tại nhà",
+      Leave: "Nghỉ phép",
+      Attendance: "Chấm công",
+      TimeSheet: "Chấm công",
     };
     return typeMap[requestType] || requestType;
   };
@@ -68,11 +69,13 @@ export const RequestManager = () => {
   // Map status từ API sang format component
   const mapStatus = (status) => {
     const statusMap = {
-      "PENDING": { status: "pending", statusText: "Chờ duyệt" },
-      "APPROVED": { status: "approved", statusText: "Đã duyệt" },
-      "REJECTED": { status: "rejected", statusText: "Từ chối" },
+      PENDING: { status: "pending", statusText: "Chờ duyệt" },
+      APPROVED: { status: "approved", statusText: "Đã duyệt" },
+      REJECTED: { status: "rejected", statusText: "Từ chối" },
     };
-    return statusMap[status] || { status: status.toLowerCase(), statusText: status };
+    return (
+      statusMap[status] || { status: status.toLowerCase(), statusText: status }
+    );
   };
 
   // Format date từ ISO string sang YYYY-MM-DD
@@ -116,15 +119,16 @@ export const RequestManager = () => {
       const selectedStatuses = Object.entries(statusFilter)
         .filter(([_, isSelected]) => isSelected)
         .map(([status]) => status);
-      
+
       if (selectedStatuses.length === 1) {
         // Map status từ UI sang API format
         const statusMap = {
-          "pending": "PENDING",
-          "approved": "APPROVED",
-          "rejected": "REJECTED",
+          pending: "PENDING",
+          approved: "APPROVED",
+          rejected: "REJECTED",
         };
-        params.requeststatus = statusMap[selectedStatuses[0]] || selectedStatuses[0].toUpperCase();
+        params.requeststatus =
+          statusMap[selectedStatuses[0]] || selectedStatuses[0].toUpperCase();
       }
 
       const response = await ManagerService.getRequestsByManager(params);
@@ -135,8 +139,8 @@ export const RequestManager = () => {
 
         return {
           id: item.id,
-          employeeCode: item.employee?.employeeCode || "-",
-          employeeName: item.employee?.fullName || "-",
+          employeeCode: item.employeeCode || "-",
+          employeeName: item.employeeName || "-",
           type: mapRequestType(item.requestType),
           requestType: item.requestType,
           createdAt: formatDate(item.createdAt),
@@ -160,7 +164,14 @@ export const RequestManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.size, startDate, endDate, leaveType, statusFilter]);
+  }, [
+    pagination.page,
+    pagination.size,
+    startDate,
+    endDate,
+    leaveType,
+    statusFilter,
+  ]);
 
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
@@ -170,7 +181,7 @@ export const RequestManager = () => {
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {
     if (pagination.page !== 0) {
-      setPagination(prev => ({ ...prev, page: 0 }));
+      setPagination((prev) => ({ ...prev, page: 0 }));
     }
   }, [startDate, endDate, leaveType, statusFilter]);
 
@@ -185,6 +196,7 @@ export const RequestManager = () => {
 
     return typeMatch && statusMatch;
   });
+  console.log("item:", filteredData);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -200,14 +212,20 @@ export const RequestManager = () => {
   };
 
   const totalRequests = filteredData.length;
-  const pendingCount = filteredData.filter((item) => item.status === "pending").length;
-  const approvedCount = filteredData.filter((item) => item.status === "approved").length;
-  const rejectedCount = filteredData.filter((item) => item.status === "rejected").length;
+  const pendingCount = filteredData.filter(
+    (item) => item.status === "pending"
+  ).length;
+  const approvedCount = filteredData.filter(
+    (item) => item.status === "approved"
+  ).length;
+  const rejectedCount = filteredData.filter(
+    (item) => item.status === "rejected"
+  ).length;
 
   const handleStatusChange = (statusKey) => {
-    setStatusFilter(prev => ({
+    setStatusFilter((prev) => ({
       ...prev,
-      [statusKey]: !prev[statusKey]
+      [statusKey]: !prev[statusKey],
     }));
   };
 
@@ -240,20 +258,20 @@ export const RequestManager = () => {
   // Pagination handlers
   const handlePageChange = (newPage) => {
     if (newPage >= 0 && newPage < pagination.totalPages) {
-      setPagination(prev => ({ ...prev, page: newPage }));
+      setPagination((prev) => ({ ...prev, page: newPage }));
     }
   };
 
   const handleSizeChange = (newSize) => {
-    setPagination(prev => ({ ...prev, size: parseInt(newSize), page: 0 }));
+    setPagination((prev) => ({ ...prev, size: parseInt(newSize), page: 0 }));
   };
 
   const handlePaginationPageChange = (page) => {
-    setPagination(prev => ({ ...prev, page }));
+    setPagination((prev) => ({ ...prev, page }));
   };
 
   const handlePaginationSizeChange = (size) => {
-    setPagination(prev => ({ ...prev, size, page: 0 }));
+    setPagination((prev) => ({ ...prev, size, page: 0 }));
   };
 
   const getFileName = (fileKey) => {
@@ -327,7 +345,7 @@ export const RequestManager = () => {
               <input
                 type="checkbox"
                 checked={statusFilter.pending}
-                onChange={() => handleStatusChange('pending')}
+                onChange={() => handleStatusChange("pending")}
               />
               Chờ duyệt
             </label>
@@ -335,7 +353,7 @@ export const RequestManager = () => {
               <input
                 type="checkbox"
                 checked={statusFilter.approved}
-                onChange={() => handleStatusChange('approved')}
+                onChange={() => handleStatusChange("approved")}
               />
               Đã duyệt
             </label>
@@ -343,7 +361,7 @@ export const RequestManager = () => {
               <input
                 type="checkbox"
                 checked={statusFilter.rejected}
-                onChange={() => handleStatusChange('rejected')}
+                onChange={() => handleStatusChange("rejected")}
               />
               Từ chối
             </label>
@@ -366,12 +384,10 @@ export const RequestManager = () => {
         </div>
       </div>
 
-
-
       {/* Table */}
       <div className="table-section">
         <h3 className="section-title">Danh sách các yêu cầu</h3>
-        
+
         {loading && (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <p>Đang tải dữ liệu...</p>
@@ -405,7 +421,10 @@ export const RequestManager = () => {
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: "center", padding: "2rem" }}
+                  >
                     Không có dữ liệu
                   </td>
                 </tr>
@@ -418,7 +437,9 @@ export const RequestManager = () => {
                     <td>{item.createdAt}</td>
                     <td>
                       <span
-                        className={`status-badge ${getStatusClass(item.status)}`}
+                        className={`status-badge ${getStatusClass(
+                          item.status
+                        )}`}
                       >
                         {item.statusText}
                       </span>
