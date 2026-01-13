@@ -15,7 +15,6 @@ export const NotificationService = {
     markAsRead: async (notificationId, dispatch) => {
         try {
             await api.put(`/notifications/${notificationId}/read`);
-            dispatch(markAsRead(notificationId));
         } catch (error) {
             console.log(error);
         }

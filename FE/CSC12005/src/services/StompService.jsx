@@ -6,17 +6,19 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 class StompService {
   client = null;
 
-  connect(accessToken) {
+  connect() {
     if (this.client && this.client.active) {
       console.log("STOMP already active");
       return;
     }
   
     this.client = new Client({
-      webSocketFactory: () =>
-        new SockJS(`${API_URL}/ws?token=${accessToken}`, null, {
-          transports: ["websocket"], 
-        }),
+      webSocketFactory: () => {
+        const token = localStorage.getItem("accessToken");
+        return new SockJS(`${API_URL}/ws?token=${token}`, null, {
+          transports: ["websocket"],
+        });
+      },
   
       reconnectDelay: 5000, // ✅ tự reconnect
       heartbeatIncoming: 4000,

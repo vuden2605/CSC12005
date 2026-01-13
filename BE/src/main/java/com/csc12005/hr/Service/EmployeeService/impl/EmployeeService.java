@@ -165,7 +165,7 @@ public class EmployeeService implements IEmployeeService {
 			Department department = departmentRepository.findById(request.getDepartmentId())
 					.orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
 			employee.setDepartment(department);
-
+			employee.setEmployeeCode(generateEmployeeCode(department));
 			// Optional: Update manager nếu đổi department
 			Employee manager = department.getManager();
 			if (manager != null) {
