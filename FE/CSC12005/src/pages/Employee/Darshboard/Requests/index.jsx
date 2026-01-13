@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
-
+import { useLocation } from "react-router-dom";
 import { ModalLeave } from "../../../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
@@ -12,6 +12,7 @@ import { Pagination } from "../../../../components/Pagination";
 import { useSelector } from "react-redux";
 
 export const Requests = () => {
+  const location = useLocation();
   const currentUser = useSelector((state) => state.user.currentUser);
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
@@ -177,7 +178,7 @@ export const Requests = () => {
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+  }, [fetchRequests, location.key]);
 
   // Tính số ngày nghỉ có lương còn lại từ currentUser trong Redux (persist vào localStorage)
   useEffect(() => {

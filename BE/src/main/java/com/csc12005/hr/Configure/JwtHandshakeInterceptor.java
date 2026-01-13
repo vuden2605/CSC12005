@@ -1,5 +1,6 @@
 package com.csc12005.hr.Configure;
 
+import com.csc12005.hr.Service.JwtService.IJwtService;
 import com.csc12005.hr.Service.JwtService.impl.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.Map;
 @Slf4j
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
-	private final JwtService jwtService;
+	private final IJwtService jwtService;
 
 	@Override
 	public boolean beforeHandshake(

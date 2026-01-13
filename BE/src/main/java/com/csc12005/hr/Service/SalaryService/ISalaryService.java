@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public interface ISalaryService {
 
-    void generatePayroll(Long month, Long year );
+    void generatePayroll();
     Page<SalaryResponse> getAll(SalaryFilterRequest salaryFilterRequest, PageRequestDTO pageRequestDTO);
     Page<SalaryResponse> getMySalaries(
             MySalaryFilterRequest request,

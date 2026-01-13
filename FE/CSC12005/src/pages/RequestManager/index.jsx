@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
-
+import { useLocation } from "react-router-dom";
 import { ModalLeave } from "../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
@@ -13,6 +13,7 @@ import { Pagination } from "../../components/Pagination";
 import { useSelector } from "react-redux";
 
 export const RequestManager = () => {
+  const location = useLocation();
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -175,7 +176,7 @@ export const RequestManager = () => {
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+  }, [fetchRequests, location.key]);
 
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {

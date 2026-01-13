@@ -43,7 +43,7 @@ public class NotificationService implements INotificationService {
 				leaveRequestCreated.getManagerId(),
 				"Đơn nghỉ phép",
 				String.format("Nhân viên %s đã gửi đơn xin nghỉ phép. Vui lòng kiểm tra và phê duyệt.", leaveRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				leaveRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(leaveRequestCreated.getManagerId(), savedNotification);
@@ -57,7 +57,7 @@ public class NotificationService implements INotificationService {
 				wfhRequestCreated.getManagerId(),
 				"Đơn làm việc tại nhà",
 				String.format("Nhân viên %s đã gửi đơn xin làm việc tại nhà. Vui lòng kiểm tra và phê duyệt.", wfhRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				wfhRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(wfhRequestCreated.getManagerId(), savedNotification);
@@ -70,12 +70,39 @@ public class NotificationService implements INotificationService {
 				timeSheetRequestCreated.getManagerId(),
 				"Đơn chấm công",
 				String.format("Nhân viên %s đã gửi đơn xin chỉnh sửa chấm công. Vui lòng kiểm tra và phê duyệt.", timeSheetRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				timeSheetRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(timeSheetRequestCreated.getManagerId(), savedNotification);
 	}
 
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleRejectRequestEvent(RejectRequestEvent rejectRequestEvent) {
+		Notification notification = createNotification(
+				rejectRequestEvent.getEmployeeId(),
+				"Yêu cầu bị từ chối",
+				String.format("Yêu cầu %s của bạn đã bị từ chối. Vui lòng kiểm tra lại.", rejectRequestEvent.getRequestType().getDisplayName()),
+				NotificationType.REQUEST_REJECTED,
+				rejectRequestEvent.getRequestId()
+		);
+		webSocketService.sendToUser(rejectRequestEvent.getEmployeeId(), notification);
+	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleApproveRequestEvent(ApproveRequestEvent approveRequestEvent) {
+		Notification notification = createNotification(
+				approveRequestEvent.getEmployeeId(),
+				"Yêu cầu được duyệt",
+				String.format("Yêu cầu %s của bạn đã được duyệt.", approveRequestEvent.getRequestType().getDisplayName()),
+				NotificationType.REQUEST_APPROVED,
+				approveRequestEvent.getRequestId()
+		);
+		webSocketService.sendToUser(approveRequestEvent.getEmployeeId(), notification);
+	}
 
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

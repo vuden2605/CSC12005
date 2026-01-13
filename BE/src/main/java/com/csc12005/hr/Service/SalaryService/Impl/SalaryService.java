@@ -38,8 +38,12 @@ public class SalaryService implements ISalaryService {
     private final IMonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
     private final SecurityUtils securityUtils;
     @Transactional
-    public void generatePayroll( Long month, Long year)
+    public void generatePayroll()
     {
+        LocalDate today = LocalDate.now();
+	    LocalDate previousMonth = today.minusMonths(1);
+	    Long month = (long) previousMonth.getMonthValue();
+	    Long year = (long) previousMonth.getYear();
 	    if (salaryRepository.existsByMonthAndYear(month, year)) {
 		    throw new AppException(ErrorCode.PAYROLL_ALREADY_GENERATED);
 	    }

@@ -1,5 +1,7 @@
 package com.csc12005.hr.Service.RequestService.Provider;
 
+import com.csc12005.hr.DTO.Request.ApproveRequestEvent;
+import com.csc12005.hr.DTO.Request.RejectRequestEvent;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Entity.Employee;
@@ -53,7 +55,12 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		Request request = requestRepository.findById(requestId)
 				.orElseThrow(() -> new AppException(ErrorCode.REQUEST_NOT_FOUND));
 		request.setStatus(RequestStatus.REJECTED);
-		return requestMapper.toRequestResponse(requestRepository.save(request));
+
+		RequestResponse requestResponse = requestMapper.toRequestResponse(requestRepository.save(request));
+		eventPublisher.publishEvent(
+				new RejectRequestEvent(request.getId(), request.getEmployee().getId(), request.getRequestType())
+		);
+		return requestResponse;
 	}
 
 	public abstract RequestResponse doCreateRequest(
@@ -115,5 +122,10 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		}
 		return days;
 	}
+	protected void publishEventAfterApproval(Request request) {
+		eventPublisher.publishEvent(
+			new ApproveRequestEvent(request.getId(), request.getEmployee().getId(), request.getRequestType())
+		);
 
+	}
 }

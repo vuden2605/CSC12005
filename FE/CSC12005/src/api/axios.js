@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { stompService } from "../services/StompService";
 // ✅ API instance chính - Có interceptor để add accessToken
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -65,7 +65,8 @@ api.interceptors.response.use(
         
         // ✅ Lưu vào localStorage
         localStorage.setItem("accessToken", newAccessToken);
-
+        stompService.disconnect();
+        stompService.connect();
         // ✅ Update Authorization header và retry request ban đầu
         originalRequest. headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
