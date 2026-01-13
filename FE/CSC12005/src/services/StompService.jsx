@@ -14,7 +14,9 @@ class StompService {
   
     this.client = new Client({
       webSocketFactory: () =>
-        new SockJS(`${API_URL}/ws?token=${accessToken}`),
+        new SockJS(`${API_URL}/ws?token=${accessToken}`, null, {
+          transports: ["websocket"], 
+        }),
   
       reconnectDelay: 5000, // ✅ tự reconnect
       heartbeatIncoming: 4000,

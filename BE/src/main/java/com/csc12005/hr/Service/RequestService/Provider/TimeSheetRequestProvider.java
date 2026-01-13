@@ -73,7 +73,6 @@ public class TimeSheetRequestProvider extends AbstractRequestProvider {
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
 
-	@Transactional
 	@Override
 	public RequestResponse doCreateRequest(
 			RequestCreationRequest request,

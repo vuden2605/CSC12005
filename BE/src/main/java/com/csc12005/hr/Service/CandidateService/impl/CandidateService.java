@@ -167,11 +167,10 @@ public class CandidateService implements ICandidateService {
         return candidateMapper.toCandidateResponse(candidate); }
     private String generateEmployeeCode(Department department) {
         // Generate employee code logic
-        int year = LocalDate.now().getYear();
-        long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId());
+        long count = employeeRepository.countByDepartment(department.getId());
         long sequence = count + 1;
         String sequenceFormatted = String.format("%03d", sequence);
-        return year + "_" + department.getDepartmentCode() + "_" + sequenceFormatted;
+        return department.getDepartmentCode() + "_" + sequenceFormatted;
     }
     @Transactional
     public EmployeeResponse hireCandidate(Long candidateId){

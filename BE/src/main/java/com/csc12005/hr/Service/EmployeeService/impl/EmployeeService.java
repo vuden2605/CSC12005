@@ -56,14 +56,11 @@ public class EmployeeService implements IEmployeeService {
 	private final SecurityUtils securityUtils;
 
 	private String generateEmployeeCode(Department department) {
-		// Generate employee code logic
-		int year = LocalDate.now().getYear();
-		log.info("year: {}", year);
-		long count = employeeRepository.countByYearAndDepartmentAndPosition(year, department.getId());
+		long count = employeeRepository.countByDepartment(department.getId());
 		log.info("count: {}", count);
 		long sequence = count + 1;
 		String sequenceFormatted = String.format("%03d", sequence);
-		return year + "_" + department.getDepartmentCode() + "_" + sequenceFormatted;
+		return department.getDepartmentCode() + "_" + sequenceFormatted;
 	}
 
 	public EmployeeResponse createEmployee(EmployeeCreationRequest employeeCreationRequest) {
@@ -254,6 +251,8 @@ public class EmployeeService implements IEmployeeService {
 							.department(department)
 							.position(position)
 							.password(passwordEncoder.encode(employeeCode))
+							.manager(department.getManager())
+							.employeeCode(generateEmployeeCode(department))
 							.build();
 					employee.setCreatedBy(employeeRepository.getReferenceById(currentUserId));
 					employee.setUpdatedBy(employeeRepository.getReferenceById(currentUserId));
