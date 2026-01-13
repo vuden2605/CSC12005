@@ -1,22 +1,15 @@
-import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import React from "react";
 
-const ActivityDetailModal = ({ isOpen, toggle, activity }) => {
-return (
-    <Modal isOpen={isOpen} toggle={toggle}>
-    <ModalHeader toggle={toggle}>Activity Details</ModalHeader>
-    <ModalBody>
-        <h3>{activity.name}</h3>
-        <p>Description: {activity.description}</p>
-        {/* Add more details here */}
-    </ModalBody>
-    <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-        Close
-        </Button>
-    </ModalFooter>
-    </Modal>
-);
+// Panel chi tiết hoạt động hiển thị inline trong dashboard
+const ActivityDetailModal = ({ activity }) => {
+  if (!activity) return null;
+
+  return (
+    <div className="activity-detail-panel">
+      <h3>{activity.name}</h3>
+      <p>Mô tả: {activity.description}</p>
+    </div>
+  );
 };
 
 export default ActivityDetailModal;

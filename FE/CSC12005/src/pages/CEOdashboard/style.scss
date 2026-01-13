@@ -1,106 +1,163 @@
-/* Reset các style mặc định */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+.ceo-dashboard-page {
+  background-color: #f0f3f8;
+  min-height: 100vh;
+  padding: 2rem;
 
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f6f9;
-}
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
 
-/* Header */
-h1 {
-  font-size: 28px;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
+  .tabs {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 
-/* Company Activities Section */
-.activities-section {
-  background-color: #ffffff;
-  padding: 20px;
-  margin-top: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+    .tab {
+      padding: 0.625rem 1.25rem;
+      border-radius: 20px;
+      border: none;
+      background-color: white;
+      color: #6b7280;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
-.activities-title {
-  font-size: 28px;
-  color: #007bff;  /* Màu xanh dương nổi bật */
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+      &:hover {
+        background-color: #f9fafb;
+      }
 
-/* Activity items */
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+      &.active {
+        background-color: #60a5fa;
+        color: white;
+        box-shadow: 0 2px 4px rgba(96, 165, 250, 0.3);
+      }
+    }
+  }
 
-.activity-item {
-  background-color: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  .ceo-dashboard-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-.activity-item h3 {
-  font-size: 20px;
-  color: #333;
-}
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
 
-.view-details-btn {
-  background-color: #007bff;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .placeholder-text {
+      color: #6b7280;
+      font-size: 15px;
+    }
 
-.view-details-btn:hover {
-  background-color: #0056b3;
-  opacity: 0.8;
-}
+    .project-create-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      font-family: inherit;
 
-/* Modal for Creating Project */
-.project-modal {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
 
-.project-modal .modal-content {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  width: 400px;
-}
+        label {
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+        }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .activities-section {
-    padding: 10px;
+        .short-input {
+          max-width: 320px;
+          font-size: 14px;
+        }
+
+        input,
+        textarea {
+          font-size: 14px;
+          font-family: inherit;
+        }
+      }
+
+      .actions {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: flex-end;
+
+        button {
+          transition: all 0.15s ease-in-out;
+          font-size: 14px;
+          font-weight: 500;
+          font-family: inherit;
+
+          &:hover:not(:disabled) {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+
+    .activity-detail-panel {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 10px;
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        margin: 0;
+        color: #4b5563;
+      }
+    }
   }
 
   .activity-list {
+    display: flex;
     flex-direction: column;
+    gap: 1rem;
+
+    .activity-item {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 {
+        font-size: 16px;
+        color: #333;
+        margin: 0;
+      }
+    }
   }
 
-  .activity-item {
-    flex-direction: column;
-    align-items: flex-start;
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .tabs {
+      .tab {
+        font-size: 13px;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    .ceo-dashboard-content {
+      padding: 1.25rem;
+    }
   }
 }
