@@ -15,6 +15,8 @@ export const HRPayRoll = () => {
   const [yearError, setYearError] = useState("");
   const [selectedSalary, setSelectedSalary] = useState(null);
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
+  const [hasPrevMonthPayroll, setHasPrevMonthPayroll] = useState(false);
+  const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
 
   const [filters, setFilters] = useState({
     month: "",
@@ -22,6 +24,44 @@ export const HRPayRoll = () => {
     employeeName: "",
     status: "",
   });
+
+  // xuất bảng lương
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
+  // Kiểm tra xem tháng trước đã có bảng lương chưa để disable nút
+  useEffect(() => {
+    const checkPrevPayroll = async () => {
+      try {
+        setCheckingPrevMonthPayroll(true);
+        const res = await HRService.getAllSalaries({
+          month: previousMonth,
+          year: previousYear,
+          page: 0,
+          size: 1,
+          sortBy: "id",
+          direction: "ASC",
+        });
+
+        const total =
+          res?.totalElements ??
+          (Array.isArray(res?.content) ? res.content.length : 0);
+        setHasPrevMonthPayroll(total > 0);
+      } catch (err) {
+        console.error(
+          "Error checking previous month payroll:",
+          err.message
+        );
+      } finally {
+        setCheckingPrevMonthPayroll(false);
+      }
+    };
+
+    checkPrevPayroll();
+  }, [previousMonth, previousYear]);
 
   const fetchSalaries = async () => {
     try {
@@ -50,6 +90,7 @@ export const HRPayRoll = () => {
   useEffect(() => {
     fetchSalaries();
   }, [page, pageSize, filters]);
+
   const FilterReset = () => {
     setFilters({
       month: "",
@@ -120,12 +161,6 @@ export const HRPayRoll = () => {
 
     return allowedSet ? Array.from(allowedSet) : [];
   };
-  // xuất bảng lương
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
   const { showAlert } = useAlert();
   const handleCreatePayroll = async () => {
     try {
@@ -145,6 +180,7 @@ export const HRPayRoll = () => {
 
       await HRService.createPayroll(month, year);
       showAlert("success", `Xuất bảng lương tháng ${month}/${year} thành công`);
+  setHasPrevMonthPayroll(true);
       fetchSalaries();
     } catch (err) {
       showAlert("error", err.message || "Xuất bảng lương thất bại");
@@ -286,8 +322,16 @@ export const HRPayRoll = () => {
 
           {/* <button onClick={handlePaySalary}>Phát lương</button> */}
         </div>
-        <button className="payroll-button" onClick={handleCreatePayroll}>
-          Xuất bảng lương tháng trước ({previousMonth}/{previousYear})
+        <button
+          className="payroll-button"
+          onClick={handleCreatePayroll}
+          disabled={hasPrevMonthPayroll || checkingPrevMonthPayroll}
+        >
+          {hasPrevMonthPayroll
+            ? `Đã xuất bảng lương tháng ${previousMonth}/${previousYear}`
+            : checkingPrevMonthPayroll
+            ? "Đang kiểm tra bảng lương..."
+            : `Xuất bảng lương tháng trước (${previousMonth}/${previousYear})`}
         </button>
       </div>
       {/* TABLE */}
