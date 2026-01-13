@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RewardPointRequest {
-	private Long employeeId;
+	private List<Long> employeeId;
 	private Integer points;
 }

@@ -89,25 +89,30 @@ public class PointHistoryService implements IPointHistoryService {
 	}
 	@Transactional
 	public void rewardPoints(RewardPointRequest request) {
-		Employee employee = employeeRepository.findById(request.getEmployeeId())
-				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-
+		List<Employee> employees = employeeRepository.findAllById(request.getEmployeeId());
+		List<PointHistory> pointHistories = new ArrayList<>();
+		if(employees.isEmpty() || employees.size() != request.getEmployeeId().size()) {
+			throw new AppException(ErrorCode.EMPLOYEE_NOT_FOUND);
+		}
 		Long currentUserId = securityUtils.getCurrentUserId();
 		Employee rewardedBy = employeeRepository.findById(currentUserId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		if(rewardedBy.getAllocatePoints() > 0 && rewardedBy.getAllocatePoints() >= request.getPoints()) {
-			employee.setTotalPoints(employee.getTotalPoints() + request.getPoints());
-			rewardedBy.setAllocatePoints(rewardedBy.getAllocatePoints() - request.getPoints());
-			PointHistory pointHistory = PointHistory.builder()
-					.employee(employee)
-					.pointChange(request.getPoints().longValue())
-					.reasonType(PointReasonType.REWARD)
-					.referenceId(rewardedBy.getId())
-					.description("Điểm thưởng từ trưởng phòng")
-					.build();
-			employeeRepository.save(employee);
+			for(Employee employee : employees) {
+				employee.setTotalPoints(employee.getTotalPoints() + request.getPoints());
+				rewardedBy.setAllocatePoints(rewardedBy.getAllocatePoints() - request.getPoints());
+				PointHistory pointHistory = PointHistory.builder()
+						.employee(employee)
+						.pointChange(request.getPoints().longValue())
+						.reasonType(PointReasonType.REWARD)
+						.referenceId(rewardedBy.getId())
+						.description("Điểm thưởng từ trưởng phòng")
+						.build();
+				pointHistories.add(pointHistory);
+			}
+			employeeRepository.saveAll(employees);
 			employeeRepository.save(rewardedBy);
-			pointHistoryRepository.save(pointHistory);
+			pointHistoryRepository.saveAll(pointHistories);
 		} else {
 			throw new AppException(ErrorCode.INSUFFICIENT_ALLOCATE_POINTS);
 		}
