@@ -1,12 +1,15 @@
 package com.csc12005.hr.Service.PointHistoryService.Impl;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.RewardPointRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.PointHistory;
 import com.csc12005.hr.Enums.PointReasonDescription;
 import com.csc12005.hr.Enums.PointReasonType;
+import com.csc12005.hr.Exception.AppException;
+import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.EmployeeMapper;
 import com.csc12005.hr.Mapper.PointHistoryMapper;
 import com.csc12005.hr.Repository.EmployeeRepository;
@@ -32,6 +35,7 @@ public class PointHistoryService implements IPointHistoryService {
 	private final EmployeeMapper employeeMapper;
 	private final EmployeeRepository employeeRepository;
 	private final PointHistoryMapper pointHistoryMapper;
+	private final SecurityUtils securityUtils;
 	@Override
 	public List<EmployeeResponse> getMonthlyCandidates() {
 		LocalDate now = LocalDate.now();
@@ -82,5 +86,31 @@ public class PointHistoryService implements IPointHistoryService {
 		return pointHistories.stream()
 				.map(pointHistoryMapper::toPointHistoryResponse)
 				.toList();
+	}
+	@Transactional
+	public void rewardPoints(RewardPointRequest request) {
+		Employee employee = employeeRepository.findById(request.getEmployeeId())
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+		Long currentUserId = securityUtils.getCurrentUserId();
+		Employee rewardedBy = employeeRepository.findById(currentUserId)
+				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
+		if(rewardedBy.getAllocatePoints() > 0 && rewardedBy.getAllocatePoints() >= request.getPoints()) {
+			employee.setTotalPoints(employee.getTotalPoints() + request.getPoints());
+			rewardedBy.setAllocatePoints(rewardedBy.getAllocatePoints() - request.getPoints());
+			PointHistory pointHistory = PointHistory.builder()
+					.employee(employee)
+					.pointChange(request.getPoints().longValue())
+					.reasonType(PointReasonType.REWARD)
+					.referenceId(rewardedBy.getId())
+					.description("Điểm thưởng từ trưởng phòng")
+					.build();
+			employeeRepository.save(employee);
+			employeeRepository.save(rewardedBy);
+			pointHistoryRepository.save(pointHistory);
+		} else {
+			throw new AppException(ErrorCode.INSUFFICIENT_ALLOCATE_POINTS);
+		}
+
 	}
 }

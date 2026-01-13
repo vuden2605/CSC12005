@@ -172,6 +172,7 @@ public enum ErrorCode {
 	SALARY_NOT_FOUND(6505,"Salary record not found for employee",HttpStatus.NOT_FOUND),
 	BANK_NOT_SUPPORTED(7005,"Bank not supported for transfers", HttpStatus.BAD_REQUEST),
 	HOLIDAY_NOT_FOUND(40013,"Holiday not found", HttpStatus.NOT_FOUND),
+	INSUFFICIENT_ALLOCATE_POINTS(40014,"Insufficient allocate points", HttpStatus.BAD_REQUEST),
 	INSUFFICIENT_CASUAL_LEAVE_BALANCE(40014,"Insufficient casual leave balance", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Invalid input", HttpStatus.BAD_REQUEST);
 

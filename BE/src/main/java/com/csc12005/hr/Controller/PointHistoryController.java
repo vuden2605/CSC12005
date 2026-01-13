@@ -2,6 +2,7 @@ package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.PointsMonthlyCreationRequest;
+import com.csc12005.hr.DTO.Request.RewardPointRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
@@ -75,5 +76,11 @@ public class PointHistoryController {
 				.message("Current total points retrieved successfully")
 				.build();
 	}
-
+	@PostMapping("/reward")
+	public ApiResponse<Void> rewardPoints(@RequestBody RewardPointRequest request) {
+		pointHistoryService.rewardPoints(request);
+		return ApiResponse.<Void>builder()
+				.message("Points rewarded successfully")
+				.build();
+	}
 }
