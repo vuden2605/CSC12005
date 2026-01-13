@@ -9,8 +9,10 @@ import { TimeSheetDetailModal } from "../../../../components/modals/Request/Time
 import { LeaveDetailModal } from "../../../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
+import { useSelector } from "react-redux";
 
 export const Requests = () => {
+  const currentUser = useSelector((state) => state.user.currentUser);
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -20,6 +22,8 @@ export const Requests = () => {
     approved: true,
     rejected: true,
   });
+
+  const [remainingPaidLeave, setRemainingPaidLeave] = useState(null);
 
   // Modal control
   const [showChooseTypeModal, setShowChooseTypeModal] = useState(false);
@@ -174,6 +178,19 @@ export const Requests = () => {
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
+
+  // Tính số ngày nghỉ có lương còn lại từ currentUser trong Redux (persist vào localStorage)
+  useEffect(() => {
+    if (!currentUser) {
+      setRemainingPaidLeave(null);
+      return;
+    }
+
+    const annualLeave = currentUser.annualLeave ?? 0;
+    const usedLeave = currentUser.usedLeave ?? 0;
+    const remaining = Math.max(annualLeave - usedLeave, 0);
+    setRemainingPaidLeave(remaining);
+  }, [currentUser]);
 
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {
@@ -486,7 +503,9 @@ export const Requests = () => {
         <div className="remaining-leave">
           <div className="leaf-icon">🌿</div>
           <p>Ngày nghỉ có lương còn lại</p>
-          <h2>0 Ngày</h2>
+          <h2>
+            {remainingPaidLeave !== null ? `${remainingPaidLeave} Ngày` : "..."}
+          </h2>
         </div>
 
         <button

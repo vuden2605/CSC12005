@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EmployeeService } from "../../../services/EmployeeService";
 
-const PointExchangeCreateModal = ({ isOpen, onClose, onSuccess }) => {
+const PointExchangeCreateModal = ({ isOpen, onClose, onSuccess, currentPoints }) => {
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -15,6 +15,10 @@ const PointExchangeCreateModal = ({ isOpen, onClose, onSuccess }) => {
     const parsed = Number(points);
     if (!parsed || parsed <= 0) {
       setError("Vui lòng nhập số điểm hợp lệ (> 0)");
+      return;
+    }
+    if (typeof currentPoints === "number" && currentPoints >= 0 && parsed > currentPoints) {
+      setError("Số điểm muốn đổi không được lớn hơn số điểm hiện có");
       return;
     }
     try {
@@ -46,12 +50,18 @@ const PointExchangeCreateModal = ({ isOpen, onClose, onSuccess }) => {
                 <input
                   type="number"
                   min={1}
+                  max={typeof currentPoints === "number" && currentPoints > 0 ? currentPoints : undefined}
                   value={points}
                   onChange={(e) => setPoints(e.target.value)}
                   placeholder="Nhập số điểm"
                   style={{ padding: 8, border: "1px solid #d1d5db", borderRadius: 6 }}
                   required
                 />
+                {typeof currentPoints === "number" && currentPoints >= 0 && (
+                  <p style={{ marginTop: 4, fontSize: 12, color: "#6b7280" }}>
+                    Bạn đang có {currentPoints} điểm thưởng. Số điểm đổi tối đa là {currentPoints}.
+                  </p>
+                )}
               </div>
               <div className="detail-item">
                 <label>Ghi chú (tuỳ chọn)</label>

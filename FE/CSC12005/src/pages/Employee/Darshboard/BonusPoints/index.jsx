@@ -339,6 +339,7 @@ export const BonusPoints = () => {
                 isOpen={openCreateModal}
                 onClose={() => setOpenCreateModal(false)}
                 onSuccess={() => setReloadExKey((k) => k + 1)}
+                currentPoints={totals.current}
               />
               <div className="filters">
                 <div>
