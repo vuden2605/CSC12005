@@ -89,6 +89,7 @@ public class WFHRequestProvider extends AbstractRequestProvider{
 		wfhRequest.setStatus(RequestStatus.APPROVED);
 		WFHRequest savedRequest = wFhRequestRepository.save(wfhRequest);
 		timeSheetRepository.saveAll(timeSheets);
+		publishEventAfterApproval(wfhRequest);
 		return wfhRequestMapper.toWFHResponse(savedRequest);
 	}
 

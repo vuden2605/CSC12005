@@ -106,6 +106,7 @@ public class LeaveRequestProvider extends AbstractRequestProvider{
 		}
 		employeeRepository.save(employee);
 		createTimeSheetsForLeaveRequest(leaveRequest);
+		publishEventAfterApproval(leaveRequest);
 		return leaveRequestMapper.toLeaveRequestResponse(leaveRequestRepository.save(leaveRequest));
 	}
 	private void createTimeSheetsForLeaveRequest(LeaveRequest leaveRequest) {

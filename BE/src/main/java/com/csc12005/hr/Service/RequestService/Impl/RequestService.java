@@ -42,7 +42,6 @@ public class RequestService implements IRequestService {
 
 	@Transactional
 	public RequestResponse rejectRequest(Long requestId, RequestType requestType) {
-
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.rejectRequest(requestId);
 	}

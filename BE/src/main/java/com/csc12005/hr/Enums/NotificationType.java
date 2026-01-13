@@ -1,7 +1,9 @@
 package com.csc12005.hr.Enums;
 
 public enum NotificationType {
-	REQUEST,
+	REQUEST_CREATED,
+	REQUEST_APPROVED,
+	REQUEST_REJECTED,
 	TIMESHEET,
 	SALARY,
 	REVIEW,

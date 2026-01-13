@@ -9,6 +9,8 @@ public interface INotificationService {
 	void handleActivityCreated(ActivityCreated activityCreated);
 	void handleWFHRequestCreated(WFHRequestCreated wfhRequestCreated);
 	void handleTimeSheetRequestCreated(TimeSheetRequestCreated timeSheetRequestCreated);
+	void handleRejectRequestEvent(RejectRequestEvent rejectRequestEvent);
+	void handleApproveRequestEvent(ApproveRequestEvent approveRequestEvent);
 	void handleScheduleCreated(ScheduleCreated scheduleCreated);
 	void handleScheduleUpdated(ScheduleUpdated scheduleUpdated);
 	void handleScheduleDeleted(ScheduleDeleted scheduleDeleted);
