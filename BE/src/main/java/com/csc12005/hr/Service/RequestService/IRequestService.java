@@ -1,5 +1,6 @@
 package com.csc12005.hr.Service.RequestService;
 
+import com.csc12005.hr.DTO.Request.ProcessManyRequest;
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.RequestFilter;
@@ -16,4 +17,6 @@ public interface IRequestService {
 	Page<RequestResponse> myRequests (PageRequestDTO pageRequestDTO, RequestFilter requestFilter);
 	RequestResponse rejectRequest (Long requestId, RequestType requestType);
 	RequestResponse getRequestById (Long requestId, RequestType requestType);
+	void approveManyRequests (ProcessManyRequest request);
+	void rejectManyRequests (ProcessManyRequest request);
 }
