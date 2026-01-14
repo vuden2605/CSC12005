@@ -5,13 +5,10 @@ import PointExchangeRequests from "./PointExchangeRequests";
 import { Pagination } from "../../components/Pagination";
 
 export const BonusPointsAdmin = () => {
-  const [activeTab, setActiveTab] = useState("grant");
+  const [activeTab, setActiveTab] = useState("exchange");
   const [bonusPoints, setBonusPoints] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedEmployees, setSelectedEmployees] = useState(new Set());
-  const [isGranting, setIsGranting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [pagination, setPagination] = useState({
     page: 0,
     size: 10,
@@ -103,79 +100,7 @@ export const BonusPointsAdmin = () => {
     }));
   };
 
-  const handleGrantPoints = async () => {
-    if (selectedEmployees.size === 0) {
-      setError("Vui lòng chọn ít nhất một nhân viên");
-      return;
-    }
-
-    try {
-      setIsGranting(true);
-      setError("");
-      setSuccessMessage("");
-      
-      const candidateIds = Array.from(selectedEmployees);
-      await HRService.grantMonthlyPoints(candidateIds);
-      
-      setSuccessMessage(`Đã phát điểm cho ${candidateIds.length} nhân viên thành công!`);
-      setSelectedEmployees(new Set());
-      
-      // Tải lại dữ liệu sau 2 giây
-      setTimeout(() => {
-        fetchBonusPoints();
-        setSuccessMessage("");
-      }, 2000);
-    } catch (err) {
-      setError(err.message || "Lỗi khi phát điểm");
-      console.error("Error granting points:", err);
-    } finally {
-      setIsGranting(false);
-    }
-  };
-
-  const handleGrantPointsSingle = async (employeeId) => {
-    try {
-      setIsGranting(true);
-      setError("");
-      setSuccessMessage("");
-      
-      await HRService.grantMonthlyPoints([employeeId]);
-      
-      setSuccessMessage("Đã phát điểm cho nhân viên thành công!");
-      
-      // Tải lại dữ liệu sau 2 giây
-      setTimeout(() => {
-        fetchBonusPoints();
-        setSuccessMessage("");
-      }, 2000);
-    } catch (err) {
-      setError(err.message || "Lỗi khi phát điểm");
-      console.error("Error granting points:", err);
-    } finally {
-      setIsGranting(false);
-    }
-  };
-
-  const handleSelectEmployee = (employeeId) => {
-    const newSelected = new Set(selectedEmployees);
-    if (newSelected.has(employeeId)) {
-      newSelected.delete(employeeId);
-    } else {
-      newSelected.add(employeeId);
-    }
-    setSelectedEmployees(newSelected);
-  };
-
-  const handleSelectAll = () => {
-    if (selectedEmployees.size === filteredData.length && filteredData.length > 0) {
-      // Nếu đã chọn tất cả thì bỏ chọn
-      setSelectedEmployees(new Set());
-    } else {
-      // Chọn tất cả
-      const allIds = new Set(filteredData.map(item => item.id));
-      setSelectedEmployees(allIds);
-    }
-  };
+  // Bỏ chức năng phát điểm thủ công vì BE đã dùng lịch.
 
   const filteredData = applyFilters();
   
@@ -192,18 +117,10 @@ export const BonusPointsAdmin = () => {
     bonusPoints.find(item => item.department?.id === id)?.department
   ).filter(Boolean);
 
-  const isAllSelected = filteredData.length > 0 && selectedEmployees.size === filteredData.length;
-  const isSomeSelected = selectedEmployees.size > 0 && selectedEmployees.size < filteredData.length;
 
   return (
     <div className="bonus-points-admin">
       <div className="tabs-navigation">
-        <button
-          className={`tab-button ${activeTab === "grant" ? "active" : ""}`}
-          onClick={() => setActiveTab("grant")}
-        >
-          Danh sách phát điểm
-        </button>
         <button
           className={`tab-button ${activeTab === "exchange" ? "active" : ""}`}
           onClick={() => setActiveTab("exchange")}
@@ -276,18 +193,8 @@ export const BonusPointsAdmin = () => {
       <div className="table-section">
         <div className="section-header">
           <h3>Danh sách nhân viên cần phát điểm tháng này ({totalElements})</h3>
-          {selectedEmployees.size > 0 && (
-            <button 
-              className="btn-grant-points" 
-              onClick={handleGrantPoints}
-              disabled={isGranting}
-            >
-              {isGranting ? "Đang phát điểm..." : "Phát điểm"}
-            </button>
-          )}
         </div>
         {error && <div className="error-message">{error}</div>}
-        {successMessage && <div className="success-message">{successMessage}</div>}
         {loading ? (
           <div className="loading">Đang tải dữ liệu...</div>
         ) : paginatedData.length === 0 ? (
@@ -296,17 +203,6 @@ export const BonusPointsAdmin = () => {
           <table className="bonus-points-table">
             <thead>
               <tr>
-                <th className="checkbox-col">
-                  <input
-                    type="checkbox"
-                    checked={isAllSelected}
-                    ref={(input) => {
-                      if (input) input.indeterminate = isSomeSelected;
-                    }}
-                    onChange={handleSelectAll}
-                    title="Chọn tất cả"
-                  />
-                </th>
                 <th>STT</th>
                 <th>Mã nhân viên</th>
                 <th>Tên nhân viên</th>
@@ -315,19 +211,11 @@ export const BonusPointsAdmin = () => {
                 <th>Chức vụ</th>
                 <th>Điểm</th>
                 <th>Ngày tuyển dụng</th>
-                <th>Hành động</th>
               </tr>
             </thead>
             <tbody>
               {paginatedData.map((point, index) => (
-                <tr key={point.id} className={selectedEmployees.has(point.id) ? 'selected' : ''}>
-                  <td className="checkbox-col">
-                    <input
-                      type="checkbox"
-                      checked={selectedEmployees.has(point.id)}
-                      onChange={() => handleSelectEmployee(point.id)}
-                    />
-                  </td>
+                <tr key={point.id}>
                   <td>{pagination.page * pagination.size + index + 1}</td>
                   <td>{point.employeeCode || "N/A"}</td>
                   <td>{point.fullName || "N/A"}</td>
@@ -340,25 +228,10 @@ export const BonusPointsAdmin = () => {
                       ? new Date(point.hireDate).toLocaleDateString("vi-VN")
                       : "N/A"}
                   </td>
-                  <td className="action-cell">
-                    <button
-                      className="btn-grant-single"
-                      onClick={() => handleGrantPointsSingle(point.id)}
-                      disabled={isGranting}
-                      title="Phát điểm cho nhân viên này"
-                    >
-                      {isGranting ? "Đang phát..." : "Phát điểm"}
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-        {selectedEmployees.size > 0 && (
-          <div className="selection-info">
-            Đã chọn: <strong>{selectedEmployees.size}</strong> nhân viên
-          </div>
         )}
         {totalElements > 0 && (
           <Pagination

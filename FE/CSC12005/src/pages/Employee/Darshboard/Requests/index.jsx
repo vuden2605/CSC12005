@@ -9,10 +9,12 @@ import { TimeSheetDetailModal } from "../../../../components/modals/Request/Time
 import { LeaveDetailModal } from "../../../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../../../redux";
 
 export const Requests = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user.currentUser);
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
@@ -175,10 +177,21 @@ export const Requests = () => {
     }
   }, [pagination.page, pagination.size, startDate, endDate, leaveType, statusFilter]);
 
+  // Refetch user profile when opening Requests tab
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await EmployeeService.getCurrentUser();
+      dispatch(setUser(data));
+    } catch (e) {
+      console.error("Error refreshing user:", e);
+    }
+  }, [dispatch]);
+
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests, location.key]);
+    refreshUser();
+  }, [fetchRequests, refreshUser, location.key]);
 
   // Tính số ngày nghỉ có lương còn lại từ currentUser trong Redux (persist vào localStorage)
   useEffect(() => {
@@ -554,7 +567,7 @@ export const Requests = () => {
 
       {/* Render modal tương ứng */}
       {selectedRequestType === "Nghỉ phép" && (
-        <ModalLeave onClose={closeModal} onSuccess={fetchRequests} />
+        <ModalLeave onClose={closeModal} onSuccess={() => { fetchRequests(); refreshUser(); }} />
       )}
       {selectedRequestType === "Làm việc tại nhà" && (
         <ModalWFH onClose={closeModal} onSuccess={fetchRequests} />

@@ -522,14 +522,14 @@ export const RequestManager = () => {
                 onClick={handleBulkApprove}
                 disabled={bulkLoading || selectedRequestIds.size === 0}
               >
-                {bulkLoading ? "Đang xử lý..." : "Duyệt đã chọn"}
+                {bulkLoading ? "Đang xử lý..." : "Duyệt"}
               </button>
               <button
                 className="bulk-btn bulk-reject"
                 onClick={handleBulkReject}
                 disabled={bulkLoading || selectedRequestIds.size === 0}
               >
-                {bulkLoading ? "Đang xử lý..." : "Từ chối đã chọn"}
+                {bulkLoading ? "Đang xử lý..." : "Từ chối"}
               </button>
             </div>
           </div>

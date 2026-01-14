@@ -10,19 +10,23 @@ export const Pagination = ({
   onPageSizeChange,
   loading = false,
 }) => {
-  const startItem = currentPage * pageSize + 1;
-  const endItem = Math.min((currentPage + 1) * pageSize, totalElements);
+  const effectiveTotalPages = Math.max(totalPages || 0, 1);
+  const hasResults = totalElements > 0;
+  const startItem = hasResults ? currentPage * pageSize + 1 : 0;
+  const endItem = hasResults
+    ? Math.min((currentPage + 1) * pageSize, totalElements)
+    : 0;
 
   // Tính toán các trang để hiển thị (tối đa 5 trang)
   let startPage = Math.max(0, currentPage - 2);
-  let endPage = Math.min(totalPages - 1, currentPage + 2);
+  let endPage = Math.min(effectiveTotalPages - 1, currentPage + 2);
 
   // Điều chỉnh để luôn hiển thị 5 trang nếu có thể
   if (endPage - startPage < 4) {
     if (startPage === 0) {
-      endPage = Math.min(4, totalPages - 1);
-    } else if (endPage === totalPages - 1) {
-      startPage = Math.max(0, totalPages - 5);
+      endPage = Math.min(4, effectiveTotalPages - 1);
+    } else if (endPage === effectiveTotalPages - 1) {
+      startPage = Math.max(0, effectiveTotalPages - 5);
     }
   }
 
@@ -38,7 +42,7 @@ export const Pagination = ({
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages - 1 && onPageChange) {
+    if (currentPage < effectiveTotalPages - 1 && onPageChange) {
       onPageChange(currentPage + 1);
     }
   };
@@ -98,7 +102,7 @@ export const Pagination = ({
 
         <button
           onClick={handleNextPage}
-          disabled={currentPage === totalPages - 1 || loading}
+          disabled={currentPage === effectiveTotalPages - 1 || loading}
           className="pagination-button next-button"
           title="Trang sau"
         >
@@ -107,7 +111,7 @@ export const Pagination = ({
       </div>
 
       <div className="pagination-right">
-        Hiển thị {startItem} - {endItem} / {totalElements} kết quả
+        Trang {Math.min(currentPage + 1, effectiveTotalPages)} / {effectiveTotalPages} · Hiển thị {startItem} - {endItem} / {totalElements} kết quả
       </div>
     </div>
   );
