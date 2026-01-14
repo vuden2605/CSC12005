@@ -1098,4 +1098,52 @@ export const HRService = {
     throw new Error(errMsg);
   }
 },
+importTimeSheet: async (file) => {
+  try {
+    if (!file) {
+      throw new Error("Vui lòng chọn file để import");
+    }
+
+    // Validate file type
+    const validTypes = [
+      "application/vnd.ms-excel", // .  xls
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    ];
+
+    if (!validTypes.includes(file.type)) {
+      throw new Error("Chỉ chấp nhận file Excel (. xls, . xlsx)");
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error("Kích thước file không được quá 10MB");
+    }
+
+    // Create FormData
+    const formData = new FormData();
+    formData.append("multipartFile", file);  // ✅ ĐỔI TÊN:  "file" → "multipartFile"
+
+    // Call API
+    const response = await api.post("/timesheets/import", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data. data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?. message ||
+      error.message ||
+      "Import timesheet thất bại";
+
+    // Handle validation errors
+    if (error. response?.data?.errors) {
+      const validationErrors = error. response.data.errors;
+      throw new Error(Object.values(validationErrors).join(", "));
+    }
+
+    throw new Error(errMsg);
+  }
+},
 };

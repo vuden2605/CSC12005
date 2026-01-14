@@ -17,7 +17,7 @@ const DEFAULT_SORT = { sortBy: "startDate", direction: "DESC" };
 
 // ========== THÊM STATUS MAPPING ==========
 const STATUS_MAP = {
-  DRAFT: { label: "Nháp", className: "status-draft" },
+  // DRAFT: { label: "Nháp", className: "status-draft" },
   OPEN_FOR_REGISTRATION: { label: "Đang mở đăng ký", className: "status-open" },
   REGISTRATION_CLOSED: { label: "Đã đóng đăng ký", className: "status-closed" },
   ONGOING: { label: "Đang diễn ra", className: "status-ongoing" },
@@ -287,7 +287,7 @@ export const EventPageHR = () => {
                   className="input-field"
                 >
                   <option value="">Tất cả trạng thái</option>
-                  <option value="DRAFT">Nháp</option>
+                  {/* <option value="DRAFT">Nháp</option> */}
                   <option value="OPEN_FOR_REGISTRATION">Đang mở đăng ký</option>
                   <option value="REGISTRATION_CLOSED">Đã đóng đăng ký</option>
                   <option value="ONGOING">Đang diễn ra</option>

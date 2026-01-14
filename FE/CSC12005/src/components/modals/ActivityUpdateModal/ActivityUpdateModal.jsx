@@ -4,7 +4,7 @@ import { HRService } from "../../../services/HRService";
 import { useAlert } from "../../../context/AlertContext";
 // ========== STATUS MAPPING ==========
 const STATUS_MAP = {
-  DRAFT: { label: "Nháp", className: "status-draft" },
+  // DRAFT: { label: "Nháp", className: "status-draft" },
   OPEN_FOR_REGISTRATION: { label: "Đang mở đăng ký", className: "status-open" },
   REGISTRATION_CLOSED: { label: "Đã đóng đăng ký", className: "status-closed" },
   ONGOING: { label: "Đang diễn ra", className: "status-ongoing" },
@@ -39,7 +39,7 @@ export const ActivityUpdateModal = ({
   // ========== CHECK IF IS COMPLETED ==========
   const isCompleted = activity.activityStatus === "COMPLETED";
   // ========== CHECK IF IS DRAFT ==========
-  const isDraft = activity.activityStatus === "DRAFT";
+  const isDraft = activity.activityStatus === "OPEN_FOR_REGISTRATION";
 
   // ========== GET STATUS DISPLAY ==========
   const getStatusDisplay = (status) => {
@@ -657,7 +657,7 @@ export const ActivityUpdateModal = ({
                   type="date"
                   value={formData.startDate}
                   onChange={handleChange("startDate")}
-                  disabled={!isDraft}
+                  disabled={isDraft}
                 />
                 {errors.startDate && (
                   <small className="error">{errors.startDate}</small>
@@ -672,7 +672,7 @@ export const ActivityUpdateModal = ({
                   type="date"
                   value={formData.endDate}
                   onChange={handleChange("endDate")}
-                  disabled={!isDraft}
+                  disabled={isDraft}
                 />
                 {errors.endDate && (
                   <small className="error">{errors.endDate}</small>
@@ -721,7 +721,7 @@ export const ActivityUpdateModal = ({
                   type="datetime-local"
                   value={formData.registrationDeadline}
                   onChange={handleChange("registrationDeadline")}
-                  disabled={!isDraft}
+                  disabled={isDraft}
                 />
                 {errors.registrationDeadline && (
                   <small className="error">{errors.registrationDeadline}</small>
@@ -1144,7 +1144,7 @@ export const ActivityUpdateModal = ({
               <tbody>
                 {participants.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="no-data">
+                    <td colSpan="3" className="no-data-a">
                       Không có dữ liệu
                     </td>
                   </tr>

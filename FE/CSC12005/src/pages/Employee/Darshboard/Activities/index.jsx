@@ -14,6 +14,8 @@ export const Activities = () => {
   const [isMandatoryChecked, setIsMandatoryChecked] = useState(false);
   const [isOptionalChecked, setIsOptionalChecked] = useState(false);
   const [activityStatus, setActivityStatus] = useState("");
+  // const isOpen = activitiesData.activityStatus === "OPEN_FOR_REGISTRATION";
+  // console.log("activity:",activitiesData)
 
   // API data states
   const [activitiesData, setActivitiesData] = useState([]);
@@ -48,7 +50,7 @@ export const Activities = () => {
       setLoading(true);
       const params = {
         page: pagination.page,
-        size: pagination.size
+        size: pagination.size,
       };
 
       if (activityName) params.activityName = activityName;
@@ -436,6 +438,11 @@ export const Activities = () => {
                             activity.isRegistered ? "registered" : ""
                           }`}
                           onClick={() => handleToggleRegister(activity)}
+                          disabled={
+                            activity.activityStatus !==
+                              "OPEN_FOR_REGISTRATION" || 
+                            registeringMap[activity.id] 
+                          }
                         >
                           {activity.isRegistered
                             ? "Hủy đăng ký"

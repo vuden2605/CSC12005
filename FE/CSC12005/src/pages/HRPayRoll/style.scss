@@ -128,7 +128,7 @@
     tr {
       border-bottom: 1px solid #f1f1f1;
     }
-    .no-data {
+    .no-data-a {
   text-align: center;
   padding: 40px 0;
   font-style: italic;
@@ -224,4 +224,236 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+// 🆕 Import Modal Styles
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content-import {
+  background:  white;
+  border-radius:  12px;
+  max-width: 600px;
+  width: 95%;
+  max-height: 85vh;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom:  1px solid #e5e7eb;
+
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .btn-close {
+      background:  transparent;
+      border: none;
+      font-size: 28px;
+      color: #6b7280;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 32px 28px;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 20px 28px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size:  14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+
+      &.btn-light {
+        background-color: #f3f4f6;
+        color: #374151;
+
+        &:hover {
+          background-color: #e5e7eb;
+        }
+      }
+
+      &.btn-primary {
+        background-color: #3b82f6;
+        color: white;
+
+        &:hover {
+          background-color: #2563eb;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+.file-input-section {
+  margin:  24px 0;
+
+  .file-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color:  #374151;
+    font-size:  14px;
+  }
+
+  input[type="file"] {
+    width: 95%;
+    padding: 16px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f9fafb;
+    font-size: 14px;
+
+    &:hover {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .file-info {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background-color: #d1fae5;
+    border:  1px solid #6ee7b7;
+    border-radius: 6px;
+    color: #065f46;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+
+    .file-size {
+      color: #059669;
+    }
+  }
+}
+
+.import-result {
+  margin-top: 24px;
+  padding: 20px;
+  background-color:  #f9fafb;
+  border:  1px solid #e5e7eb;
+  border-radius: 8px;
+
+  h4 {
+    margin:  0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .result-summary {
+    display: flex;
+    gap: 16px;
+    margin-bottom:  20px;
+
+    > div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-radius: 8px;
+
+      .icon {
+        font-size: 24px;
+      }
+
+      span {
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+
+    .success-count {
+      background-color: #d1fae5;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+    }
+
+    .error-count {
+      background-color: #fee2e2;
+      border:  1px solid #fecaca;
+      color: #991b1b;
+    }
+  }
+
+  .error-details {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: white;
+    border: 1px solid #fecaca;
+    border-radius:  8px;
+    max-height: 250px;
+    overflow-y:  auto;
+
+    h5 {
+      margin:  0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #991b1b;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+
+      li {
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        background-color:  #fef2f2;
+        border-left: 3px solid #f87171;
+        border-radius:  4px;
+        font-size: 13px;
+
+        strong {
+          color:  #991b1b;
+        }
+      }
+    }
+  }
 }

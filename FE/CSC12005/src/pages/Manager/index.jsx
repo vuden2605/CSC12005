@@ -384,7 +384,7 @@ export const Manager = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="no-data">
+                <td colSpan="7" className="no-data-a">
                   Không tìm thấy nhân viên nào
                 </td>
               </tr>

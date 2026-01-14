@@ -28,7 +28,12 @@ export const HRPayRoll = () => {
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
   const [hasPrevMonthPayroll, setHasPrevMonthPayroll] = useState(false);
   const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
-
+  //  Import Timesheet States
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+console.log("resultim:",importResult)
   const [filters, setFilters] = useState({
     month: String(previousMonth),
     year: String(previousYear),
@@ -349,6 +354,44 @@ export const HRPayRoll = () => {
     }
   };
 
+    const handleImportFileChange = (e) => {
+    const file = e.target. files[0];
+    setImportFile(file);
+    setImportResult(null);
+  };
+
+  const handleImportTimesheet = async () => {
+    if (!importFile) {
+      showAlert("warning", "Vui lòng chọn file để import");
+      return;
+    }
+
+    try {
+      setImportLoading(true);
+
+      const result = await HRService.importTimeSheet(importFile);
+      setImportResult(result);
+
+      if (result.errorCount === 0) {
+        showAlert("success", `Import thành công ${result.successCount} bản ghi! `);
+        
+        // Auto close after 2s
+        setTimeout(() => {
+          setShowImportModal(false);
+          setImportFile(null);
+          setImportResult(null);
+        }, 2000);
+      } else {
+        
+      }
+    } catch (error) {
+      console.error("Error importing timesheet:", error);
+      showAlert("error", error.message || "Import thất bại");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   return (
     <div className="dashboard-page payroll-page">
       {/* FILTER */}
@@ -421,6 +464,13 @@ export const HRPayRoll = () => {
         <div style={{ display: "flex", gap: 12 }}>
           <button
             className="payroll-button"
+            style={{ background: "#3b82f6", width: "170px", height: "50px" }}
+            onClick={() => setShowImportModal(true)}
+          >
+             Nhập file chấm công
+          </button>
+          <button
+            className="payroll-button"
             style={{ background: "#10b981" , width: '100px', height: '50px'}}
             onClick={handleExportExcel}
           >
@@ -477,7 +527,7 @@ export const HRPayRoll = () => {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={9} className="no-data">
+                <td colSpan={9} className="no-data-a">
                   Không có dữ liệu
                 </td>
               </tr>
@@ -560,6 +610,98 @@ export const HRPayRoll = () => {
           onStatusUpdated={fetchSalaries}
         />
       )}
+            {showImportModal && (
+        <div className="modal-overlay" onClick={() => setShowImportModal(false)}>
+          <div
+            className="modal-content-import"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3>Nhập dữ liệu chấm công</h3>
+              <button
+                className="btn-close"
+                onClick={() => setShowImportModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {/* File Input */}
+              <div className="file-input-section">
+                <label htmlFor="timesheet-upload" className="file-label">
+                  Chọn file Excel (. xls, .xlsx)
+                </label>
+                <input
+                  id="timesheet-upload"
+                  type="file"
+                  accept=".xls,.xlsx"
+                  onChange={handleImportFileChange}
+                  disabled={importLoading}
+                />
+
+                {importFile && (
+                  <div className="file-info">
+                    <span>✓ {importFile.name}</span>
+                    <span className="file-size">
+                      ({(importFile.size / 1024).toFixed(2)} KB)
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Import Result */}
+              {importResult && (
+                <div className="import-result">
+                  <h4>Kết quả nhập:</h4>
+                  <div className="result-summary">
+                    <div className="success-count">
+                      <span>Thành công: {importResult.successRow}</span>
+                    </div>
+                    <div className="error-count">
+                      <span>Thất bại: {importResult.errorRow}</span>
+                    </div>
+                  </div>
+
+                  {/* Error Details */}
+                  {importResult.errors && importResult.errors.length > 0 && (
+                    <div className="error-details">
+                      <h5>Chi tiết lỗi:</h5>
+                      <ul>
+                        {importResult.errors.map((error, index) => (
+                          <li key={index}>
+                            <strong>Dòng {error.row}:</strong> {error.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={() => setShowImportModal(false)}
+                disabled={importLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleImportTimesheet}
+                disabled={! importFile || importLoading}
+              >
+                {importLoading ? "Đang import..." :  "Import"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

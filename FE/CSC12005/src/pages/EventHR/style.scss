@@ -1,16 +1,19 @@
+// File: src/pages/EventPageHR/style.  scss
+
 .dashboard-content {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius:  16px;
+  padding:  24px;
   box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  min-height: calc(100vh - 140px); // 🆕 THÊM DÒNG NÀY - Đảm bảo content đủ cao
 }
 
 .event-hr {
-  /* outer frame similar to mock */
   border: 3px solid #e6eaf0;
-  border-radius: 18px;
-  padding: 22px 22px 28px;
+  border-radius:  18px;
+  padding:  22px 22px 28px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  min-height: 70vh; // 🆕 THÊM DÒNG NÀY - Backup fallback
 }
 
 .event-hr__hero {
@@ -54,13 +57,13 @@
 .event-hr__primaryBtn {
   height: 44px;
   padding: 0 22px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
+  border:  none;
+  border-radius:  12px;
+  cursor:  pointer;
+  font-weight:  600;
   font-size: 20px;
   color: #ffffff;
-  background: linear-gradient(180deg, #4a8f2e 0%, #3f7f27 100%);
+  background:  linear-gradient(180deg, #4a8f2e 0%, #3f7f27 100%);
   box-shadow: 0 10px 18px rgba(63, 127, 39, 0.22);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 
@@ -76,7 +79,8 @@
 
 .activities-page {
   width: 100%;
-  padding: 10px 6px 0;
+  padding:  10px 6px 0;
+  min-height: 50vh; // 🆕 THÊM DÒNG NÀY - Đảm bảo activities-page đủ cao
 }
 
 /* shared card look */
@@ -119,6 +123,7 @@
   flex-direction: column;
   gap: 8px;
   min-width: 200px;
+  
   label,
   .filter-label {
     font-size: 13px;
@@ -134,7 +139,7 @@
 .checkbox-row {
   display: flex;
   gap: 14px;
-  align-items: center;
+  align-items:  center;
   padding-top: 6px;
   flex-wrap: wrap;
 }
@@ -175,17 +180,17 @@
   gap: 10px;
   justify-content: flex-end;
 
-  @media (max-width: 1100px) {
+  @media (max-width:  1100px) {
     justify-content: flex-start;
   }
 }
 
 .search-button,
 .reset-button {
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 10px;
-  border: 1px solid transparent;
+  height:  40px;
+  padding:  0 16px;
+  border-radius:  10px;
+  border:  1px solid transparent;
   cursor: pointer;
   font-weight: 800;
   font-size: 14px;
@@ -214,15 +219,19 @@
   }
 }
 
+.activities-section {
+  min-height: 400px; // 🆕 THÊM DÒNG NÀY - Đảm bảo section đủ cao ngay cả khi empty
+}
+
 .activities-section__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 6px;
+  margin-bottom:  6px;
 }
 
-/* Table wrapper: keep existing table structure, just prettier container */
+/* Table wrapper:  keep existing table structure, just prettier container */
 .table-container {
   overflow-x: auto;
   border-radius: 12px;
@@ -288,11 +297,11 @@
   border: none;
   border-radius: 999px;
   background: #2f6fed;
-  color: #fff;
+  color:  #fff;
   font-size: 13px;
   font-weight: 900;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition:  transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
@@ -329,21 +338,25 @@
 .loading,
 .no-data {
   text-align: center;
-  padding: 22px;
+  padding: 80px 22px; // 🆕 TĂNG PADDING - Làm cho empty state cao hơn
   color: #64748b;
   font-size: 14px;
   background: #ffffff;
   border-radius: 12px;
   border: 1px dashed rgba(148, 163, 184, 0.7);
+  min-height: 300px; // 🆕 THÊM MIN-HEIGHT
+  display: flex; // 🆕 CENTER CONTENT
+  align-items: center;
+  justify-content: center;
 }
 
 .error-message {
   background: #fff1f2;
-  border: 1px solid #fecdd3;
+  border:  1px solid #fecdd3;
   color: #9f1239;
   padding: 12px 14px;
-  border-radius: 12px;
-  margin: 0 0 12px;
+  border-radius:  12px;
+  margin:  0 0 12px;
   font-weight: 700;
 }
 
@@ -426,6 +439,7 @@
     background: #f8fafc;
   }
 }
+
 // ========== STATUS BADGES ==========
 .status-cell {
   text-align: center;
@@ -435,54 +449,47 @@
 .status-badge {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius:  12px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 
-  // DRAFT - Nháp (Xám)
   &.status-draft {
     background-color: #f3f4f6;
     color: #6b7280;
     border: 1px solid #d1d5db;
   }
 
-  // OPEN_FOR_REGISTRATION - Đang mở đăng ký (Xanh lá)
   &.status-open {
     background-color: #d1fae5;
     color: #065f46;
     border: 1px solid #10b981;
   }
 
-  // REGISTRATION_CLOSED - Đã đóng đăng ký (Cam)
   &.status-closed {
     background-color: #fed7aa;
     color: #92400e;
     border: 1px solid #f59e0b;
   }
 
-  // ONGOING - Đang diễn ra (Xanh dương)
   &.status-ongoing {
     background-color: #dbeafe;
     color: #1e40af;
-    border: 1px solid #3b82f6;
+    border:  1px solid #3b82f6;
   }
 
-  // COMPLETED - Đã hoàn thành (Xanh lá đậm)
   &.status-completed {
     background-color: #d1fae5;
     color: #047857;
     border: 1px solid #059669;
   }
 
-  // CANCELLED - Đã hủy (Đỏ)
   &.status-cancelled {
     background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #ef4444;
+    color:  #991b1b;
+    border:  1px solid #ef4444;
   }
 
-  // Default
   &.status-default {
     background-color: #f9fafb;
     color: #374151;
