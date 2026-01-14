@@ -173,6 +173,8 @@ public enum ErrorCode {
 	BANK_NOT_SUPPORTED(7005,"Ngân hàng không hỗ trợ chuyển khoản", HttpStatus.BAD_REQUEST),
 	HOLIDAY_NOT_FOUND(40013,"Không tìm thấy ngày nghỉ lễ", HttpStatus.NOT_FOUND),
 	INSUFFICIENT_ALLOCATE_POINTS(40014,"Không đủ điểm phân bổ", HttpStatus.BAD_REQUEST),
+	NOTIFICATION_NOT_FOUND(40015,"Không tìm thấy thông báo", HttpStatus.NOT_FOUND),
+	READING_NOTIFICATION_FAILED(40016,"Đánh dấu thông báo đã đọc thất bại", HttpStatus.BAD_REQUEST),
 	INSUFFICIENT_CASUAL_LEAVE_BALANCE(40014,"Không đủ số ngày nghỉ phép", HttpStatus.BAD_REQUEST),
 	INVALID_INPUT(40014,"Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST);
 

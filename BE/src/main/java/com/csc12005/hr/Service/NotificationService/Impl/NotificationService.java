@@ -3,6 +3,8 @@ package com.csc12005.hr.Service.NotificationService.Impl;
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.Entity.Notification;
 import com.csc12005.hr.Enums.NotificationType;
+import com.csc12005.hr.Exception.AppException;
+import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Repository.NotificationRepository;
 import com.csc12005.hr.Service.NotificationService.INotificationService;
 import com.csc12005.hr.Service.WebSocketService.Impl.WebSocketService;
@@ -169,7 +171,7 @@ public class NotificationService implements INotificationService {
 	@Override
 	public void markAsRead(Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new RuntimeException("Notification not found"));
+				.orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 		notification.setIsRead(true);
 		notificationRepository.save(notification);
 	}

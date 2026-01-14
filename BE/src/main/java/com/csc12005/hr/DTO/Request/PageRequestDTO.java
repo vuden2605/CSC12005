@@ -21,7 +21,7 @@ public class PageRequestDTO {
 	@Builder.Default
 	private String sortBy = "id";
 	@Builder.Default
-	private Sort.Direction direction = Sort.Direction.ASC;
+	private Sort.Direction direction = Sort.Direction.DESC;
 	public Pageable buildPageable() {
 		return PageRequest.of(
 				page,
