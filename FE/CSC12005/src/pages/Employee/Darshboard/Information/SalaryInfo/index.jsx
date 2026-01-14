@@ -21,7 +21,7 @@ export const SalaryInfo = () => {
     accountName: "",
     branch: "",
     accountNumber: "",
-    logo: mbLogo,
+    logo: acbLogo,
   });
 
   const [salaryInfo, setSalaryInfo] = useState({

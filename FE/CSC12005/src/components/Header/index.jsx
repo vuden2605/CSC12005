@@ -30,7 +30,6 @@ export const Header = () => {
 
   const menuItems = {
     CEO: [
-      { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Quản lý nhân viên", path: "/hr/humans" },
       { label: "Quản lý Lương", path: "/hr/payroll" },
       { label: "Quản lý yêu cầu", path: "/manager/requests" },
