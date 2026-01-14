@@ -57,7 +57,7 @@ export const Activities = () => {
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
 
-      const data = await EmployeeService.getActivities(params);
+      const data = await EmployeeService.getActivitiesEMP(params);
 
       // Normalize payload so table can render nested shape from API
       const rawActivities = Array.isArray(data)

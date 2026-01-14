@@ -615,6 +615,8 @@ function EmployeeList() {
       {/* Table */}
       <div className="table">
         <div className="table-header">
+          <div>Mã nhân viên</div>
+
           <div>Tên nhân viên</div>
           <div>Phòng ban</div>
           <div>Vị trí</div>
@@ -625,6 +627,7 @@ function EmployeeList() {
         {employees.length > 0 ? (
           employees.map((emp) => (
             <div className="table-row" key={emp.id}>
+              <div>{emp.employeeCode}</div>
               <div>{emp.fullName}</div>
               <div>{emp.department?.departmentName || "Chưa có"}</div>
               <div>{emp.position?.positionName || "Chưa có"}</div>

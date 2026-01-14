@@ -1,3 +1,7 @@
+// ========== Không thay đổi phần JSX, chỉ update CSS ==========
+
+// File:  style.scss
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -77,10 +81,12 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
 .form-group.invalid input,
 .form-group.invalid select {
   border-color: #e74c3c;
 }
+
 .form-group .error {
   color: #e74c3c;
   font-size: 12px;
@@ -94,7 +100,6 @@
   margin-top: 4px;
   display: block;
 }
-/* === moved from index.jsx inline styles === */
 
 .modal-content-e {
   .modal-close-btn {
@@ -169,4 +174,489 @@
       padding: 16px;
     }
   }
+}
+
+// ========== STATUS BANNER ==========
+.activity-status-banner {
+  padding: 16px 24px;
+  text-align: center;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.status-badge-large {
+  display: inline-block;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.status-draft {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 2px solid #d1d5db;
+  }
+
+  &.status-open {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+  }
+
+  &.status-closed {
+    background-color: #fed7aa;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+  }
+
+  &.status-ongoing {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+  }
+
+  &.status-completed {
+    background-color: #d1fae5;
+    color: #047857;
+    border: 2px solid #059669;
+  }
+
+  &.status-cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+  }
+
+  &.status-default {
+    background-color: #f9fafb;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+  }
+}
+
+// ========== FORM ACTIONS ==========
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 24px;
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+
+    &.primary {
+      background-color: #3b82f6;
+      color: white;
+
+      &:hover {
+        background-color: #2563eb;
+      }
+    }
+
+    &.success {
+      background-color: #10b981;
+      color: white;
+
+      &:hover {
+        background-color: #059669;
+      }
+    }
+
+    &.danger {
+      background-color: #ef4444;
+      color: white;
+
+      &:hover {
+        background-color: #dc2626;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ========== DISABLED INPUTS ==========
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  border-color: #d1d5db !important;
+}
+
+// ========== IMPORT SECTION (NÚT IMPORT) ==========
+.import-section {
+  margin-left: auto; // Đẩy sang phải
+  padding: 0;
+  background: none;
+
+  .btn-import {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background-color: #2563eb;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ========== IMPORT MODAL (TĂNG CHIỀU CAO) ==========
+.modal-content-import {
+  background: white;
+  border-radius: 12px;
+  max-width: 700px; // ✅ Tăng từ 600px → 700px
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalSlideIn 0.3s ease-out;
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px; // ✅ Tăng padding
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(to bottom, #f9fafb, white);
+
+    h3 {
+      margin: 0;
+      font-size: 22px; // ✅ Tăng từ 20px → 22px
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 28px;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+      }
+
+      &:active {
+        background-color: #e5e7eb;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 32px 28px; // ✅ Tăng padding
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 20px 28px; // ✅ Tăng padding
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+
+    .btn {
+      padding: 12px 24px; // ✅ Tăng padding nút
+      border-radius: 6px;
+      font-size: 15px; // ✅ Tăng font size
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+
+      &.btn-light {
+        background-color: #f3f4f6;
+        color: #374151;
+
+        &:hover {
+          background-color: #e5e7eb;
+        }
+      }
+
+      &.btn-primary {
+        background-color: #3b82f6;
+        color: white;
+
+        &:hover {
+          background-color: #2563eb;
+        }
+
+        &:disabled {
+          opacity: 0.6; // ✅ Giảm opacity thay vì spinner
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// ========== FILE INPUT SECTION ==========
+.file-input-section {
+  margin: 24px 0; // ✅ Tăng margin
+
+  .file-label {
+    display: block;
+    margin-bottom: 10px; // ✅ Tăng từ 8px
+    font-weight: 500;
+    color: #374151;
+    font-size: 15px; // ✅ Tăng font size
+  }
+
+  input[type="file"] {
+    width: 95%;
+    padding: 16px; // ✅ Tăng padding
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f9fafb;
+    transition: all 0.2s;
+    font-size: 14px;
+
+    &:hover {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #f3f4f6;
+    }
+  }
+
+  .file-info {
+    margin-top: 12px;
+    padding: 12px 16px; // ✅ Tăng padding
+    background-color: #d1fae5;
+    border: 1px solid #6ee7b7;
+    border-radius: 6px;
+    color: #065f46;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .file-size {
+      color: #059669;
+      font-size: 13px;
+    }
+  }
+}
+
+// ========== IMPORT RESULT ==========
+.import-result {
+  margin-top: 24px; // ✅ Tăng margin
+  padding: 20px; // ✅ Tăng padding
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  h4 {
+    margin: 0 0 16px 0; // ✅ Tăng margin bottom
+    font-size: 17px; // ✅ Tăng font size
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .result-summary {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px; // ✅ Tăng margin
+
+    > div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px; // ✅ Tăng gap
+      padding: 16px 20px; // ✅ Tăng padding
+      border-radius: 8px;
+
+      .icon {
+        font-size: 28px; // ✅ Tăng icon size
+      }
+
+      span {
+        font-weight: 500;
+        font-size: 15px; // ✅ Tăng font size
+      }
+    }
+
+    .success-count {
+      background-color: #d1fae5;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+    }
+
+    .error-count {
+      background-color: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+  }
+
+  .error-details {
+    margin-top: 20px; // ✅ Tăng margin
+    padding: 16px; // ✅ Tăng padding
+    background-color: white;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    max-height: 250px; // ✅ Tăng từ 200px
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 8px; // ✅ Tăng scrollbar width
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f3f4f6;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+
+      &:hover {
+        background: #9ca3af;
+      }
+    }
+
+    h5 {
+      margin: 0 0 12px 0;
+      font-size: 15px; // ✅ Tăng font size
+      font-weight: 600;
+      color: #991b1b;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+
+      li {
+        margin-bottom: 10px; // ✅ Tăng margin
+        padding: 10px 12px; // ✅ Tăng padding
+        background-color: #fef2f2;
+        border-left: 3px solid #f87171;
+        border-radius: 4px;
+        font-size: 14px; // ✅ Tăng font size
+        color: #374151;
+
+        strong {
+          color: #991b1b;
+          font-weight: 600;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+// ========== RESPONSIVE (MOBILE) ==========
+@media (max-width: 768px) {
+  .modal-content-import {
+    max-width: 95%;
+    max-height: 90vh;
+
+    .modal-header {
+      padding: 16px 20px;
+
+      h3 {
+        font-size: 18px;
+      }
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+
+  .import-result {
+    .result-summary {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+
+  .file-input-section {
+    input[type="file"] {
+      font-size: 13px;
+      padding: 12px;
+    }
+  }
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

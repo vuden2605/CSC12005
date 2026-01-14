@@ -2,6 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { HRService } from "../../../services/HRService";
 import { useAlert } from "../../../context/AlertContext";
+import ConfirmModal from "../../ConfirmModal/ConfirmModal";
+// ========== STATUS MAPPING ==========
+const STATUS_MAP = {
+  DRAFT: { label: "Nháp", className: "status-draft" },
+  OPEN_FOR_REGISTRATION: { label: "Đang mở đăng ký", className: "status-open" },
+  REGISTRATION_CLOSED: { label: "Đã đóng đăng ký", className: "status-closed" },
+  ONGOING: { label: "Đang diễn ra", className: "status-ongoing" },
+  COMPLETED: { label: "Đã hoàn thành", className: "status-completed" },
+  CANCELLED: { label: "Đã hủy", className: "status-cancelled" },
+};
 
 export const ActivityUpdateModal = ({
   activity,
@@ -17,17 +27,40 @@ export const ActivityUpdateModal = ({
   const [participants, setParticipants] = useState([]);
   const [filters, setFilters] = useState({
     name: "",
-    status:  "",
+    status: "",
   });
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showOpenRegistrationConfirm, setShowOpenRegistrationConfirm] =
+    useState(false);
+  // ========== THÊM IMPORT STATES ==========
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importResult, setImportResult] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+  // ========== CHECK IF IS COMPLETED ==========
+  const isCompleted = activity.activityStatus === "COMPLETED";
+  // ========== CHECK IF IS DRAFT ==========
+  const isDraft = activity.activityStatus === "DRAFT";
+
+  // ========== GET STATUS DISPLAY ==========
+  const getStatusDisplay = (status) => {
+    const statusInfo = STATUS_MAP[status] || {
+      label: status || "N/A",
+      className: "status-default",
+    };
+    return statusInfo;
+  };
+
+  const statusInfo = getStatusDisplay(activity.activityStatus);
 
   const [formData, setFormData] = useState({
     // Required fields
     activityName: "",
     activityType: "",
     startDate: "",
-    endDate:  "",
+    endDate: "",
     startTime: "",
-    endTime:  "",
+    endTime: "",
     registrationDeadline: "",
     location: "",
     address: "",
@@ -38,7 +71,7 @@ export const ActivityUpdateModal = ({
     basePoints: "",
 
     // Optional fields
-    description:  "",
+    description: "",
     duration: "",
     minParticipants: "",
     isMandatory: false,
@@ -62,24 +95,24 @@ export const ActivityUpdateModal = ({
 
   const formatTimeForInput = (time) => {
     if (!time) return "";
-    return time.substring(0, 5); // HH:mm
+    return time.substring(0, 5);
   };
 
   const formatDateTimeForInput = (dateTime) => {
     if (!dateTime) return "";
-    return dateTime.substring(0, 16); // YYYY-MM-DDTHH:mm
+    return dateTime.substring(0, 16);
   };
 
   /* ================= EFFECT - Load Activity Data ================= */
   useEffect(() => {
     if (activity) {
       setFormData({
-        activityName: activity. activityName || "",
+        activityName: activity.activityName || "",
         activityType: activity.activityType || "",
         description: activity.description || "",
         startDate: formatDateForInput(activity.startDate),
         endDate: formatDateForInput(activity.endDate),
-        startTime: formatTimeForInput(activity. startTime),
+        startTime: formatTimeForInput(activity.startTime),
         endTime: formatTimeForInput(activity.endTime),
         registrationDeadline: formatDateTimeForInput(
           activity.registrationDeadline
@@ -88,15 +121,15 @@ export const ActivityUpdateModal = ({
         address: activity.address || "",
         organizer: activity.organizer || "",
         contactPhone: activity.contactPhone || "",
-        contactEmail:  activity.contactEmail || "",
+        contactEmail: activity.contactEmail || "",
         minParticipants: activity.minParticipants || "",
-        maxParticipants: activity. maxParticipants || "",
+        maxParticipants: activity.maxParticipants || "",
         isMandatory: activity.isMandatory || false,
         basePoints: activity.basePoints || "",
         firstPlaceBonus: activity.firstPlaceBonus || "",
-        secondPlaceBonus:  activity.secondPlaceBonus || "",
+        secondPlaceBonus: activity.secondPlaceBonus || "",
         thirdPlaceBonus: activity.thirdPlaceBonus || "",
-        notes:  activity.notes || "",
+        notes: activity.notes || "",
         duration: activity.duration || "",
 
         // Files
@@ -117,7 +150,7 @@ export const ActivityUpdateModal = ({
       formData.endTime
     ) {
       const start = new Date(`${formData.startDate}T${formData.startTime}:00`);
-      const end = new Date(`${formData.endDate}T${formData. endTime}:00`);
+      const end = new Date(`${formData.endDate}T${formData.endTime}:00`);
 
       if (end > start) {
         const durationInMinutes = Math.floor((end - start) / (1000 * 60));
@@ -126,11 +159,16 @@ export const ActivityUpdateModal = ({
         setFormData((prev) => ({ ...prev, duration: "" }));
       }
     }
-  }, [formData.startDate, formData.endDate, formData.startTime, formData.endTime]);
+  }, [
+    formData.startDate,
+    formData.endDate,
+    formData.startTime,
+    formData.endTime,
+  ]);
 
   /* ================= EFFECT - Fetch Participants ================= */
   useEffect(() => {
-    if (! activity?.id) return;
+    if (!activity?.id) return;
 
     const fetchParticipants = async () => {
       try {
@@ -165,7 +203,7 @@ export const ActivityUpdateModal = ({
 
   const resetFilters = () => {
     setFilters({
-      name:  "",
+      name: "",
       status: "",
     });
   };
@@ -176,7 +214,6 @@ export const ActivityUpdateModal = ({
   const validateForm = () => {
     const newErrors = {};
 
-    // Basic info
     if (!formData.activityName.trim()) {
       newErrors.activityName = "Tên hoạt động không được để trống";
     } else if (formData.activityName.trim().length < 5) {
@@ -191,7 +228,6 @@ export const ActivityUpdateModal = ({
       newErrors.description = "Mô tả không được quá 1000 ký tự";
     }
 
-    // Time & Location
     if (!formData.startDate) {
       newErrors.startDate = "Vui lòng chọn ngày bắt đầu";
     }
@@ -210,7 +246,7 @@ export const ActivityUpdateModal = ({
       newErrors.startTime = "Vui lòng chọn giờ bắt đầu";
     }
 
-    if (! formData.endTime) {
+    if (!formData.endTime) {
       newErrors.endTime = "Vui lòng chọn giờ kết thúc";
     }
 
@@ -224,25 +260,25 @@ export const ActivityUpdateModal = ({
       const end = new Date(`${formData.endDate}T${formData.endTime}: 00`);
 
       if (end <= start) {
-        newErrors. endTime = "Thời gian kết thúc ph��i sau thời gian bắt đầu";
+        newErrors.endTime = "Thời gian kết thúc phải sau thời gian bắt đầu";
       }
     }
 
-    if (!formData. registrationDeadline) {
+    if (!formData.registrationDeadline) {
       newErrors.registrationDeadline = "Vui lòng chọn hạn đăng ký";
     } else {
       const deadline = new Date(formData.registrationDeadline);
       const start = new Date(`${formData.startDate}T${formData.startTime}`);
 
       if (deadline >= start) {
-        newErrors. registrationDeadline =
+        newErrors.registrationDeadline =
           "Hạn đăng ký phải trước thời gian bắt đầu";
       }
     }
 
-    if (!formData.location. trim()) {
+    if (!formData.location.trim()) {
       newErrors.location = "Địa điểm không được để trống";
-    } else if (formData.location. trim().length < 3) {
+    } else if (formData.location.trim().length < 3) {
       newErrors.location = "Địa điểm phải có ít nhất 3 ký tự";
     }
 
@@ -252,34 +288,32 @@ export const ActivityUpdateModal = ({
       newErrors.address = "Địa chỉ phải có ít nhất 10 ký tự";
     }
 
-    // Contact info
-    if (!formData. organizer.trim()) {
+    if (!formData.organizer.trim()) {
       newErrors.organizer = "Người tổ chức không được để trống";
     }
 
     if (!formData.contactPhone.trim()) {
       newErrors.contactPhone = "Số điện thoại không được để trống";
-    } else if (! isPhoneVN(formData.contactPhone. trim())) {
+    } else if (!isPhoneVN(formData.contactPhone.trim())) {
       newErrors.contactPhone = "SĐT:  0xxxxxxxxx hoặc +84xxxxxxxxx";
     }
 
     if (!formData.contactEmail.trim()) {
       newErrors.contactEmail = "Email không được để trống";
-    } else if (! isEmail(formData.contactEmail.trim())) {
+    } else if (!isEmail(formData.contactEmail.trim())) {
       newErrors.contactEmail = "Email không hợp lệ";
     }
 
-    // Participants & Points
     if (formData.minParticipants !== "") {
       const min = Number(formData.minParticipants);
       if (isNaN(min) || min < 0) {
-        newErrors. minParticipants = "Số lượng tối thiểu phải >= 0";
-      } else if (! Number.isInteger(min)) {
+        newErrors.minParticipants = "Số lượng tối thiểu phải >= 0";
+      } else if (!Number.isInteger(min)) {
         newErrors.minParticipants = "Số lượng tối thiểu phải là số nguyên";
       }
     }
 
-    if (! formData.maxParticipants) {
+    if (!formData.maxParticipants) {
       newErrors.maxParticipants = "Số lượng tối đa không được trống";
     } else {
       const max = Number(formData.maxParticipants);
@@ -305,18 +339,17 @@ export const ActivityUpdateModal = ({
       const points = Number(formData.basePoints);
       if (isNaN(points) || points < 0) {
         newErrors.basePoints = "Điểm cơ bản phải >= 0";
-      } else if (! Number.isInteger(points)) {
+      } else if (!Number.isInteger(points)) {
         newErrors.basePoints = "Điểm cơ bản phải là số nguyên";
       }
     }
 
-    // Bonus points validation
     if (formData.firstPlaceBonus !== "") {
       const bonus = Number(formData.firstPlaceBonus);
       if (isNaN(bonus) || bonus < 0) {
         newErrors.firstPlaceBonus = "Điểm thưởng phải >= 0";
       } else if (!Number.isInteger(bonus)) {
-        newErrors. firstPlaceBonus = "Điểm thưởng phải là số nguyên";
+        newErrors.firstPlaceBonus = "Điểm thưởng phải là số nguyên";
       }
     }
 
@@ -343,19 +376,17 @@ export const ActivityUpdateModal = ({
       formData.secondPlaceBonus &&
       Number(formData.firstPlaceBonus) < Number(formData.secondPlaceBonus)
     ) {
-      newErrors.secondPlaceBonus =
-        "Điểm giải nhì không được lớn hơn giải nhất";
+      newErrors.secondPlaceBonus = "Điểm giải nhì không được lớn hơn giải nhất";
     }
 
     if (
       formData.secondPlaceBonus &&
       formData.thirdPlaceBonus &&
-      Number(formData. secondPlaceBonus) < Number(formData.thirdPlaceBonus)
+      Number(formData.secondPlaceBonus) < Number(formData.thirdPlaceBonus)
     ) {
       newErrors.thirdPlaceBonus = "Điểm giải ba không được lớn hơn giải nhì";
     }
 
-    // File validation (only if new file uploaded)
     if (formData.image && formData.image instanceof File) {
       const validImageTypes = [
         "image/jpeg",
@@ -363,9 +394,9 @@ export const ActivityUpdateModal = ({
         "image/png",
         "image/gif",
       ];
-      if (!validImageTypes.includes(formData.image. type)) {
-        newErrors. image = "Chỉ chấp nhận file ảnh (JPG, PNG, GIF)";
-      } else if (formData.image. size > 5 * 1024 * 1024) {
+      if (!validImageTypes.includes(formData.image.type)) {
+        newErrors.image = "Chỉ chấp nhận file ảnh (JPG, PNG, GIF)";
+      } else if (formData.image.size > 5 * 1024 * 1024) {
         newErrors.image = "Kích thước ảnh không được quá 5MB";
       }
     }
@@ -395,24 +426,24 @@ export const ActivityUpdateModal = ({
         activityName: formData.activityName.trim(),
         activityType: formData.activityType,
         startDate: formData.startDate,
-        endDate: formData. endDate,
-        startTime:  formData.startTime + ":00",
+        endDate: formData.endDate,
+        startTime: formData.startTime + ":00",
         endTime: formData.endTime + ":00",
-        registrationDeadline: formData. registrationDeadline + ":00",
-        location:  formData.location.trim(),
-        address: formData.address. trim(),
+        registrationDeadline: formData.registrationDeadline + ":00",
+        location: formData.location.trim(),
+        address: formData.address.trim(),
         organizer: formData.organizer.trim(),
         contactPhone: formData.contactPhone.trim(),
         contactEmail: formData.contactEmail.trim(),
         maxParticipants: Number(formData.maxParticipants),
         basePoints: Number(formData.basePoints),
         description: formData.description.trim() || null,
-        duration: formData.duration ?  Number(formData.duration) : null,
+        duration: formData.duration ? Number(formData.duration) : null,
         minParticipants: formData.minParticipants
           ? Number(formData.minParticipants)
           : null,
         isMandatory: formData.isMandatory,
-        firstPlaceBonus:  formData.firstPlaceBonus
+        firstPlaceBonus: formData.firstPlaceBonus
           ? Number(formData.firstPlaceBonus)
           : null,
         secondPlaceBonus: formData.secondPlaceBonus
@@ -422,8 +453,6 @@ export const ActivityUpdateModal = ({
           ? Number(formData.thirdPlaceBonus)
           : null,
         notes: formData.notes.trim() || null,
-
-        // Files - only if new file uploaded
         image: formData.image,
         attachment: formData.attachment,
       };
@@ -443,6 +472,93 @@ export const ActivityUpdateModal = ({
     }
   };
 
+  // ========== HANDLERS FOR STATUS CHANGE ==========
+  const handleCancelActivity = async () => {
+    try {
+      setLoading(true);
+      const result = await HRService.cancelDraftActivity(activity.id);
+
+      if (onUpdate) onUpdate(result);
+      onClose();
+      showAlert("success", "Hủy sự kiện thành công!");
+    } catch (error) {
+      console.error("Error cancelling activity:", error);
+      showAlert("error", error.message || "Hủy sự kiện thất bại");
+    } finally {
+      setLoading(false);
+      setShowCancelConfirm(false);
+    }
+  };
+
+  const handleOpenRegistration = async () => {
+    try {
+      setLoading(true);
+      const result = await HRService.openRegistration(activity.id);
+
+      if (onUpdate) onUpdate(result);
+      onClose();
+      showAlert("success", "Mở đăng ký thành công!");
+    } catch (error) {
+      console.error("Error opening registration:", error);
+      showAlert("error", error.message || "Mở đăng ký thất bại");
+    } finally {
+      setLoading(false);
+      setShowOpenRegistrationConfirm(false);
+    }
+  };
+  // ========== THÊM IMPORT HANDLERS ==========
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setImportFile(selectedFile);
+    setImportResult(null);
+  };
+
+  const handleImportResult = async () => {
+    if (!importFile) {
+      showAlert("warning", "Vui lòng chọn file để import");
+      return;
+    }
+
+    try {
+      setImportLoading(true);
+
+      const result = await HRService.importActivityResult(importFile);
+      setImportResult(result);
+
+      if (result.errorCount === 0) {
+        showAlert(
+          "success",
+          `Import thành công ${result.successCount} bản ghi! `
+        );
+
+        // Refresh participants list
+        const data = await HRService.GetParticipantsByActivity(
+          activity.id,
+          filters
+        );
+        setParticipants(data.content || []);
+
+        // Auto close after 2s
+        setTimeout(() => {
+          setShowImportModal(false);
+          setImportFile(null);
+          setImportResult(null);
+        }, 2000);
+      } else {
+        
+      }
+    } catch (error) {
+      console.error("Error importing:", error);
+      showAlert("error", error.message || "Import thất bại");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    window.open("/templates/activity-result-template.xlsx", "_blank");
+  };
+  console.log("importResult:", importResult);
   const invalid = (field) => (errors[field] ? "invalid" : "");
 
   /* ================= RENDER ================= */
@@ -451,13 +567,23 @@ export const ActivityUpdateModal = ({
       <div className="modal-content-e" onClick={(e) => e.stopPropagation()}>
         {/* ========== MODAL HEADER ========== */}
         <div className="modal-header-e">
-          <h3>Cập nhật hoạt động</h3>
+          <h3>Chi tiết hoạt động</h3>
           <button className="btn-close-e" onClick={onClose} type="button">
             ×
           </button>
         </div>
 
-        <form className="employee-form" onSubmit={handleSubmit}>
+        {/* ========== HIỂN THỊ STATUS ========== */}
+        <div className="activity-status-banner">
+          <span className={`status-badge-large ${statusInfo.className}`}>
+            {statusInfo.label}
+          </span>
+        </div>
+
+        <form
+          className="employee-form"
+          onSubmit={isDraft ? handleSubmit : (e) => e.preventDefault()}
+        >
           {/* ===== THÔNG TIN CƠ BẢN ===== */}
           <fieldset>
             <legend>Thông tin cơ bản</legend>
@@ -472,6 +598,7 @@ export const ActivityUpdateModal = ({
                   value={formData.activityName}
                   onChange={handleChange("activityName")}
                   placeholder="Nhập tên hoạt động"
+                  disabled={!isDraft}
                 />
                 {errors.activityName && (
                   <small className="error">{errors.activityName}</small>
@@ -485,6 +612,7 @@ export const ActivityUpdateModal = ({
                 <select
                   value={formData.activityType}
                   onChange={handleChange("activityType")}
+                  disabled={!isDraft}
                 >
                   <option value="">-- Chọn loại --</option>
                   <option value="TRAINING">Đào tạo</option>
@@ -509,8 +637,9 @@ export const ActivityUpdateModal = ({
                   value={formData.description}
                   onChange={handleChange("description")}
                   placeholder="Mô tả về hoạt động"
+                  disabled={!isDraft}
                 />
-                {errors. description && (
+                {errors.description && (
                   <small className="error">{errors.description}</small>
                 )}
               </div>
@@ -530,6 +659,7 @@ export const ActivityUpdateModal = ({
                   type="date"
                   value={formData.startDate}
                   onChange={handleChange("startDate")}
+                  disabled={!isDraft}
                 />
                 {errors.startDate && (
                   <small className="error">{errors.startDate}</small>
@@ -544,6 +674,7 @@ export const ActivityUpdateModal = ({
                   type="date"
                   value={formData.endDate}
                   onChange={handleChange("endDate")}
+                  disabled={!isDraft}
                 />
                 {errors.endDate && (
                   <small className="error">{errors.endDate}</small>
@@ -560,6 +691,7 @@ export const ActivityUpdateModal = ({
                   type="time"
                   value={formData.startTime}
                   onChange={handleChange("startTime")}
+                  disabled={!isDraft}
                 />
                 {errors.startTime && (
                   <small className="error">{errors.startTime}</small>
@@ -572,8 +704,9 @@ export const ActivityUpdateModal = ({
                 </label>
                 <input
                   type="time"
-                  value={formData. endTime}
+                  value={formData.endTime}
                   onChange={handleChange("endTime")}
+                  disabled={!isDraft}
                 />
                 {errors.endTime && (
                   <small className="error">{errors.endTime}</small>
@@ -590,11 +723,10 @@ export const ActivityUpdateModal = ({
                   type="datetime-local"
                   value={formData.registrationDeadline}
                   onChange={handleChange("registrationDeadline")}
+                  disabled={!isDraft}
                 />
-                {errors. registrationDeadline && (
-                  <small className="error">
-                    {errors.registrationDeadline}
-                  </small>
+                {errors.registrationDeadline && (
+                  <small className="error">{errors.registrationDeadline}</small>
                 )}
               </div>
             </div>
@@ -609,8 +741,9 @@ export const ActivityUpdateModal = ({
                   value={formData.location}
                   onChange={handleChange("location")}
                   placeholder="VD: Phòng họp A"
+                  disabled={!isDraft}
                 />
-                {errors. location && (
+                {errors.location && (
                   <small className="error">{errors.location}</small>
                 )}
               </div>
@@ -624,6 +757,7 @@ export const ActivityUpdateModal = ({
                   value={formData.address}
                   onChange={handleChange("address")}
                   placeholder="Địa chỉ cụ thể"
+                  disabled={!isDraft}
                 />
                 {errors.address && (
                   <small className="error">{errors.address}</small>
@@ -646,6 +780,7 @@ export const ActivityUpdateModal = ({
                   value={formData.organizer}
                   onChange={handleChange("organizer")}
                   placeholder="Tên người tổ chức"
+                  disabled={!isDraft}
                 />
                 {errors.organizer && (
                   <small className="error">{errors.organizer}</small>
@@ -661,6 +796,7 @@ export const ActivityUpdateModal = ({
                   value={formData.contactPhone}
                   onChange={handleChange("contactPhone")}
                   placeholder="0xxxxxxxxx"
+                  disabled={!isDraft}
                 />
                 {errors.contactPhone && (
                   <small className="error">{errors.contactPhone}</small>
@@ -678,6 +814,7 @@ export const ActivityUpdateModal = ({
                   value={formData.contactEmail}
                   onChange={handleChange("contactEmail")}
                   placeholder="email@example.com"
+                  disabled={!isDraft}
                 />
                 {errors.contactEmail && (
                   <small className="error">{errors.contactEmail}</small>
@@ -699,8 +836,9 @@ export const ActivityUpdateModal = ({
                   value={formData.minParticipants}
                   onChange={handleChange("minParticipants")}
                   placeholder="Tối thiểu"
+                  disabled={!isDraft}
                 />
-                {errors. minParticipants && (
+                {errors.minParticipants && (
                   <small className="error">{errors.minParticipants}</small>
                 )}
               </div>
@@ -715,6 +853,7 @@ export const ActivityUpdateModal = ({
                   value={formData.maxParticipants}
                   onChange={handleChange("maxParticipants")}
                   placeholder="Tối đa"
+                  disabled={!isDraft}
                 />
                 {errors.maxParticipants && (
                   <small className="error">{errors.maxParticipants}</small>
@@ -727,8 +866,9 @@ export const ActivityUpdateModal = ({
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData. isMandatory}
+                    checked={formData.isMandatory}
                     onChange={handleChange("isMandatory")}
+                    disabled={!isDraft}
                   />
                   <span style={{ marginLeft: "8px" }}>Bắt buộc tham gia</span>
                 </label>
@@ -746,6 +886,7 @@ export const ActivityUpdateModal = ({
                   value={formData.basePoints}
                   onChange={handleChange("basePoints")}
                   placeholder="Điểm cho người tham gia"
+                  disabled={!isDraft}
                 />
                 {errors.basePoints && (
                   <small className="error">{errors.basePoints}</small>
@@ -760,9 +901,10 @@ export const ActivityUpdateModal = ({
                   value={formData.firstPlaceBonus}
                   onChange={handleChange("firstPlaceBonus")}
                   placeholder="Điểm thưởng (nếu có)"
+                  disabled={!isDraft}
                 />
                 {errors.firstPlaceBonus && (
-                  <small className="error">{errors. firstPlaceBonus}</small>
+                  <small className="error">{errors.firstPlaceBonus}</small>
                 )}
               </div>
             </div>
@@ -775,9 +917,10 @@ export const ActivityUpdateModal = ({
                   min="0"
                   value={formData.secondPlaceBonus}
                   onChange={handleChange("secondPlaceBonus")}
+                  disabled={!isDraft}
                 />
                 {errors.secondPlaceBonus && (
-                  <small className="error">{errors. secondPlaceBonus}</small>
+                  <small className="error">{errors.secondPlaceBonus}</small>
                 )}
               </div>
 
@@ -788,6 +931,7 @@ export const ActivityUpdateModal = ({
                   min="0"
                   value={formData.thirdPlaceBonus}
                   onChange={handleChange("thirdPlaceBonus")}
+                  disabled={!isDraft}
                 />
                 {errors.thirdPlaceBonus && (
                   <small className="error">{errors.thirdPlaceBonus}</small>
@@ -804,13 +948,12 @@ export const ActivityUpdateModal = ({
               <div className={`form-group ${invalid("image")}`}>
                 <label>Ảnh hoạt động</label>
 
-                {/* Hiển thị ảnh hiện tại */}
-                {formData.currentImageUrl && ! formData.image && (
+                {formData.currentImageUrl && !formData.image && (
                   <div style={{ marginBottom: "8px" }}>
                     <small style={{ color: "#666" }}>
-                      Ảnh hiện tại: 
+                      Ảnh hiện tại:
                       <a
-                        href={formData. currentImageUrl}
+                        href={formData.currentImageUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ marginLeft: "4px", color: "#2563eb" }}
@@ -825,11 +968,12 @@ export const ActivityUpdateModal = ({
                   type="file"
                   accept="image/*"
                   onChange={handleChange("image")}
+                  disabled={!isDraft}
                 />
 
                 {formData.image && (
                   <small style={{ color: "#28a745" }}>
-                    ✓ Ảnh mới: {formData.image. name}
+                    ✓ Ảnh mới: {formData.image.name}
                   </small>
                 )}
 
@@ -837,20 +981,25 @@ export const ActivityUpdateModal = ({
                   <small className="error">{errors.image}</small>
                 )}
 
-                <small
-                  style={{ color: "#666", display: "block", marginTop: "4px" }}
-                >
-                  {formData.image
-                    ? "Ảnh mới sẽ thay thế ảnh cũ"
-                    : "Để trống nếu không muốn thay đổi"}
-                </small>
+                {isDraft && (
+                  <small
+                    style={{
+                      color: "#666",
+                      display: "block",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {formData.image
+                      ? "Ảnh mới sẽ thay thế ảnh cũ"
+                      : "Để trống nếu không muốn thay đổi"}
+                  </small>
+                )}
               </div>
 
               <div className={`form-group ${invalid("attachment")}`}>
                 <label>Tài liệu đính kèm</label>
 
-                {/* Hiển thị file hiện tại */}
-                {formData.currentAttachmentUrl && !formData. attachment && (
+                {formData.currentAttachmentUrl && !formData.attachment && (
                   <div style={{ marginBottom: "8px" }}>
                     <small style={{ color: "#666" }}>
                       File hiện tại:
@@ -870,6 +1019,7 @@ export const ActivityUpdateModal = ({
                   type="file"
                   onChange={handleChange("attachment")}
                   accept=".pdf,.doc,.docx,. xls,.xlsx"
+                  disabled={!isDraft}
                 />
 
                 {formData.attachment && (
@@ -879,16 +1029,22 @@ export const ActivityUpdateModal = ({
                 )}
 
                 {errors.attachment && (
-                  <small className="error">{errors. attachment}</small>
+                  <small className="error">{errors.attachment}</small>
                 )}
 
-                <small
-                  style={{ color: "#666", display: "block", marginTop: "4px" }}
-                >
-                  {formData.attachment
-                    ? "File mới sẽ thay thế file cũ"
-                    : "Để trống nếu không muốn thay đổi"}
-                </small>
+                {isDraft && (
+                  <small
+                    style={{
+                      color: "#666",
+                      display: "block",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {formData.attachment
+                      ? "File mới sẽ thay thế file cũ"
+                      : "Để trống nếu không muốn thay đổi"}
+                  </small>
+                )}
               </div>
             </div>
 
@@ -900,31 +1056,43 @@ export const ActivityUpdateModal = ({
                   value={formData.notes}
                   onChange={handleChange("notes")}
                   placeholder="Ghi chú thêm về hoạt động"
+                  disabled={!isDraft}
                 />
               </div>
             </div>
           </fieldset>
 
-          {/* ===== ACTION ===== */}
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn light"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Hủy
-            </button>
-            <button type="submit" className="btn primary" disabled={loading}>
-              {loading ? "Đang cập nhật..." : "Lưu chỉnh sửa"}
-            </button>
-          </div>
+          {/* ===== ACTION (CHỈ HIỆN KHI DRAFT) ===== */}
+          {isDraft && (
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn danger"
+                onClick={handleCancelActivity}
+                disabled={loading}
+              >
+                {loading ? "Đang xử lý..." : "Hủy sự kiện"}
+              </button>
+
+              <button type="submit" className="btn primary" disabled={loading}>
+                {loading ? "Đang cập nhật..." : "Chỉnh sửa"}
+              </button>
+
+              <button
+                type="button"
+                className="btn success"
+                onClick={handleOpenRegistration}
+                disabled={loading}
+              >
+                {loading ? "Đang xử lý..." : "Mở đăng ký"}
+              </button>
+            </div>
+          )}
 
           {/* ===== DANH SÁCH THAM GIA ===== */}
           <fieldset>
             <legend>Danh sách nhân viên tham gia</legend>
 
-            {/* Filter */}
             <div className="participants-filter">
               <input
                 className="filter-input"
@@ -954,9 +1122,19 @@ export const ActivityUpdateModal = ({
               >
                 Đặt lại
               </button>
+              {isCompleted && (
+                <div className="import-section">
+                  <button
+                    type="button"
+                    className="btn btn-import"
+                    onClick={() => setShowImportModal(true)}
+                  >
+                    Import kết quả
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Table */}
             <table className="participants-table">
               <thead>
                 <tr>
@@ -973,7 +1151,7 @@ export const ActivityUpdateModal = ({
                     </td>
                   </tr>
                 ) : (
-                  participants?. map((p) => (
+                  participants?.map((p) => (
                     <tr key={p.id}>
                       <td>{p.employeeName}</td>
                       <td>{p.activityRank}</td>
@@ -986,6 +1164,102 @@ export const ActivityUpdateModal = ({
           </fieldset>
         </form>
       </div>
+
+      {showImportModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowImportModal(false)}
+        >
+          <div
+            className="modal-content-import"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3>Import kết quả hoạt động</h3>
+              <button
+                className="btn-close"
+                onClick={() => setShowImportModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {/* File Input */}
+              <div className="file-input-section">
+                <label htmlFor="file-upload" className="file-label">
+                  Chọn file Excel (. xls, .xlsx)
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept=".xls,.xlsx"
+                  onChange={handleFileChange}
+                  disabled={importLoading}
+                />
+
+                {importFile && (
+                  <div className="file-info">
+                    <span>✓ {importFile.name}</span>
+                    <span className="file-size">
+                      ({(importFile.size / 1024).toFixed(2)} KB)
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Import Result */}
+              {importResult && (
+                <div className="import-result">
+                  <h4>Kết quả import:</h4>
+                  <div className="result-summary">
+                    <div className="success-count">
+                      <span>Thành công: {importResult.successRow || 0}</span>
+                    </div>
+                    <div className="error-count">
+                      <span>Thất bại: {importResult.errorRow || 0}</span>
+                    </div>
+                  </div>
+
+                  {/* Error Details */}
+                  {importResult.importErrors &&
+                    importResult.importErrors.length > 0 && (
+                      <div className="error-details">
+                        <h5>Chi tiết lỗi:</h5>
+                        <ul>
+                          {importResult.importErrors.map((error, index) => (
+                            <li key={index}>
+                              {error.message}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={() => setShowImportModal(false)}
+                disabled={importLoading}
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleImportResult}
+                disabled={!importFile || importLoading}
+              >
+                {importLoading ? "Đang import..." : "Import"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

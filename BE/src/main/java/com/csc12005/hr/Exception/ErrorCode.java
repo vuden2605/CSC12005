@@ -19,6 +19,7 @@ public enum ErrorCode {
 	//Position
 	POSITION_NOT_FOUND(3001, "Không tìm thấy vị trí", HttpStatus.NOT_FOUND),
 	//Validation
+
 	VALIDATION_FAILED(4001, "Xác thực thất bại", HttpStatus.BAD_REQUEST),
 	REQUIRED_FULL_NAME(4002, "Họ và tên là bắt buộc", HttpStatus.BAD_REQUEST),
 	REQUIRED_EMAIL(4003, "Email là bắt buộc", HttpStatus.BAD_REQUEST),
