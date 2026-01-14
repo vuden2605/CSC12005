@@ -36,11 +36,18 @@ public class MonthlyAttendanceSummaryService implements IMonthlyAttendanceSummar
 
 	@Override
 	@Transactional
-	public void createMonthlyAttendanceSummary(int year, int month) {
+	public void createMonthlyAttendanceSummary(int month, int year) {
 		List<Employee> employees = employeeRepository.findAll();
 		List<MonthlyAttendanceSummary> summaries = new ArrayList<>();
 		for(Employee employee : employees) {
 			if("ADMIN".equals(employee.getEmployeeCode()) || "CEO".equals(employee.getEmployeeCode())) {
+				continue;
+			}
+			if(monthlyAttendanceSummaryRepository.existsByEmployeeIdAndMonthAndYear(
+							employee.getId(),
+							month,
+							year
+					)) {
 				continue;
 			}
 			Long employeeId = employee.getId();

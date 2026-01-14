@@ -1,6 +1,7 @@
 package com.csc12005.hr.Controller;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.PointHistoryFilterRequest;
 import com.csc12005.hr.DTO.Request.PointsMonthlyCreationRequest;
 import com.csc12005.hr.DTO.Request.RewardPointRequest;
 import com.csc12005.hr.DTO.Response.ApiResponse;
@@ -30,23 +31,34 @@ public class PointHistoryController {
 				.message("Monthly candidates retrieved successfully")
 				.build();
 	}
-	@PostMapping("/monthly-grant")
-	public ApiResponse<Void> givePointsToMonthlyCandidates(
-			@RequestBody PointsMonthlyCreationRequest request) {
-
-		pointHistoryService.givePointToMonthlyCandidates(request.getCandidateIds());
-
-		return ApiResponse.<Void>builder()
-				.message("Points given to monthly candidates successfully")
-				.build();
-	}
+//	@PostMapping("/monthly-grant")
+//	public ApiResponse<Void> givePointsToMonthlyCandidates(
+//			@RequestBody PointsMonthlyCreationRequest request) {
+//
+//		pointHistoryService.givePointToMonthlyCandidates(request.getCandidateIds());
+//
+//		return ApiResponse.<Void>builder()
+//				.message("Points given to monthly candidates successfully")
+//				.build();
+//	}
 	@GetMapping("/me")
-	public ApiResponse<List<PointHistoryResponse>> getMyPointHistory(PageRequestDTO pageRequestDTO) {
+	public ApiResponse<List<PointHistoryResponse>> getMyPointHistory(PageRequestDTO pageRequestDTO, PointHistoryFilterRequest filterRequest) {
 		Long userId = securityUtils.getCurrentUserId();
-		List<PointHistoryResponse> pointHistories = pointHistoryService.myPointsHistory(userId, pageRequestDTO);
+		List<PointHistoryResponse> pointHistories = pointHistoryService.getPointHistoriesByEmployee(userId, filterRequest, pageRequestDTO);
 		return ApiResponse.<List<PointHistoryResponse>>builder()
 				.data(pointHistories)
 				.message("Point history retrieved successfully")
+				.build();
+	}
+	@GetMapping("/employee/{employeeId}")
+	public ApiResponse<List<PointHistoryResponse>> getEmployeePointHistory(
+			@PathVariable Long employeeId,
+			PageRequestDTO pageRequestDTO,
+			PointHistoryFilterRequest filterRequest) {
+		List<PointHistoryResponse> pointHistories = pointHistoryService.getPointHistoriesByEmployee(employeeId, filterRequest, pageRequestDTO);
+		return ApiResponse.<List<PointHistoryResponse>>builder()
+				.data(pointHistories)
+				.message("Employee point history retrieved successfully")
 				.build();
 	}
 	@GetMapping("/me/total-received/month")

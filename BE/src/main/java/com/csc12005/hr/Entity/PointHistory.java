@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "point_histories")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class PointHistory {
 
 	@Id

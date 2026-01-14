@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Notification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

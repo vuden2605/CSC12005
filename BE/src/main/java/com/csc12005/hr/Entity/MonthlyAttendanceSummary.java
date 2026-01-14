@@ -2,10 +2,7 @@ package com.csc12005.hr.Entity;
 
 import com.csc12005.hr.Enums.AttendanceStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -20,10 +17,11 @@ import java.util.Locale;
 		@Index(name = "idx_employee_year_month", columnList = "employee_id, year, month")
 	}
 )
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class MonthlyAttendanceSummary {
 	@Id
 	@GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)

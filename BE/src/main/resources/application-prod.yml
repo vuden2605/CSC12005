@@ -40,6 +40,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  task:
+    scheduling:
+      pool:
+        size: 5
 
 cache:
   expires:

@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface MonthlyAttendanceSummaryRepository extends JpaRepository<MonthlyAttendanceSummary, Long> {
 	Optional<MonthlyAttendanceSummary> findByEmployeeIdAndMonthAndYear(Long employeeId, Integer month, Integer year);
+	boolean existsByEmployeeIdAndMonthAndYear(Long employeeId, Integer month, Integer year);
 }
