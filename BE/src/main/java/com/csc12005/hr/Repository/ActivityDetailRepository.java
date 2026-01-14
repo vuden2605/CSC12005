@@ -53,5 +53,6 @@ public interface ActivityDetailRepository extends JpaRepository<ActivityDetail, 
 	boolean existsByActivity_IdAndEmployee_Id(Long activityId, Long employeeId);
 	Optional<ActivityDetail> findByActivity_IdAndEmployee_EmployeeCode(Long activityId, String EmployeeCode);
     void deleteByActivity_IdAndEmployee_Id(Long activityId, Long employeeId);
+    void deleteAllByActivity_Id(Long activityId);
 
 }

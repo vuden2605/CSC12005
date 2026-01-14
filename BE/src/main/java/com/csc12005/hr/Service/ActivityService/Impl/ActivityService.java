@@ -182,13 +182,15 @@ public class ActivityService implements IActivityService {
                 .orElseThrow(() -> new AppException(ErrorCode. ACTIVITY_NOT_FOUND));
 
         // Kiểm tra trạng thái hiện tại
-        if (activity.getActivityStatus() != ActivityStatus.DRAFT) {
-            throw new AppException(ErrorCode.ACTIVITY_NOT_DRAFT);
+        if (activity.getActivityStatus() != ActivityStatus.OPEN_FOR_REGISTRATION) {
+            throw new AppException(ErrorCode.ACTIVITY_NOT_OPEN);
         }
 
         // Cập nhật trạng thái
         activity.setActivityStatus(ActivityStatus.CANCELLED);
         activity.setUpdatedAt(LocalDateTime.now());
+        // xoá tất cả đăng ký tham gia hoạt động
+        activityDetailRepository.deleteAllByActivity_Id(activityId);
 
         Activity savedActivity = activityRepository.save(activity);
 

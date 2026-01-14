@@ -27,7 +27,6 @@ public class TimeSheetController {
 	@PostMapping(
 			value = "/timesheets/import",
 			consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@PreAuthorize("hasRole('ADMIN')")
 	public ApiResponse<ImportResult> importTimeSheet(@ModelAttribute TimeSheetCreationRequest request) throws IOException {
 		return ApiResponse.<ImportResult>builder()
 				.message("Time sheet imported successfully")
