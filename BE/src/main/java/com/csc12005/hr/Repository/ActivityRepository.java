@@ -137,4 +137,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+	@Query("""
+        SELECT a FROM Activity a
+        WHERE a.isActive = true
+          AND a.activityStatus <> 'COMPLETED'
+    """)
+	List<Activity> findActivitiesNeedStatusUpdate();
 }
