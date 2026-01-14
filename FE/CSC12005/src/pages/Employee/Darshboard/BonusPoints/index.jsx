@@ -2,16 +2,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./style.scss";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import PointExchangeCreateModal from "../../../../components/modals/PointExchangeCreateModal";
+import { Pagination } from "../../../../components/Pagination";
 
 export const BonusPoints = () => {
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sort, setSort] = useState({ sortBy: "createdAt", direction: "DESC" });
+  const [pagination, setPagination] = useState({ page: 0, size: 10, totalPages: 0, totalElements: 0 });
   const [activeTab, setActiveTab] = useState("history");
   const [exchanges, setExchanges] = useState([]);
   const [loadingEx, setLoadingEx] = useState(false);
   const [errorEx, setErrorEx] = useState("");
+  const [exPagination, setExPagination] = useState({ page: 0, size: 10, totalPages: 0, totalElements: 0 });
   // Lọc trạng thái và ngày
   const [filterStatus, setFilterStatus] = useState("");
   const [filterStart, setFilterStart] = useState("");
@@ -63,28 +66,45 @@ export const BonusPoints = () => {
         setLoading(true);
         setError("");
         const data = await EmployeeService.getMyPointHistories({
-          page: 0,
-          size: 200,
-          sortBy: "createdAt",
-          direction: "DESC",
+          page: pagination.page,
+          size: pagination.size,
+          sortBy: sort.sortBy,
+          direction: sort.direction,
         });
-        const content = Array.isArray(data?.content)
-          ? data.content
-          : Array.isArray(data?.data)
-            ? data.data
+
+        // Chuẩn hóa dữ liệu trả về theo nhiều khả năng
+        const pageData = data && typeof data === 'object' ? data : {};
+        const content = Array.isArray(pageData.content)
+          ? pageData.content
+          : Array.isArray(pageData.data)
+            ? pageData.data
             : Array.isArray(data)
               ? data
               : [];
+
+        const totalPages = Number(pageData.totalPages ?? 0);
+        const totalElements = Number(pageData.totalElements ?? content.length);
+        const size = Number(pageData.size ?? pagination.size);
+        const number = Number(pageData.number ?? pagination.page);
+
         setHistories(content);
+        setPagination(prev => ({
+          ...prev,
+          page: number,
+          size,
+          totalPages,
+          totalElements,
+        }));
       } catch (err) {
         setError(err.message || "Không thể tải lịch sử điểm");
         setHistories([]);
+        setPagination(prev => ({ ...prev, totalPages: 0, totalElements: 0 }));
       } finally {
         setLoading(false);
       }
     };
     fetchHistories();
-  }, []);
+  }, [pagination.page, pagination.size, sort.sortBy, sort.direction]);
 
   // Fetch totals (current points, received month, received year)
   useEffect(() => {
@@ -122,8 +142,8 @@ export const BonusPoints = () => {
         setLoadingEx(true);
         setErrorEx("");
         const params = {
-          page: 0,
-          size: 100,
+          page: exPagination.page,
+          size: exPagination.size,
           sortBy: "requestedAt",
           direction: "DESC",
         };
@@ -139,23 +159,38 @@ export const BonusPoints = () => {
         if (filterStart) params.startDate = toIsoDateTime(filterStart, false);
         if (filterEnd) params.endDate = toIsoDateTime(filterEnd, true);
         const data = await EmployeeService.getMyPointExchangeRequests(params);
-        const content = Array.isArray(data?.content)
-          ? data.content
-          : Array.isArray(data?.data)
-            ? data.data
+        const pageData = data && typeof data === 'object' ? data : {};
+        const content = Array.isArray(pageData.content)
+          ? pageData.content
+          : Array.isArray(pageData.data)
+            ? pageData.data
             : Array.isArray(data)
               ? data
               : [];
+        const totalPages = Number(pageData.totalPages ?? 0);
+        const totalElements = Number(pageData.totalElements ?? content.length);
+        const size = Number(pageData.size ?? exPagination.size);
+        const number = Number(pageData.number ?? exPagination.page);
         setExchanges(content);
+        setExPagination(prev => ({ ...prev, page: number, size, totalPages, totalElements }));
       } catch (err) {
         setErrorEx(err.message || "Không thể tải yêu cầu đổi điểm");
         setExchanges([]);
+        setExPagination(prev => ({ ...prev, totalPages: 0, totalElements: 0 }));
       } finally {
         setLoadingEx(false);
       }
     };
     fetchExchanges();
-  }, [filterStatus, filterStart, filterEnd, reloadExKey]);
+  }, [filterStatus, filterStart, filterEnd, reloadExKey, exPagination.page, exPagination.size]);
+
+  const handleExchangePageChange = (page) => {
+    setExPagination(prev => ({ ...prev, page }));
+  };
+
+  const handleExchangeSizeChange = (size) => {
+    setExPagination(prev => ({ ...prev, size, page: 0 }));
+  };
 
   const toggleSort = (column) => {
     setSort((prev) => {
@@ -207,25 +242,15 @@ export const BonusPoints = () => {
     return { current, thisMonth, thisYear };
   }, [histories]);
 
-  const sortedHistories = useMemo(() => {
-    if (!histories.length) return [];
-    const copy = [...histories];
+  const sortedHistories = histories; // dữ liệu đã được sort từ server
 
-    copy.sort((a, b) => {
-      const dir = sort.direction === "ASC" ? 1 : -1;
+  const handleHistoryPageChange = (page) => {
+    setPagination(prev => ({ ...prev, page }));
+  };
 
-      if (sort.sortBy === "pointChange") {
-        return ((Number(a.pointChange) || 0) - (Number(b.pointChange) || 0)) * dir;
-      }
-
-      // default createdAt
-      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return (da - db) * dir;
-    });
-
-    return copy;
-  }, [histories, sort]);
+  const handleHistorySizeChange = (size) => {
+    setPagination(prev => ({ ...prev, size, page: 0 }));
+  };
 
   return (
     <div className="bonus-points-section">
@@ -316,6 +341,17 @@ export const BonusPoints = () => {
                       )}
                     </tbody>
                   </table>
+                )}
+                {!loading && !error && (
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    pageSize={pagination.size}
+                    totalElements={pagination.totalElements}
+                    onPageChange={handleHistoryPageChange}
+                    onPageSizeChange={handleHistorySizeChange}
+                    loading={loading}
+                  />
                 )}
               </div>
             </div>
@@ -408,6 +444,17 @@ export const BonusPoints = () => {
                       )}
                     </tbody>
                   </table>
+                )}
+                {!loadingEx && !errorEx && (
+                  <Pagination
+                    currentPage={exPagination.page}
+                    totalPages={exPagination.totalPages}
+                    pageSize={exPagination.size}
+                    totalElements={exPagination.totalElements}
+                    onPageChange={handleExchangePageChange}
+                    onPageSizeChange={handleExchangeSizeChange}
+                    loading={loadingEx}
+                  />
                 )}
               </div>
             </div>

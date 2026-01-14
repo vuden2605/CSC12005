@@ -400,18 +400,7 @@ export const HRPayRoll = () => {
         <div style={{ display: "flex", gap: 12 }}>
           <button
             className="payroll-button"
-            onClick={handleCreatePayroll}
-            disabled={hasPrevMonthPayroll || checkingPrevMonthPayroll}
-          >
-            {hasPrevMonthPayroll
-              ? `Đã xuất bảng lương tháng ${previousMonth}/${previousYear}`
-              : checkingPrevMonthPayroll
-              ? "Đang kiểm tra bảng lương..."
-              : `Xuất bảng lương tháng trước (${previousMonth}/${previousYear})`}
-          </button>
-          <button
-            className="payroll-button"
-            style={{ background: "#10b981" }}
+            style={{ background: "#10b981" , width: '100px', height: '50px'}}
             onClick={handleExportExcel}
           >
             Xuất Excel
