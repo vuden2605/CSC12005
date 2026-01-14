@@ -233,5 +233,35 @@ export const ManagerService = {
                 "Error rejecting requests";
             throw new Error(errMsg);
         }
+    },
+    // Fetch point history for a specific employee
+    // Supports pagination and optional filters: type, year, month
+    getEmployeePointHistories: async (employeeId, pagination = {}, filters = {}) => {
+        try {
+            const params = {
+                page: pagination.page ?? 0,
+                size: pagination.size ?? 10,
+                sortBy: pagination.sortBy ?? "createdAt",
+                direction: pagination.direction ?? "ASC",
+                ...(filters.type && { type: filters.type }),
+                ...(filters.year != null && { year: filters.year }),
+                ...(filters.month != null && { month: filters.month }),
+            };
+
+            const response = await api.get(`/point-histories/employee/${employeeId}`, {
+                params,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            return response.data.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error fetching employee point histories";
+            throw new Error(errMsg);
+        }
     }
 };
