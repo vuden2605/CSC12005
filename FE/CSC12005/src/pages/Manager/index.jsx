@@ -3,11 +3,14 @@ import "./style.scss";
 import InfoCard from "../../components/InfoCard";
 import { ManagerService } from "../../services/ManagerService";
 import { useSelector } from "react-redux";
+import { EmployeeDetailModal } from "../../components/modals/EmployeeDetailModal/EmployeeDetailModal";
 
 export const Manager = () => {
   const [employeesPage, setEmployeesPage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState(""); // ⭐ SEARCH STATE
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -35,7 +38,7 @@ export const Manager = () => {
   useEffect(() => {
     if (currentUser?.id) fetchEmployees(currentPage);
   }, [currentUser, currentPage]);
-  if (!employeesPage) return <div>Đang tải...</div>;
+  if (!employeesPage) return <div>Đang tải danh sách nhân viên...</div>;
 
   const employees = employeesPage.content;
   const totalPages = employeesPage.totalPages;
@@ -50,6 +53,11 @@ export const Manager = () => {
   // EXPORT CSV
   // ============================
   const exportToCSV = () => {
+    if (!filteredEmployees || filteredEmployees.length === 0) {
+      alert("Không có dữ liệu để xuất");
+      return;
+    }
+
     const headers = ["Mã NV", "Tên nhân viên", "Phòng ban", "Vị trí"];
 
     const rows = filteredEmployees.map((emp) => [
@@ -77,6 +85,11 @@ export const Manager = () => {
   // EXPORT EXCEL
   // ============================
   const exportToExcel = () => {
+    if (!filteredEmployees || filteredEmployees.length === 0) {
+      alert("Không có dữ liệu để xuất");
+      return;
+    }
+
     const tableHTML = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" 
             xmlns:x="urn:schemas-microsoft-com:office:excel">
@@ -147,11 +160,11 @@ export const Manager = () => {
         <table className="employee-table">
           <thead>
             <tr>
-              <th>Mã NV</th>
-              <th>Tên nhân viên</th>
+              <th>Mã nhân viên</th>
+              <th>Họ và tên</th>
               <th>Phòng ban</th>
               <th>Vị trí</th>
-              <th>Xem</th>
+              <th>Thông tin</th>
             </tr>
           </thead>
           <tbody>
@@ -163,23 +176,23 @@ export const Manager = () => {
                   <td>{emp.department?.departmentName}</td>
                   <td>{emp.position?.positionName}</td>
                   <td>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="link-view"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        alert(`Xem chi tiết: ${emp.fullName}`);
+                      onClick={() => {
+                        setSelectedEmployee(emp);
+                        setShowEmployeeModal(true);
                       }}
                     >
                       Xem
-                    </a>
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td colSpan="5" className="no-data">
-                  Không tìm thấy nhân viên nào
+                  Không có nhân viên nào dưới quyền hoặc không tìm thấy theo tìm kiếm
                 </td>
               </tr>
             )}
@@ -219,13 +232,28 @@ export const Manager = () => {
       </div>
 
       <div className="export-section">
-        <button className="btn-export" onClick={exportToExcel}>
+        <button
+          className="btn-export"
+          onClick={exportToExcel}
+        >
           📊 Xuất Excel
         </button>
-        <button className="btn-export btn-export-csv" onClick={exportToCSV}>
+        <button
+          className="btn-export btn-export-csv"
+          onClick={exportToCSV}
+        >
           📄 Xuất CSV
         </button>
       </div>
+
+      <EmployeeDetailModal
+        employee={selectedEmployee}
+        isOpen={showEmployeeModal}
+        onClose={() => {
+          setShowEmployeeModal(false);
+          setSelectedEmployee(null);
+        }}
+      />
     </div>
   );
 };
