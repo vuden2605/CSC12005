@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { HRService } from "../../../services/HRService";
 import { useAlert } from "../../../context/AlertContext";
-import ConfirmModal from "../../ConfirmModal/ConfirmModal";
 // ========== STATUS MAPPING ==========
 const STATUS_MAP = {
   DRAFT: { label: "Nháp", className: "status-draft" },
@@ -545,7 +544,6 @@ export const ActivityUpdateModal = ({
           setImportResult(null);
         }, 2000);
       } else {
-        
       }
     } catch (error) {
       console.error("Error importing:", error);
@@ -1228,9 +1226,7 @@ export const ActivityUpdateModal = ({
                         <h5>Chi tiết lỗi:</h5>
                         <ul>
                           {importResult.importErrors.map((error, index) => (
-                            <li key={index}>
-                              {error.message}
-                            </li>
+                            <li key={index}>{error.message}</li>
                           ))}
                         </ul>
                       </div>

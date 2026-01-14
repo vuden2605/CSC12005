@@ -163,7 +163,7 @@ public class ActivityService implements IActivityService {
 
         // Kiểm tra trạng thái hiện tại
         if (activity.getActivityStatus() != ActivityStatus.DRAFT) {
-            throw new AppException(ErrorCode. ACTIVITY_NOT_DRAFT);
+            throw new AppException(ErrorCode.ACTIVITY_NOT_DRAFT);
         }
 
         // Cập nhật trạng thái

@@ -90,7 +90,7 @@ public enum ErrorCode {
 	ACTIVITY_FULL(4052,"Hoạt động này đã đầy",HttpStatus.BAD_REQUEST),
 	CANCELLATION_TOO_LATE(4053,"Không thể hủy trong vòng 3 ngày trước ngày bắt đầu",HttpStatus.BAD_REQUEST),
 	UPDATE_TOO_LATE(4054,"Không thể cập nhật trong vòng 7 ngày trước ngày bắt đầu",HttpStatus.BAD_REQUEST),
-
+    ACTIVITY_NOT_DRAFT(4058,"Chỉ các hoạt động ở trạng thái nháp mới có thể thực hiện thao tác này",HttpStatus.BAD_REQUEST),
 	//Timesheet
 	TIMESHEET_NOT_FOUND(4001, "Không tìm thấy bảng chấm công", HttpStatus.NOT_FOUND),
 	CHECK_TIME_REQUIRED(4002,"Thời gian check-in và check-out là bắt buộc", HttpStatus.BAD_REQUEST),

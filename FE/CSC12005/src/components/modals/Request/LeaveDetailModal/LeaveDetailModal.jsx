@@ -5,17 +5,28 @@ import { useAlert } from "../../../../context/AlertContext";
 import ConfirmModal from "../../ConfirmModal/ConfirmModal";
 import "../style.scss";
 
-export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
+export const LeaveDetailModal = ({
+  requestId,
+  onClose,
+  isManager,
+  onSuccess,
+}) => {
   const [leaveDetail, setLeaveDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { showAlert } = useAlert();
-  const [confirmState, setConfirmState] = useState({ isOpen: false, action: null });
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    action: null,
+  });
   useEffect(() => {
     const fetchLeaveDetail = async () => {
       try {
         setLoading(true);
-        const response = await EmployeeService.getRequestDetail(requestId, "Leave");
+        const response = await EmployeeService.getRequestDetail(
+          requestId,
+          "Leave"
+        );
         setLeaveDetail(response);
       } catch (err) {
         console.error("Error fetching Leave detail:", err);
@@ -122,8 +133,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
   };
 
   const isFinalStatus =
-    leaveDetail?.status === "APPROVED" ||
-    leaveDetail?.status === "REJECTED";
+    leaveDetail?.status === "APPROVED" || leaveDetail?.status === "REJECTED";
 
   const mapLeaveReason = (reason) => {
     if (!reason) return "-";
@@ -144,7 +154,9 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
       <div className="modal-box wfh-detail-modal">
         <div className="modal-header">
           <h2>Chi tiết yêu cầu Nghỉ phép</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         {loading && (
@@ -161,7 +173,6 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
 
         {!loading && !error && leaveDetail && (
           <div className="modal-content">
-
             {/* ===== THÔNG TIN YÊU CẦU ===== */}
             <div className="detail-section">
               <h3>Thông tin yêu cầu</h3>
@@ -174,7 +185,9 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
               <div className="detail-row">
                 <span className="detail-label">Trạng thái:</span>
                 <span
-                  className={`status-badge ${getStatusClass(leaveDetail.status)}`}
+                  className={`status-badge ${getStatusClass(
+                    leaveDetail.status
+                  )}`}
                 >
                   {getStatusText(leaveDetail.status)}
                 </span>
@@ -182,7 +195,9 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
 
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
-                <span className="detail-value">{mapLeaveReason(leaveDetail.reason)}</span>
+                <span className="detail-value">
+                  {mapLeaveReason(leaveDetail.reason)}
+                </span>
               </div>
 
               <div className="detail-row">
@@ -190,10 +205,17 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
                 <span className="detail-value">
                   {leaveDetail.requestAttachment ? (
                     <button
-                      onClick={() => handleDownload(leaveDetail.requestAttachment)}
+                      onClick={() =>
+                        handleDownload(leaveDetail.requestAttachment)
+                      }
                       className="attachment-link"
                       title={getFileName(leaveDetail.requestAttachment)}
-                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        cursor: "pointer",
+                      }}
                     >
                       📎 {getFileName(leaveDetail.requestAttachment)}
                     </button>
@@ -289,10 +311,9 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
                 </>
               )}
             </div>
-
-           </div>
-         )}
-       </div>
+          </div>
+        )}
+      </div>
       <ConfirmModal
         isOpen={confirmState.isOpen}
         title={
@@ -314,6 +335,6 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
         onCancel={() => setConfirmState({ isOpen: false, action: null })}
         loading={loading}
       />
-     </div>
+    </div>
   );
 };
