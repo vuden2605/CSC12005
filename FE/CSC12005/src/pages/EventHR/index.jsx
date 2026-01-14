@@ -300,7 +300,7 @@ export const EventPageHR = () => {
                             (sort.direction === "ASC" ? "↑" : "↓")}
                         </th>
                         <th>Ngày kết thúc</th>
-                        <th>Điểm thưởng</th>
+                        <th>Điểm thưởng cơ bản</th>
                         <th>Số lượng tối đa</th>
                         <th>Đã đăng ký</th>
                         <th>Xem</th>
@@ -323,16 +323,10 @@ export const EventPageHR = () => {
                             {formatDate(activity.endDate) || "N/A"}
                           </td>
                           <td className="point-cell">
-                            {activity.points ??
-                              activity.point ??
-                              activity.reward ??
-                              0}
+                            {activity.basePoints ?? 0}
                           </td>
                           <td className="quantity-cell">
-                            {activity.count ??
-                              activity.totalSlot ??
-                              activity.slots ??
-                              "N/A"}
+                            {activity.maxParticipants ?? "N/A"}
                           </td>
                           <td className="registered-count-cell">
                             {activity.registeredCount || 0}

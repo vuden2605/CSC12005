@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public interface IActivityService {
 	ActivityResponse createActivity(ActivityCreationRequest activityCreationRequest);
 	Page<ActivityDetailResponse> getActivities(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO);
-    ActivityResponse updateActivity(ActivityUpdateRequest activityUpdateRequest, long id);
+    ActivityResponse updateActivity(ActivityUpdateRequest request, long id);
     Page<ActivityDetailHRResponse> getActivityParticipants(
             Long activityId,
             String employeeName,

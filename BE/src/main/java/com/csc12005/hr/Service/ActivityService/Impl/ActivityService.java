@@ -69,15 +69,57 @@ public class ActivityService implements IActivityService {
     @Override
     public ActivityResponse updateActivity(ActivityUpdateRequest request, long id)
     {
-        Activity activity= activityRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
-        LocalDate startDate = activity.getStartDate();
-        LocalDate sevenDaysAgo = startDate.minusDays(7);
+//
+        // Tìm activity
+        Activity activity = activityRepository. findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
 
-        if (!LocalDate.now().isBefore(sevenDaysAgo)) {
-            throw new AppException(ErrorCode.UPDATE_TOO_LATE);
-        }
-        activityMapper.updateActivity(activity, request);
-        return activityMapper.toActivityResponse(activityRepository.save(activity));
+        // ========== Update basic fields ==========
+        activity.setActivityName(request.getActivityName());
+        activity.setDescription(request. getDescription());
+        activity.setActivityType(request.getActivityType());
+
+        // Thời gian
+        activity.setStartDate(request.getStartDate());
+        activity.setEndDate(request.getEndDate());
+        activity.setStartTime(request. getStartTime());
+        activity.setEndTime(request.getEndTime());
+        activity.setDuration(request.getDuration());
+        activity.setRegistrationDeadline(request.getRegistrationDeadline());
+
+        // Địa điểm
+        activity.setLocation(request.getLocation());
+        activity.setAddress(request.getAddress());
+
+        // Liên hệ
+        activity. setOrganizer(request.getOrganizer());
+        activity.setContactPhone(request.getContactPhone());
+        activity.setContactEmail(request.getContactEmail());
+
+        // Số lượng
+        activity.setMinParticipants(request.getMinParticipants());
+        activity.setMaxParticipants(request. getMaxParticipants());
+        activity.setIsMandatory(request.getIsMandatory());
+
+        // Điểm
+        activity.setBasePoints(request.getBasePoints());
+        activity.setFirstPlaceBonus(request.getFirstPlaceBonus());
+        activity.setSecondPlaceBonus(request.getSecondPlaceBonus());
+        activity.setThirdPlaceBonus(request.getThirdPlaceBonus());
+
+        // Ghi chú
+        activity.setNotes(request.getNotes());
+
+        // ========== Update IMAGE if new file uploaded ==========
+        String urlImg= request.getImage() != null ? s3Service.uploadFile(request.getImage()) : activity.getImageUrl();
+        activity.setImageUrl(urlImg);
+
+        String urlAttachment = request.getAttachment() != null ? s3Service.uploadFile(request.getAttachment()) : activity.getAttachmentUrl();
+        activity.setAttachmentUrl(urlAttachment);
+
+        // Save
+        Activity updated = activityRepository. save(activity);
+        return activityMapper.toActivityResponse(updated);
     }
     @Override
     public Page<ActivityDetailHRResponse> getActivityParticipants(
