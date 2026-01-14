@@ -4,7 +4,7 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-##  1. Yêu cầu chức năng
+## 1. Yêu cầu chức năng
 
 ### 1.1. Quản lý hồ sơ nhân viên (Profile)
 - Quản lý thông tin cơ bản: họ tên, căn cước/CMND, mã số thuế
@@ -15,7 +15,7 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 - Quy trình: nhân viên tạo yêu cầu → quản lý phê duyệt
 
 ### 1.3. Quản lý hoạt động nhân viên
-- Theo dõi hoạt động theo chiến dịch: ví dụ chạy bộ
+- Theo dõi hoạt động theo chiến dịch (ví dụ: chạy bộ)
 - Lưu trữ: số km chạy, thời gian bắt đầu & kết thúc, thành tích
 
 ### 1.4. Quản lý khen thưởng (KPI)
@@ -26,16 +26,16 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-##  2. Yêu cầu công nghệ
+## 2. Yêu cầu công nghệ
 
-| Layer     | Công nghệ đề xuất     |
-|-----------|------------------------|
-| Backend   | Java Spring Boot |
-| Frontend  | ReactJS                |
+| Layer     | Công nghệ đề xuất |
+|----------|------------------|
+| Backend  | Java Spring Boot |
+| Frontend | ReactJS          |
 
 ---
 
-##  3. Các mốc phát triển (Milestones)
+## 3. Các mốc phát triển (Milestones)
 
 ### 🔹 Lần 1: Phát biểu & phân tích yêu cầu
 - Trình bày lại đề tài
@@ -60,12 +60,12 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 - Tích hợp toàn hệ thống
 - Dữ liệu giả (dummy data) để demo
 - Viết test case & kiểm thử
-- Triển khai chạy thử 
+- Triển khai chạy thử
 - Hoàn thiện báo cáo & chỉnh sửa cuối
 
 ---
 
-##  Mục tiêu dự án
+## Mục tiêu dự án
 - Quản lý nhân sự hiệu quả và minh bạch
 - Tối ưu quy trình yêu cầu & phê duyệt
 - Theo dõi hiệu suất làm việc dễ dàng
@@ -73,13 +73,24 @@ Hệ thống giúp doanh nghiệp quản lý thông tin nhân viên, yêu cầu 
 
 ---
 
-##  Thành viên nhóm
-> Nông Quốc Việt, Nguyễn Quang Vũ, Nguyễn Văn Vũ, Bàn Hữu Bằng
+## Thành viên nhóm
+- Nông Quốc Việt  
+- Nguyễn Quang Vũ  
+- Nguyễn Văn Vũ  
+- Bàn Hữu Bằng  
+
 ---
 
-## 📞 Liên hệ
-> 22120442@student.hcmus.edu.vn
+## Chạy hệ thống bằng Docker Compose
 
----
---- Chạy mysql local
-docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=CSC12005_HR -p 3306:3306 mysql
+Hệ thống hỗ trợ khởi động nhanh toàn bộ Backend, Frontend và Database bằng **Docker Compose**.
+
+### Yêu cầu môi trường
+- Docker
+- Docker Compose
+
+### ▶️ Khởi động hệ thống
+
+- Tại thư mục gốc của dự án (nơi chứa file `docker-compose.yml`), chạy lệnh: docker-compose up -d
+- Các username mặc định: CEO, HR-HEAD, FIN-HEAD, IT-HEAD
+- Mật khẩu mặc định là 123456
