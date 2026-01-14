@@ -2,6 +2,7 @@ package com.csc12005.hr.Repository;
 
 import com.csc12005.hr.Entity.Employee;
 import com.csc12005.hr.Entity.PointHistory;
+import com.csc12005.hr.Enums.PointReasonType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,8 +31,23 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 			@Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate
 	);
-	List<PointHistory> findByEmployeeId(Long employeeId, Pageable pageable);
-
+	@Query(
+	"""
+		SELECT ph
+		FROM PointHistory ph
+		WHERE ph.employee.id = :employeeId
+		  AND (:reasonType IS NULL OR ph.reasonType = :reasonType)
+		  AND (:year IS NULL OR FUNCTION('YEAR', ph.createdAt) = :year)
+		  AND (:month IS NULL OR FUNCTION('MONTH', ph.createdAt) = :month)
+		
+	"""
+	)
+	List<PointHistory> findByEmployeeId(
+			@Param("employeeId") Long employeeId,
+			@Param("reasonType") PointReasonType reasonType,
+			@Param("year") Integer year,
+			@Param("month") Integer month,
+			Pageable pageable);
 	@Query("""
 	SELECT COALESCE(SUM(ph.pointChange), 0)
 	FROM PointHistory ph

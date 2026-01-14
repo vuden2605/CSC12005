@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.PointHistoryService;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.PointHistoryFilterRequest;
 import com.csc12005.hr.DTO.Request.RewardPointRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
@@ -17,5 +18,5 @@ public interface IPointHistoryService {
 	int getTotalReceivedPointsInYear(Long userId);
 	int getCurrentTotalPoints(Long userId);
 	void rewardPoints(RewardPointRequest request);
-	List<PointHistoryResponse> myPointsHistory(Long userId, PageRequestDTO pageRequestDTO);
+	List<PointHistoryResponse> getPointHistoriesByEmployee(Long employeeId, PointHistoryFilterRequest filterRequest , PageRequestDTO pageRequestDTO);
 }
