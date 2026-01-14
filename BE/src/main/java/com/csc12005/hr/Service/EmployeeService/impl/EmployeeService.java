@@ -124,13 +124,13 @@ public class EmployeeService implements IEmployeeService {
 		Employee employee = buildEmployeeFromCreationRequest(employeeCreationRequest, department, position);
 		return employeeMapper.toEmployeeResponse(employeeRepository.save(employee));
 	}
-	//@Cacheable(value = "employeeCache", key ="#userId")
+	@Cacheable(value = "user.details", key ="#userId")
 	public EmployeeResponse getMyInfo(Long userId) {
 		Employee employee = employeeRepository.findById(userId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
 		return employeeMapper.toEmployeeResponse(employee);
 	}
-	@CachePut(value = "employeeCache", key = "#userId")
+	@CachePut(value = "user.details", key = "#userId")
 	public EmployeeResponse updateUser(EmployeeUpdateRequest request, Long userId) {
 		Employee employee = employeeRepository.findById(userId)
 				.orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_FOUND));
@@ -148,7 +148,7 @@ public class EmployeeService implements IEmployeeService {
 		employee = employeeRepository.save(employee);
 		return employeeMapper.toEmployeeResponse(employee);
 	}
-	@CachePut(value = "employeeCache", key = "#id")
+	@CachePut(value = "user.details", key = "#id")
 	public EmployeeResponse hrUpdateEmployee(EmployeeHRUpdateRequest request, Long id) {
       // Tìm employee
       Employee employee = employeeRepository.findById(id)
@@ -406,7 +406,7 @@ public class EmployeeService implements IEmployeeService {
 
 		return dto;
 	}
-	@CacheEvict(value = "employeeCache", key = "#id")
+	@CacheEvict(value = "user.details", key = "#id")
 	public void deleteEmployee(Long id) {
 		employeeRepository.deleteById(id);
 	}
