@@ -117,7 +117,7 @@ public class ActivityDetailService implements IActivityDetailService {
 					importErrors.add(
 							ImportError.builder()
 									.code(ErrorCode.IMPORT_EMPLOYEE_FAIL.getCode())
-									.message("Dòng " + (i + 1) + ": " + ex.getMessage())
+									.message("Dòng " + (i) + ": " + ex.getMessage())
 									.build()
 					);
 				}

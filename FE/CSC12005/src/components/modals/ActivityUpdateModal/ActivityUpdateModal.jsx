@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { HRService } from "../../../services/HRService";
 import { useAlert } from "../../../context/AlertContext";
-import  ConfirmModal  from "../../ConfirmModal/ConfirmModal";
+import ConfirmModal from "../../ConfirmModal/ConfirmModal";
 // ========== STATUS MAPPING ==========
 const STATUS_MAP = {
   DRAFT: { label: "Nháp", className: "status-draft" },
@@ -32,7 +32,7 @@ export const ActivityUpdateModal = ({
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showOpenRegistrationConfirm, setShowOpenRegistrationConfirm] =
     useState(false);
-      // ========== THÊM IMPORT STATES ==========
+  // ========== THÊM IMPORT STATES ==========
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState(null);
   const [importResult, setImportResult] = useState(null);
@@ -506,7 +506,7 @@ export const ActivityUpdateModal = ({
       setShowOpenRegistrationConfirm(false);
     }
   };
-   // ========== THÊM IMPORT HANDLERS ==========
+  // ========== THÊM IMPORT HANDLERS ==========
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setImportFile(selectedFile);
@@ -526,7 +526,10 @@ export const ActivityUpdateModal = ({
       setImportResult(result);
 
       if (result.errorCount === 0) {
-        showAlert("success", `Import thành công ${result.successCount} bản ghi! `);
+        showAlert(
+          "success",
+          `Import thành công ${result.successCount} bản ghi! `
+        );
 
         // Refresh participants list
         const data = await HRService.GetParticipantsByActivity(
@@ -542,10 +545,7 @@ export const ActivityUpdateModal = ({
           setImportResult(null);
         }, 2000);
       } else {
-        showAlert(
-          "warning",
-          `Import thành công ${result.successCount} bản ghi, thất bại ${result.errorCount} bản ghi`
-        );
+        
       }
     } catch (error) {
       console.error("Error importing:", error);
@@ -558,7 +558,7 @@ export const ActivityUpdateModal = ({
   const handleDownloadTemplate = () => {
     window.open("/templates/activity-result-template.xlsx", "_blank");
   };
-
+  console.log("importResult:", importResult);
   const invalid = (field) => (errors[field] ? "invalid" : "");
 
   /* ================= RENDER ================= */
@@ -1164,10 +1164,16 @@ export const ActivityUpdateModal = ({
           </fieldset>
         </form>
       </div>
-    
-       {showImportModal && (
-        <div className="modal-overlay" onClick={() => setShowImportModal(false)}>
-          <div className="modal-content-import" onClick={(e) => e.stopPropagation()}>
+
+      {showImportModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowImportModal(false)}
+        >
+          <div
+            className="modal-content-import"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Import kết quả hoạt động</h3>
               <button
@@ -1179,8 +1185,6 @@ export const ActivityUpdateModal = ({
             </div>
 
             <div className="modal-body">
-             
-
               {/* File Input */}
               <div className="file-input-section">
                 <label htmlFor="file-upload" className="file-label">
@@ -1210,26 +1214,27 @@ export const ActivityUpdateModal = ({
                   <h4>Kết quả import:</h4>
                   <div className="result-summary">
                     <div className="success-count">
-                      <span>Thành công: {importResult.successCount}</span>
+                      <span>Thành công: {importResult.successRow || 0}</span>
                     </div>
                     <div className="error-count">
-                      <span>Thất bại: {importResult.errorCount}</span>
+                      <span>Thất bại: {importResult.errorRow || 0}</span>
                     </div>
                   </div>
 
                   {/* Error Details */}
-                  {importResult.errors && importResult.errors.length > 0 && (
-                    <div className="error-details">
-                      <h5>Chi tiết lỗi:</h5>
-                      <ul>
-                        {importResult.errors.map((error, index) => (
-                          <li key={index}>
-                            <strong>Dòng {error.row}:</strong> {error.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {importResult.importErrors &&
+                    importResult.importErrors.length > 0 && (
+                      <div className="error-details">
+                        <h5>Chi tiết lỗi:</h5>
+                        <ul>
+                          {importResult.importErrors.map((error, index) => (
+                            <li key={index}>
+                              {error.message}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                 </div>
               )}
             </div>
@@ -1247,7 +1252,7 @@ export const ActivityUpdateModal = ({
                 type="button"
                 className="btn btn-primary"
                 onClick={handleImportResult}
-                disabled={! importFile || importLoading}
+                disabled={!importFile || importLoading}
               >
                 {importLoading ? "Đang import..." : "Import"}
               </button>

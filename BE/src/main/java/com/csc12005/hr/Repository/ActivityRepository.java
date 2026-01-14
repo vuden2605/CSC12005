@@ -68,7 +68,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	  AND (:startDate IS NULL OR a.startDate >= :startDate)
 	  AND (:endDate IS NULL OR a.endDate <= :endDate)
 	  AND (:activityStatus IS NULL OR a.activityStatus = :activityStatus)
-
 	""")
 	Page<ActivityDetailResponse> getActivities(
 			@Param("employeeId") Long employeeId,
