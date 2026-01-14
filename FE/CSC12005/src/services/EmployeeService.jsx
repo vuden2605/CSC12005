@@ -205,6 +205,57 @@ export const EmployeeService = {
       // Date filters
       if (params.startDate) queryParams.append("startDate", params.startDate);
       if (params.endDate) queryParams.append("endDate", params.endDate);
+      if (params.activityStatus)
+        queryParams.append("activityStatus", params.activityStatus);
+
+      // Pagination
+      if (
+        params.page !== undefined &&
+        params.page !== null &&
+        params.page !== ""
+      )
+        queryParams.append("page", String(params.page));
+      if (
+        params.size !== undefined &&
+        params.size !== null &&
+        params.size !== ""
+      )
+        queryParams.append("size", String(params.size));
+
+      // Sorting
+      if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+      if (params.direction) queryParams.append("direction", params.direction);
+
+      const queryString = queryParams.toString();
+      const url = `/activities${queryString ? `?${queryString}` : ""}`;
+
+      const response = await api.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.data || response.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error fetching activities";
+      console.error("Error fetching activities:", errMsg);
+      throw new Error(errMsg);
+    }
+  },
+  getActivitiesEMP: async (params = {}) => {
+    try {
+      // Build query parameters
+      const queryParams = new URLSearchParams();
+
+      // Activity name filter
+      if (params.activityName)
+        queryParams.append("activityName", params.activityName);
+
+      // Date filters
+      if (params.startDate) queryParams.append("startDate", params.startDate);
+      if (params.endDate) queryParams.append("endDate", params.endDate);
 
       // Pagination
       if (params.page !== undefined) queryParams.append("page", params.page);
@@ -215,7 +266,7 @@ export const EmployeeService = {
       if (params.direction) queryParams.append("direction", params.direction);
 
       const queryString = queryParams.toString();
-      const url = `/activities${queryString ? `?${queryString}` : ""}`;
+      const url = `/activities/emp${queryString ? `?${queryString}` : ""}`;
 
       const response = await api.get(url, {
         headers: {

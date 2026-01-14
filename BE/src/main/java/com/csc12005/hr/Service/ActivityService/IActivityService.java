@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 public interface IActivityService {
 	ActivityResponse createActivity(ActivityCreationRequest activityCreationRequest);
 	Page<ActivityDetailResponse> getActivities(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO);
+    Page<ActivityDetailResponse> getActivitiesEMP(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO);
+
     ActivityResponse updateActivity(ActivityUpdateRequest request, long id);
     Page<ActivityDetailHRResponse> getActivityParticipants(
             Long activityId,
@@ -21,4 +23,6 @@ public interface IActivityService {
             Boolean isSuccess,
             PageRequestDTO pageRequestDTO
     );
+    ActivityResponse cancelDraftActivity(Long activityId);
+     ActivityResponse openRegistration(Long activityId);
 }

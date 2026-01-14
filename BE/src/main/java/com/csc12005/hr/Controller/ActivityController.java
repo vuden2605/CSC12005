@@ -39,6 +39,13 @@ public class ActivityController {
 				.data(activityService.getActivities(activityFilterRequest, pageRequestDTO))
 				.build();
 	}
+    @GetMapping("/emp")
+    public ApiResponse<Page<ActivityDetailResponse>> getActivitiesEMP(PageRequestDTO pageRequestDTO, ActivityFilterRequest activityFilterRequest) {
+        return ApiResponse.<Page<ActivityDetailResponse>>builder()
+                .message("Get activities successfully")
+                .data(activityService.getActivitiesEMP(activityFilterRequest, pageRequestDTO))
+                .build();
+    }
 	@PostMapping("/{activityId}/details")
 	public ApiResponse<Void> createActivityDetail(@PathVariable Long activityId) {
 		activityDetailService.createActivityDetail(activityId);
@@ -73,7 +80,7 @@ public class ActivityController {
                 .build();
     }
     @PostMapping("/import-result")
-    public ApiResponse<ImportResult> imPortActivityResult (@RequestParam ("file") MultipartFile file) {
+    public ApiResponse<ImportResult> importActivityResult (@RequestParam ("file") MultipartFile file) {
         return ApiResponse.<ImportResult>builder()
 		        .message("Import")
 		        .data(activityDetailService.importActivityResult(file))
@@ -85,6 +92,20 @@ public class ActivityController {
         activityDetailService.deleteActivityDetail(activityId);
         return ApiResponse.<Void>builder()
                 .message("delete success")
+                .build();
+    }
+    @PatchMapping("/{activityId}/cancel")
+    public ApiResponse<ActivityResponse> cancelDraftActivity(@PathVariable Long activityId) {
+        return ApiResponse.<ActivityResponse>builder()
+                .message("Hủy sự kiện thành công")
+                .data(activityService.cancelDraftActivity(activityId))
+                .build();
+    }
+    @PatchMapping("/{activityId}/open-registration")
+    public ApiResponse<ActivityResponse> openRegistration(@PathVariable Long activityId) {
+        return ApiResponse.<ActivityResponse>builder()
+                .message("Mở đăng ký thành công")
+                .data(activityService.openRegistration(activityId))
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.csc12005.hr.DTO.Request;
 
+import com.csc12005.hr.Enums.ActivityStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,5 +17,6 @@ import java.time.LocalDate;
 public class ActivityFilterRequest {
 	private String activityName;
 	private LocalDate startDate;
+    private ActivityStatus activityStatus;
 	private LocalDate endDate;
 }

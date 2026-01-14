@@ -6,6 +6,7 @@ import com.csc12005.hr.DTO.Response.ActivityDetailResponse;
 import com.csc12005.hr.DTO.Response.ActivityResponse;
 import com.csc12005.hr.Entity.Activity;
 import com.csc12005.hr.Entity.ActivityDetail;
+import com.csc12005.hr.Enums.ActivityStatus;
 import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Mapper.ActivityMapper;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +62,8 @@ public class ActivityService implements IActivityService {
 		return activityRepository.getActivities(
 				employeeId,
 				activityFilterRequest.getActivityName(),
-				activityFilterRequest.getStartDate(),
+                activityFilterRequest.getActivityStatus(),
+                activityFilterRequest.getStartDate(),
 				activityFilterRequest.getEndDate(),
 				pageRequestDTO.buildPageable()
 		);
@@ -150,5 +153,61 @@ public class ActivityService implements IActivityService {
                 .isSuccess(ad.getIsSuccess())
                 .build();
     }
+    @Override
+    @Transactional
+    public ActivityResponse openRegistration(Long activityId) {
+
+        // Tìm activity
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+
+        // Kiểm tra trạng thái hiện tại
+        if (activity.getActivityStatus() != ActivityStatus.DRAFT) {
+            throw new AppException(ErrorCode. ACTIVITY_NOT_DRAFT);
+        }
+
+        // Cập nhật trạng thái
+        activity.setActivityStatus(ActivityStatus.OPEN_FOR_REGISTRATION);
+        activity.setUpdatedAt(LocalDateTime.now());
+
+        Activity savedActivity = activityRepository.save(activity);
+        return activityMapper.toActivityResponse(savedActivity);
+    }
+    @Override
+    @Transactional
+    public ActivityResponse cancelDraftActivity(Long activityId) {
+
+        // Tìm activity
+        Activity activity = activityRepository. findById(activityId)
+                .orElseThrow(() -> new AppException(ErrorCode. ACTIVITY_NOT_FOUND));
+
+        // Kiểm tra trạng thái hiện tại
+        if (activity.getActivityStatus() != ActivityStatus.DRAFT) {
+            throw new AppException(ErrorCode.ACTIVITY_NOT_DRAFT);
+        }
+
+        // Cập nhật trạng thái
+        activity.setActivityStatus(ActivityStatus.CANCELLED);
+        activity.setUpdatedAt(LocalDateTime.now());
+
+        Activity savedActivity = activityRepository.save(activity);
+
+
+        return activityMapper.toActivityResponse(savedActivity);
+    }
+    @Override
+    public Page<ActivityDetailResponse> getActivitiesEMP(ActivityFilterRequest activityFilterRequest, PageRequestDTO pageRequestDTO)
+    {
+        Long employeeId = securityUtils.getCurrentUserId();
+        return activityRepository.getActivitiesEMP(
+                employeeId,
+                activityFilterRequest.getActivityName(),
+                activityFilterRequest.getStartDate(),
+                activityFilterRequest.getEndDate(),
+                pageRequestDTO.buildPageable()
+        );
+    }
+
+
 
 }

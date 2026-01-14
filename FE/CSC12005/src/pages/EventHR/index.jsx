@@ -15,17 +15,27 @@ const DEFAULT_PAGINATION = {
 };
 const DEFAULT_SORT = { sortBy: "startDate", direction: "DESC" };
 
+// ========== THÊM STATUS MAPPING ==========
+const STATUS_MAP = {
+  DRAFT: { label: "Nháp", className: "status-draft" },
+  OPEN_FOR_REGISTRATION: { label: "Đang mở đăng ký", className: "status-open" },
+  REGISTRATION_CLOSED: { label: "Đã đóng đăng ký", className: "status-closed" },
+  ONGOING: { label: "Đang diễn ra", className: "status-ongoing" },
+  COMPLETED: { label: "Đã hoàn thành", className: "status-completed" },
+  CANCELLED: { label: "Đã hủy", className: "status-cancelled" },
+};
+
 export const EventPageHR = () => {
   const [filters, setFilters] = useState({
     activityName: "",
     startDate: "",
     endDate: "",
+    activityStatus: "",
     isRegisteredChecked: false,
     isUnregisteredChecked: false,
   });
   const [pagination, setPagination] = useState(DEFAULT_PAGINATION);
   const [sort, setSort] = useState(DEFAULT_SORT);
-
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,7 +44,6 @@ export const EventPageHR = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   console.log(activities);
-  // NEW: modal/create event (UI hook - bạn nối route/modal thật sau)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const formatDate = (dateString) =>
@@ -46,8 +55,17 @@ export const EventPageHR = () => {
         })
       : "";
 
+  // ========== THÊM FUNCTION FORMAT STATUS ==========
+  const getStatusDisplay = (status) => {
+    const statusInfo = STATUS_MAP[status] || {
+      label: status || "N/A",
+      className: "status-default",
+    };
+    return statusInfo;
+  };
+
   const buildParams = useMemo(() => {
-    const { activityName, startDate, endDate } = filters;
+    const { activityName, startDate, endDate, activityStatus } = filters;
     const params = {
       page: pagination.page,
       size: pagination.size,
@@ -57,6 +75,7 @@ export const EventPageHR = () => {
     if (activityName) params.activityName = activityName;
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
+    if (activityStatus) params.activityStatus = activityStatus;
     return params;
   }, [filters, pagination.page, pagination.size, sort]);
 
@@ -77,6 +96,7 @@ export const EventPageHR = () => {
   const fetchActivities = useCallback(async () => {
     try {
       setLoading(true);
+      console.log("Param:", buildParams);
       const data = await EmployeeService.getActivities(buildParams);
 
       const raw = Array.isArray(data)
@@ -124,6 +144,7 @@ export const EventPageHR = () => {
     filters.activityName,
     filters.startDate,
     filters.endDate,
+    filters.activityStatus,
     filters.isRegisteredChecked,
     filters.isUnregisteredChecked,
   ]);
@@ -147,6 +168,7 @@ export const EventPageHR = () => {
       activityName: "",
       startDate: "",
       endDate: "",
+      activityStatus: "",
       isRegisteredChecked: false,
       isUnregisteredChecked: false,
     });
@@ -185,6 +207,7 @@ export const EventPageHR = () => {
 
     setIsCreateModalOpen(false);
   };
+
   const handleUpdateActivity = (updatedActivity) => {
     console.log("gửi form:", updatedActivity);
     setActivities((prevActivities) =>
@@ -200,10 +223,7 @@ export const EventPageHR = () => {
         {/* Header / Hero */}
         <div className="event-hr__hero">
           <div className="event-hr__heroLeft"></div>
-          <div className="event-hr__title">
-            <img className="event-hr__icon" src={img} alt="megaphone" />
-            Quản lý sự kiện
-          </div>
+          <div className="event-hr__title">Quản lý sự kiện</div>
 
           <div className="event-hr__heroRight">
             <button
@@ -231,6 +251,7 @@ export const EventPageHR = () => {
                   value={filters.activityName}
                   onChange={handleInputChange("activityName")}
                   className="input-field"
+                  style={{ height: "20px" }}
                 />
               </div>
 
@@ -242,6 +263,7 @@ export const EventPageHR = () => {
                   value={filters.startDate}
                   onChange={handleInputChange("startDate")}
                   className="input-field"
+                  style={{ height: "20px" }}
                 />
               </div>
 
@@ -253,13 +275,30 @@ export const EventPageHR = () => {
                   value={filters.endDate}
                   onChange={handleInputChange("endDate")}
                   className="input-field"
+                  style={{ height: "20px" }}
                 />
               </div>
-
+              <div className="filter-group">
+                <label htmlFor="activityStatus">Trạng thái:</label>
+                <select
+                  id="activityStatus"
+                  value={filters.activityStatus}
+                  onChange={handleInputChange("activityStatus")}
+                  className="input-field"
+                >
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="DRAFT">Nháp</option>
+                  <option value="OPEN_FOR_REGISTRATION">Đang mở đăng ký</option>
+                  <option value="REGISTRATION_CLOSED">Đã đóng đăng ký</option>
+                  <option value="ONGOING">Đang diễn ra</option>
+                  <option value="COMPLETED">Đã hoàn thành</option>
+                  <option value="CANCELLED">Đã hủy</option>
+                </select>
+              </div>
               <div className="filter-actions">
-                <button type="submit" className="search-button">
+                {/* <button type="submit" className="search-button">
                   Tìm kiếm
-                </button>
+                </button> */}
                 <button
                   type="button"
                   className="reset-button"
@@ -303,48 +342,65 @@ export const EventPageHR = () => {
                         <th>Điểm thưởng cơ bản</th>
                         <th>Số lượng tối đa</th>
                         <th>Đã đăng ký</th>
+                        {/* ========== THÊM CỘT STATUS ========== */}
+                        <th>Trạng thái</th>
                         <th>Xem</th>
                       </tr>
                     </thead>
 
                     <tbody>
-                      {activities.map((activity, index) => (
-                        <tr
-                          key={activity.id || index}
-                          className={index % 2 === 0 ? "even-row" : ""}
-                        >
-                          <td className="name-cell">
-                            {activity.activityName || activity.name || "N/A"}
-                          </td>
-                          <td className="date-cell">
-                            {formatDate(activity.startDate) || "N/A"}
-                          </td>
-                          <td className="date-cell">
-                            {formatDate(activity.endDate) || "N/A"}
-                          </td>
-                          <td className="point-cell">
-                            {activity.basePoints ?? 0}
-                          </td>
-                          <td className="quantity-cell">
-                            {activity.maxParticipants ?? "N/A"}
-                          </td>
-                          <td className="registered-count-cell">
-                            {activity.registeredCount || 0}
-                          </td>
+                      {activities.map((activity, index) => {
+                        const statusInfo = getStatusDisplay(
+                          activity.activityStatus
+                        );
 
-                          <td className="action-cell">
-                            <button
-                              className="view-link"
-                              onClick={() => (
-                                setIsModalOpen(true),
-                                setSelectedActivity(activity)
-                              )}
-                            >
-                              Xem
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                        return (
+                          <tr
+                            key={activity.id || index}
+                            className={index % 2 === 0 ? "even-row" : ""}
+                          >
+                            <td className="name-cell">
+                              {activity.activityName || activity.name || "N/A"}
+                            </td>
+                            <td className="date-cell">
+                              {formatDate(activity.startDate) || "N/A"}
+                            </td>
+                            <td className="date-cell">
+                              {formatDate(activity.endDate) || "N/A"}
+                            </td>
+                            <td className="point-cell">
+                              {activity.basePoints ?? 0}
+                            </td>
+                            <td className="quantity-cell">
+                              {activity.maxParticipants ?? "N/A"}
+                            </td>
+                            <td className="registered-count-cell">
+                              {activity.registeredCount || 0}
+                            </td>
+
+                            {/* ========== HIỂN THỊ STATUS ========== */}
+                            <td className="status-cell">
+                              <span
+                                className={`status-badge ${statusInfo.className}`}
+                              >
+                                {statusInfo.label}
+                              </span>
+                            </td>
+
+                            <td className="action-cell">
+                              <button
+                                className="view-link"
+                                onClick={() => {
+                                  setIsModalOpen(true);
+                                  setSelectedActivity(activity);
+                                }}
+                              >
+                                Xem
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

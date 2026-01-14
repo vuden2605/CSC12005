@@ -103,111 +103,114 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  UpdateActivity:  async (activityId, activityData) => {
-  try {
-    // Tạo FormData object
-    const formData = new FormData();
-
-    // ========== Append Required Fields ==========
-    formData. append("activityName", activityData.activityName);
-    formData.append("activityType", activityData. activityType);
-    formData.append("startDate", activityData.startDate);
-    formData.append("endDate", activityData.endDate);
-    formData.append("startTime", activityData.startTime);
-    formData.append("endTime", activityData.endTime);
-    formData.append("registrationDeadline", activityData.registrationDeadline);
-    formData.append("location", activityData.location);
-    formData.append("address", activityData.address);
-    formData.append("organizer", activityData.organizer);
-    formData.append("contactPhone", activityData.contactPhone);
-    formData.append("contactEmail", activityData.contactEmail);
-    formData.append("maxParticipants", activityData.maxParticipants);
-    formData.append("basePoints", activityData.basePoints);
-
-    // ========== Append Optional Fields ==========
-    if (activityData.description) {
-      formData.append("description", activityData.description);
-    }
-
-    if (activityData.duration) {
-      formData.append("duration", activityData.duration);
-    }
-
-    if (
-      activityData.minParticipants !== null &&
-      activityData.minParticipants !== undefined &&
-      activityData.minParticipants !== ""
-    ) {
-      formData.append("minParticipants", activityData.minParticipants);
-    }
-
-    if (
-      activityData.isMandatory !== null &&
-      activityData.isMandatory !== undefined
-    ) {
-      formData.append("isMandatory", activityData.isMandatory);
-    }
-
-    if (activityData.firstPlaceBonus) {
-      formData.append("firstPlaceBonus", activityData.firstPlaceBonus);
-    }
-
-    if (activityData.secondPlaceBonus) {
-      formData.append("secondPlaceBonus", activityData.secondPlaceBonus);
-    }
-
-    if (activityData.thirdPlaceBonus) {
-      formData.append("thirdPlaceBonus", activityData.thirdPlaceBonus);
-    }
-
-    if (activityData.notes) {
-      formData.append("notes", activityData.notes);
-    }
-
-    // ========== Append Files (ONLY IF NEW FILE UPLOADED) ==========
-    // Image - chỉ append nếu user upload file mới
-    if (activityData.image && activityData.image instanceof File) {
-      formData.append("image", activityData. image);
-    }
-
-    // Attachment - chỉ append nếu user upload file mới
-    if (activityData. attachment && activityData.attachment instanceof File) {
-      formData.append("attachment", activityData. attachment);
-    }
-
-    // ========== API Call ==========
-    const response = await api.patch(`/activities/${activityId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    console.log("✅ Activity updated:", response.data);
-    return response.data. data;
-  } catch (error) {
-    const errMsg =
-      error.response?.data?. message ||
-      error.message ||
-      "Error updating activity";
-    console.error("❌ Error updating activity:", errMsg);
-
-    // Handle validation errors
-    if (error.response?.data?.errors) {
-      const validationErrors = error.response. data.errors;
-      throw new Error(Object.values(validationErrors).join(", "));
-    }
-
-    throw new Error(errMsg);
-  }
-},
-  createActivity:  async (activityData) => {
+  UpdateActivity: async (activityId, activityData) => {
     try {
       // Tạo FormData object
       const formData = new FormData();
 
       // ========== Append Required Fields ==========
-      formData. append("activityName", activityData.activityName);
-      formData.append("activityType", activityData. activityType);
+      formData.append("activityName", activityData.activityName);
+      formData.append("activityType", activityData.activityType);
+      formData.append("startDate", activityData.startDate);
+      formData.append("endDate", activityData.endDate);
+      formData.append("startTime", activityData.startTime);
+      formData.append("endTime", activityData.endTime);
+      formData.append(
+        "registrationDeadline",
+        activityData.registrationDeadline
+      );
+      formData.append("location", activityData.location);
+      formData.append("address", activityData.address);
+      formData.append("organizer", activityData.organizer);
+      formData.append("contactPhone", activityData.contactPhone);
+      formData.append("contactEmail", activityData.contactEmail);
+      formData.append("maxParticipants", activityData.maxParticipants);
+      formData.append("basePoints", activityData.basePoints);
+
+      // ========== Append Optional Fields ==========
+      if (activityData.description) {
+        formData.append("description", activityData.description);
+      }
+
+      if (activityData.duration) {
+        formData.append("duration", activityData.duration);
+      }
+
+      if (
+        activityData.minParticipants !== null &&
+        activityData.minParticipants !== undefined &&
+        activityData.minParticipants !== ""
+      ) {
+        formData.append("minParticipants", activityData.minParticipants);
+      }
+
+      if (
+        activityData.isMandatory !== null &&
+        activityData.isMandatory !== undefined
+      ) {
+        formData.append("isMandatory", activityData.isMandatory);
+      }
+
+      if (activityData.firstPlaceBonus) {
+        formData.append("firstPlaceBonus", activityData.firstPlaceBonus);
+      }
+
+      if (activityData.secondPlaceBonus) {
+        formData.append("secondPlaceBonus", activityData.secondPlaceBonus);
+      }
+
+      if (activityData.thirdPlaceBonus) {
+        formData.append("thirdPlaceBonus", activityData.thirdPlaceBonus);
+      }
+
+      if (activityData.notes) {
+        formData.append("notes", activityData.notes);
+      }
+
+      // ========== Append Files (ONLY IF NEW FILE UPLOADED) ==========
+      // Image - chỉ append nếu user upload file mới
+      if (activityData.image && activityData.image instanceof File) {
+        formData.append("image", activityData.image);
+      }
+
+      // Attachment - chỉ append nếu user upload file mới
+      if (activityData.attachment && activityData.attachment instanceof File) {
+        formData.append("attachment", activityData.attachment);
+      }
+
+      // ========== API Call ==========
+      const response = await api.patch(`/activities/${activityId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("✅ Activity updated:", response.data);
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error updating activity";
+      console.error("❌ Error updating activity:", errMsg);
+
+      // Handle validation errors
+      if (error.response?.data?.errors) {
+        const validationErrors = error.response.data.errors;
+        throw new Error(Object.values(validationErrors).join(", "));
+      }
+
+      throw new Error(errMsg);
+    }
+  },
+  createActivity: async (activityData) => {
+    try {
+      // Tạo FormData object
+      const formData = new FormData();
+
+      // ========== Append Required Fields ==========
+      formData.append("activityName", activityData.activityName);
+      formData.append("activityType", activityData.activityType);
       formData.append("startDate", activityData.startDate);
       formData.append("endDate", activityData.endDate);
       formData.append("startTime", activityData.startTime);
@@ -259,7 +262,7 @@ export const HRService = {
         formData.append("thirdPlaceBonus", activityData.thirdPlaceBonus);
       }
 
-      if (activityData. notes) {
+      if (activityData.notes) {
         formData.append("notes", activityData.notes);
       }
 
@@ -287,8 +290,8 @@ export const HRService = {
         "Error creating activity";
 
       // Handle validation errors
-      if (error. response?.data?.errors) {
-        const validationErrors = error. response.data.errors;
+      if (error.response?.data?.errors) {
+        const validationErrors = error.response.data.errors;
         throw new Error(Object.values(validationErrors).join(", "));
       }
 
@@ -1020,4 +1023,79 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
+  cancelDraftActivity: async (activityId) => {
+    try {
+      const response = await api.patch(`/activities/${activityId}/cancel`);
+
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error cancelling activity";
+      throw new Error(errMsg);
+    }
+  },
+  openRegistration: async (activityId) => {
+    try {
+      const response = await api.patch(
+        `/activities/${activityId}/open-registration`
+      );
+      return response.data.data;
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        error.message ||
+        "Error opening registration";
+      throw new Error(errMsg);
+    }
+  },
+  importActivityResult:  async (file) => {
+  try {
+    if (!file) {
+      throw new Error("Vui lòng chọn file để import");
+    }
+
+    // Validate file type
+    const validTypes = [
+      "application/vnd.ms-excel", // . xls
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    ];
+
+    if (!validTypes.includes(file.type)) {
+      throw new Error("Chỉ chấp nhận file Excel (. xls, .xlsx)");
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      throw new Error("Kích thước file không được quá 10MB");
+    }
+
+    // Create FormData
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Call API
+    const response = await api.post("/activities/import-result", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data. data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?. message ||
+      error.message ||
+      "Import kết quả thất bại";
+
+    // Handle validation errors
+    if (error.response?.data?.errors) {
+      const validationErrors = error.response.data. errors;
+      throw new Error(Object.values(validationErrors).join(", "));
+    }
+
+    throw new Error(errMsg);
+  }
+},
 };

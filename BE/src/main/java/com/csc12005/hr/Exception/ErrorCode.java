@@ -89,7 +89,7 @@ public enum ErrorCode {
     ACTIVITY_FULL(4052,"This activity is fully booked.",HttpStatus.BAD_REQUEST),
     CANCELLATION_TOO_LATE(4053,"Cancellation is not allowed within 3 days of the start date.",HttpStatus.BAD_REQUEST),
     UPDATE_TOO_LATE(4054,"Update is not allowed within 7 days of the start date.",HttpStatus.BAD_REQUEST),
-
+    ACTIVITY_NOT_DRAFT(4058,"Only activities in draft status can be published",HttpStatus.BAD_REQUEST),
     //Timesheet
 	TIMESHEET_NOT_FOUND(4001, "Timesheet not found", HttpStatus.NOT_FOUND),
 	CHECK_TIME_REQUIRED(4002,"Check-in and check-out time are required", HttpStatus.BAD_REQUEST),
