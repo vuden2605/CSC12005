@@ -353,13 +353,14 @@ export const Manager = () => {
                         onChange={(e) =>
                           handleChangeRewardInput(emp.id, e.target.value)
                         }
+                        disabled={selectedEmployees.size > 0}
                       />
                       <button
                         className="btn-reward"
                         onClick={() =>
                           handleRewardPoints(emp.id, emp.fullName)
                         }
-                        disabled={rewardLoadingId === emp.id}
+                        disabled={rewardLoadingId === emp.id || selectedEmployees.size > 0}
                       >
                         {rewardLoadingId === emp.id
                           ? "Đang gửi..."
@@ -419,7 +420,7 @@ export const Manager = () => {
                 onClick={handleBulkReward}
                 disabled={bulkLoading}
               >
-                {bulkLoading ? "Đang thưởng điểm..." : "Thưởng điểm đã chọn"}
+                {bulkLoading ? "Đang thưởng điểm..." : "Thưởng điểm"}
               </button>
             </div>
           </div>
