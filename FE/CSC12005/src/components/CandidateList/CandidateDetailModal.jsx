@@ -4,7 +4,7 @@ import { HRService } from "../../services/HRService";
 import { PositionService } from "../../services/PositionService";
 import { EmployeeService } from "../../services/EmployeeService";
 import "./CandidateDetailModal.scss";
-import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
 
 const CandidateDetailModal = ({ candidate, onClose, onUpdate }) => {
   if (!candidate) return null;

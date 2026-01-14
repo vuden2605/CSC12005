@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { HRService } from "../../services/HRService";
-import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import ConfirmModal from "../modals/ConfirmModal/ConfirmModal";
 import CancelScheduleModal from "./CancelScheduleModal";
 import AssignCandidatesModal from "./AssignCandidatesModal";
 import RemoveCandidateModal from "./RemoveCandidateModal";
