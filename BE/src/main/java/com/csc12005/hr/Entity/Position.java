@@ -23,7 +23,7 @@ public class Position {
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	private EmployeeRole role = EmployeeRole.EMP;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "department_id")
 	private Department department;
 }

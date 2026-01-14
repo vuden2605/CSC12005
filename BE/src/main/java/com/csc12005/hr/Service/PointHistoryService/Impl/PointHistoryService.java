@@ -46,25 +46,23 @@ public class PointHistoryService implements IPointHistoryService {
 	}
 	@Transactional
 	@Override
-	public void givePointToMonthlyCandidates(List<Long> candidateIds) {
-		if(candidateIds.isEmpty()) {
+	public void givePointToMonthlyCandidates(List<Employee> employees) {
+		if(employees.isEmpty()) {
 			return;
 		}
-		List<Employee> candidates = employeeRepository.findAllById(candidateIds);
 		List<PointHistory> pointHistories = new ArrayList<>();
-		for (Employee candidate : candidates) {
+		for (Employee candidate : employees) {
 			Long pointChange = candidate.getPosition().getPoint();
 			candidate.setTotalPoints(candidate.getTotalPoints() + pointChange);
 			PointHistory pointHistory = PointHistory.builder()
 					.employee(candidate)
 					.pointChange(pointChange)
 					.reasonType(PointReasonType.MONTHLY_GRANT)
-					.description(PointReasonDescription.ACTIVITY_BONUS.getDescription())
+					.description(PointReasonDescription.MONTHLY_GRANT.getDescription())
 					.build();
 			pointHistories.add(pointHistory);
 		}
 		pointHistoryRepository.saveAll(pointHistories);
-		employeeRepository.saveAll(candidates);
 	}
 	@Override
 	public int getTotalReceivedPointsInMonth(Long userId) {

@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 				@Index(name = "idx_holiday", columnList = "year, month, is_active")
 		}
 )
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class PublicHoliday {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
