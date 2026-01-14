@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ManagerService } from "../../../services/ManagerService";
 import "./style.scss";
-import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal"; 
+import ConfirmModal from "../../../components/modals/ConfirmModal/ConfirmModal"; 
 
 const ManagerCandidateReviewModal = ({ candidate, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);

@@ -167,22 +167,71 @@ export const ManagerService = {
             throw new Error(errMsg);
         }
     },
-    approveRequest: async (requestId, requestType) => {
-        const response = await api.put(
-          `/requests/${requestId}/approve`,
-          null,
-          { params: { requestType } }
-        );
-        return response.data.data;
-      },
-      
-      rejectRequest: async (requestId, requestType) => {
-        const response = await api.put(
-          `/requests/${requestId}/reject`,
-          null,
-          { params: { requestType } }
-        );
-        return response.data.data;
-    
-    }      
+    rewardPoints: async (employeeIds, points) => {
+        try {
+            const payload = {
+                employeeId: Array.isArray(employeeIds) ? employeeIds : [employeeIds],
+                points,
+            };
+
+            const response = await api.post(`/point-histories/reward`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            return response.data.data || response.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error rewarding points";
+            throw new Error(errMsg);
+        }
+    },
+    // Approve one or many requests using new bulk API
+    approveRequest: async (requestIds) => {
+        try {
+            const payload = {
+                requestIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+            };
+
+            const response = await api.put(`/requests/approve-many`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            return response.data.data || response.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error approving requests";
+            throw new Error(errMsg);
+        }
+    },
+
+    // Reject one or many requests using new bulk API
+    rejectRequest: async (requestIds) => {
+        try {
+            const payload = {
+                requestIds: Array.isArray(requestIds) ? requestIds : [requestIds],
+            };
+
+            const response = await api.put(`/requests/reject-many`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            return response.data.data || response.data;
+        } catch (error) {
+            const errMsg =
+                error.response?.data?.message ||
+                error.message ||
+                "Error rejecting requests";
+            throw new Error(errMsg);
+        }
+    }
 };

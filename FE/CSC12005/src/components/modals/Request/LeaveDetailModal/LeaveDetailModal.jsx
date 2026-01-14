@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { ManagerService } from "../../../../services/ManagerService";
+import { useAlert } from "../../../../context/AlertContext";
+import ConfirmModal from "../../ConfirmModal/ConfirmModal";
 import "../style.scss";
 
 export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
   const [leaveDetail, setLeaveDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showAlert } = useAlert();
+  const [confirmState, setConfirmState] = useState({ isOpen: false, action: null });
   useEffect(() => {
     const fetchLeaveDetail = async () => {
       try {
@@ -28,10 +32,14 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
 
   // ===== ACTIONS =====
   const handleApprove = async () => {
+    setConfirmState({ isOpen: true, action: "approve" });
+  };
+
+  const handleConfirmApprove = async () => {
     try {
       setLoading(true);
-      await ManagerService.approveRequest(requestId, "Leave");
-      alert("Đã duyệt yêu cầu nghỉ phép");
+      await ManagerService.approveRequest(requestId);
+      showAlert("success", "Đã duyệt yêu cầu nghỉ phép");
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -39,17 +47,19 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
       alert("Duyệt yêu cầu thất bại");
     } finally {
       setLoading(false);
+      setConfirmState({ isOpen: false, action: null });
     }
   };
 
   const handleReject = async () => {
-    const ok = window.confirm("Bạn chắc chắn muốn từ chối yêu cầu này?");
-    if (!ok) return;
+    setConfirmState({ isOpen: true, action: "reject" });
+  };
 
+  const handleConfirmReject = async () => {
     try {
       setLoading(true);
       await ManagerService.rejectRequest(requestId, "Leave");
-      alert("Đã từ chối yêu cầu nghỉ phép");
+      showAlert("success", "Đã từ chối yêu cầu nghỉ phép");
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -57,6 +67,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
       alert("Từ chối yêu cầu thất bại");
     } finally {
       setLoading(false);
+      setConfirmState({ isOpen: false, action: null });
     }
   };
 
@@ -114,6 +125,19 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
     leaveDetail?.status === "APPROVED" ||
     leaveDetail?.status === "REJECTED";
 
+  const mapLeaveReason = (reason) => {
+    if (!reason) return "-";
+
+    const reasonMap = {
+      SICK_LEAVE: "Nghỉ ốm",
+      ANNUAL_LEAVE: "Nghỉ phép",
+      MATERNITY_LEAVE: "Nghỉ thai sản",
+      PERSONAL_LEAVE: "Nghỉ việc riêng",
+    };
+
+    return reasonMap[reason] || reason;
+  };
+
   // ===== RENDER =====
   return (
     <div className="modal-overlay">
@@ -158,7 +182,7 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
 
               <div className="detail-row">
                 <span className="detail-label">Lý do:</span>
-                <span className="detail-value">{leaveDetail.reason || "-"}</span>
+                <span className="detail-value">{mapLeaveReason(leaveDetail.reason)}</span>
               </div>
 
               <div className="detail-row">
@@ -266,9 +290,30 @@ export const LeaveDetailModal = ({ requestId, onClose, isManager, onSuccess }) =
               )}
             </div>
 
-          </div>
-        )}
-      </div>
-    </div>
+           </div>
+         )}
+       </div>
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={
+          confirmState.action === "approve"
+            ? "Xác nhận duyệt yêu cầu"
+            : "Xác nhận từ chối yêu cầu"
+        }
+        message={
+          confirmState.action === "approve"
+            ? "Bạn chắc chắn muốn duyệt yêu cầu này?"
+            : "Bạn chắc chắn muốn từ chối yêu cầu này?"
+        }
+        type={confirmState.action === "reject" ? "danger" : "info"}
+        onConfirm={
+          confirmState.action === "approve"
+            ? handleConfirmApprove
+            : handleConfirmReject
+        }
+        onCancel={() => setConfirmState({ isOpen: false, action: null })}
+        loading={loading}
+      />
+     </div>
   );
 };
