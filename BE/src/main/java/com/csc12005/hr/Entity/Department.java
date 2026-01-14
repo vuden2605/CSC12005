@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 @Table(name = "departments")
 @Builder
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Department {

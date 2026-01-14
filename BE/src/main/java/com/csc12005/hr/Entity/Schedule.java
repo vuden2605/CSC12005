@@ -4,17 +4,15 @@ import com.csc12005.hr.Enums.CandidateStatus;
 import com.csc12005.hr.Enums.ScheduleStatus;
 import com.csc12005.hr.Enums.ScheduleTimeSlot;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "schedules")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

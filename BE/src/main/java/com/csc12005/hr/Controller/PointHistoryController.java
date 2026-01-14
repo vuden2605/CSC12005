@@ -30,16 +30,16 @@ public class PointHistoryController {
 				.message("Monthly candidates retrieved successfully")
 				.build();
 	}
-	@PostMapping("/monthly-grant")
-	public ApiResponse<Void> givePointsToMonthlyCandidates(
-			@RequestBody PointsMonthlyCreationRequest request) {
-
-		pointHistoryService.givePointToMonthlyCandidates(request.getCandidateIds());
-
-		return ApiResponse.<Void>builder()
-				.message("Points given to monthly candidates successfully")
-				.build();
-	}
+//	@PostMapping("/monthly-grant")
+//	public ApiResponse<Void> givePointsToMonthlyCandidates(
+//			@RequestBody PointsMonthlyCreationRequest request) {
+//
+//		pointHistoryService.givePointToMonthlyCandidates(request.getCandidateIds());
+//
+//		return ApiResponse.<Void>builder()
+//				.message("Points given to monthly candidates successfully")
+//				.build();
+//	}
 	@GetMapping("/me")
 	public ApiResponse<List<PointHistoryResponse>> getMyPointHistory(PageRequestDTO pageRequestDTO) {
 		Long userId = securityUtils.getCurrentUserId();

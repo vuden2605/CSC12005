@@ -8,9 +8,7 @@ import com.csc12005.hr.Exception.AppException;
 import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Repository.*;
 import com.csc12005.hr.Service.MonthlyAttendanceSummaryService.IMonthlyAttendanceSummaryService;
-import com.csc12005.hr.Service.MonthlyAttendanceSummaryService.impl.MonthlyAttendanceSummaryService;
 import com.csc12005.hr.Service.SalaryService.ISalaryService;
-import com.csc12005.hr.Utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,7 +20,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -36,23 +33,18 @@ public class SalaryService implements ISalaryService {
     private final SalaryRepository salaryRepository;
     private final EmployeeRepository employeeRepository;
     private final IMonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
-    private final SecurityUtils securityUtils;
     @Transactional
-    public void generatePayroll()
+    public void generatePayroll(int month, int year)
     {
-        LocalDate today = LocalDate.now();
-	    LocalDate previousMonth = today.minusMonths(1);
-	    Long month = (long) previousMonth.getMonthValue();
-	    Long year = (long) previousMonth.getYear();
 	    if (salaryRepository.existsByMonthAndYear(month, year)) {
 		    throw new AppException(ErrorCode.PAYROLL_ALREADY_GENERATED);
 	    }
-	    monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(year.intValue(), month.intValue());
+	    monthlyAttendanceSummaryService.createMonthlyAttendanceSummary(month, year);
 		List<Employee> employees = employeeRepository.findAll();
 		List<Salary> salaries = new ArrayList<>();
 		for (Employee employee : employees) {
 			if(employee.getEmployeeCode().equals("ADMIN") || employee.getEmployeeCode().equals("CEO")) continue;
-			MonthlyAttendanceSummary attendanceSummary = monthlyAttendanceSummaryService.getMonthlyAttendanceSummary(employee.getId(), year.intValue(), month.intValue());
+			MonthlyAttendanceSummary attendanceSummary = monthlyAttendanceSummaryService.getMonthlyAttendanceSummary(employee.getId(), year, month);
 			if (attendanceSummary == null) {
 				log.warn("No attendance summary found for employee ID {} for {}/{}", employee.getId(), month, year);
 				continue;
@@ -66,8 +58,8 @@ public class SalaryService implements ISalaryService {
 
 			BigDecimal positionAllowance = getPositionAllowance(employee);
 			Salary salary = Salary.builder()
-					.year(year.intValue())
-					.month(month.intValue())
+					.year(year)
+					.month(month)
 					.attendanceSummary(attendanceSummary)
 					.baseSalary(employee.getBaseSalary())
 					.actualSalary(attendanceSummary.getActualSalary())

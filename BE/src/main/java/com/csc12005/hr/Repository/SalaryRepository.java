@@ -65,8 +65,8 @@ WHERE (:status IS NULL OR s.status = :status)
 """)
     Page<SalaryResponse> filterSalaries(
             @Param("status") SalaryStatus status,
-            @Param("month") Long month,
-            @Param("year") Long year,
+            @Param("month") Integer month,
+            @Param("year") Integer year,
             @Param("employeeName") String employeeName,
             Pageable pageable
     );
@@ -121,8 +121,8 @@ WHERE (:status IS NULL OR s.status = :status)
     Page<SalaryResponse> findMySalaries(
             @Param("employeeId") Long employeeId,
             @Param("status") SalaryStatus status,
-            @Param("month") Long month,
-            @Param("year") Long year,
+            @Param("month") Integer month,
+            @Param("year") Integer year,
             Pageable pageable
     );
     @Modifying
@@ -132,9 +132,9 @@ SET s.status = :status
 WHERE s.month = :month
   AND s.year = :year
 """)
-    int paySalary(@Param("month") Long month,
-                  @Param("year") Long year,
+    int paySalary(@Param("month") Integer month,
+                  @Param("year") Integer year,
                   @Param("status") SalaryStatus status);
-    boolean existsByMonthAndYear(Long month, Long year);
+    boolean existsByMonthAndYear(Integer month, Integer year);
 
 }

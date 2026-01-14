@@ -12,7 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

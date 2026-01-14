@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public interface IPointHistoryService {
 	List<EmployeeResponse> getMonthlyCandidates();
-	void givePointToMonthlyCandidates(List<Long> candidateIds);
+	void givePointToMonthlyCandidates(List<Employee> candidateIds);
 	int getTotalReceivedPointsInMonth(Long userId);
 	int getTotalReceivedPointsInYear(Long userId);
 	int getCurrentTotalPoints(Long userId);

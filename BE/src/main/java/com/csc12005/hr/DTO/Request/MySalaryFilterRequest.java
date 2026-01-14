@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MySalaryFilterRequest {
     private SalaryStatus status;
-    private Long month;
-    private Long year;
+    private int month;
+    private int year;
 }
