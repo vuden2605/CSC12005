@@ -29,7 +29,13 @@ export const Header = () => {
   const hasFetchedRef = useRef(false);
 
   const menuItems = {
-    ADMIN: [{ label: "Trang tổng quan", path: "/admin/dashboard" }],
+    CEO: [
+      { label: "Trang tổng quan", path: "/employee/dashboard" },
+      { label: "Quản lý nhân viên", path: "/hr/humans" },
+      { label: "Quản lý Lương", path: "/hr/payroll" },
+      { label: "Quản lý yêu cầu", path: "/manager/requests" },
+      { label: "Quản lý điểm", path: "/hr/bonus-points" },
+    ],
     EMP: [{ label: "Trang tổng quan", path: "/employee/dashboard" }],
     HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
