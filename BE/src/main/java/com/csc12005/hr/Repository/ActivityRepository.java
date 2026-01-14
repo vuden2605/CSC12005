@@ -128,7 +128,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	WHERE (:activityName IS NULL OR LOWER(a.activityName) LIKE LOWER(CONCAT('%', :activityName, '%')))
 	  AND (:startDate IS NULL OR a.startDate >= :startDate)
 	  AND (:endDate IS NULL OR a.endDate <= :endDate)
-	  AND a.activityStatus <> 'DRAFT'
       AND a.activityStatus <> 'CANCELLED'
 	""")
     Page<ActivityDetailResponse> getActivitiesEMP(

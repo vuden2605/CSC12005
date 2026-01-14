@@ -91,7 +91,7 @@ public class Activity {
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	@Column(nullable = false)
-	private ActivityStatus activityStatus = ActivityStatus.DRAFT;
+	private ActivityStatus activityStatus = ActivityStatus.OPEN_FOR_REGISTRATION;
 
 	@Builder.Default
 	private Boolean isActive = true;
