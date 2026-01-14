@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

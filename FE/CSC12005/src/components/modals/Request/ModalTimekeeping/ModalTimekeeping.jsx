@@ -85,6 +85,7 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
+      console.log(error);
       console.error("Error creating timesheet request:", error);
   
       let errorMessage = "Không thể tạo yêu cầu. Vui lòng thử lại.";

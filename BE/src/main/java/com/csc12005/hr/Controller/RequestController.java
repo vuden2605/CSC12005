@@ -10,6 +10,7 @@ import com.csc12005.hr.Enums.RequestType;
 import com.csc12005.hr.Service.RequestService.IRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/requests")
+@Slf4j
 public class RequestController {
 	private final IRequestService requestService;
 	@GetMapping("/by-manager")

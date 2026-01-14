@@ -20,12 +20,14 @@ import com.csc12005.hr.Repository.TimeSheetRequestRepository;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.SecurityUtils;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 
 @Service
+@Slf4j
 public class TimeSheetRequestProvider extends AbstractRequestProvider {
 	private final TimeSheetRepository timeSheetRepository;
 	private final TimeSheetRequestMapper timeSheetRequestMapper;
@@ -80,19 +82,23 @@ public class TimeSheetRequestProvider extends AbstractRequestProvider {
 			Employee employee,
 			String attachmentUrl
 	) {
-		validateWorkDate(request.getWorkDate());
+		//validateWorkDate(request.getWorkDate());
 		Long employeeId = employee.getId();
 		TimeSheet timeSheet = timeSheetRepository.findByEmployeeIdAndWorkDate(employeeId, request.getWorkDate())
 				.orElseThrow(() -> new AppException(ErrorCode.TIMESHEET_NOT_FOUND));
+		log.info("Found timesheet: {}", timeSheet.getId());
 		TimeSheetRequest timeSheetRequest= timeSheetRequestMapper.toTimeSheetRequest(request);
 		setCommonFields(timeSheetRequest, employee, attachmentUrl, RequestType.TimeSheet);
 		TimeSheetRequest saved = timeSheetRequestRepository.save(timeSheetRequest);
+		RequestResponse requestResponse = timeSheetRequestMapper.toTimeSheetRequestResponse(saved);
 		eventPublisher.publishEvent(TimeSheetRequestCreated.builder()
 				.requestId(timeSheetRequest.getId())
-				.managerId(employee.getManager().getId())
+				.managerId(employee.getManager() != null
+						? employee.getManager().getId()
+						: null)
 				.employeeName(employee.getFullName())
 				.build());
-		return timeSheetRequestMapper.toTimeSheetRequestResponse(saved);
+		return requestResponse;
 	}
 	@Override
 	public RequestResponse getRequestById(Long requestId) {
