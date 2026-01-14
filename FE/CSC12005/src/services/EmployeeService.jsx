@@ -226,6 +226,7 @@ export const EmployeeService = {
           "Content-Type": "application/json",
         },
       });
+      console.log("Activities EMP response:", response.data);
       return response.data.data || response.data;
     } catch (error) {
       const errMsg =

@@ -21,7 +21,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class    ActivityResponse {
+public class ActivityResponse {
 
 	private Long id;
 

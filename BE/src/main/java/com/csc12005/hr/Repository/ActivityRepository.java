@@ -54,8 +54,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	        ub.fullName,
 	        ub.employeeCode
 	    ),
-	    CASE WHEN ad.id IS NULL THEN false ELSE true END,
-	    CASE WHEN ad.isSuccess IS NULL THEN false ELSE ad.isSuccess END,
+	    (ad.id IS NOT NULL),
+		(ad.isSuccess = true),
 	    ad.activityRank
 	)
 	FROM Activity a
@@ -115,8 +115,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	        ub.fullName,
 	        ub.employeeCode
 	    ),
-	    CASE WHEN ad.id IS NULL THEN false ELSE true END,
-	    CASE WHEN ad.isSuccess IS NULL THEN false ELSE ad.isSuccess END,
+	    (ad.id IS NOT NULL),
+		(ad.isSuccess = true),
 	    ad.activityRank
 	)
 	FROM Activity a
@@ -130,8 +130,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	  AND (:endDate IS NULL OR a.endDate <= :endDate)
 	  AND a.activityStatus <> 'DRAFT'
       AND a.activityStatus <> 'CANCELLED'
-
-      
 	""")
     Page<ActivityDetailResponse> getActivitiesEMP(
             @Param("employeeId") Long employeeId,
@@ -140,5 +138,4 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
-
 }

@@ -48,9 +48,7 @@ export const Activities = () => {
       setLoading(true);
       const params = {
         page: pagination.page,
-        size: pagination.size,
-        sortBy: sortBy,
-        direction: sortDirection,
+        size: pagination.size
       };
 
       if (activityName) params.activityName = activityName;
