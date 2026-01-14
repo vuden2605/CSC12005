@@ -47,7 +47,7 @@ public class ActivityController {
 				.build();
 	}
     @PatchMapping("/{activityId}")
-    public ApiResponse<ActivityResponse> UpdateActivity(@RequestBody @Valid ActivityUpdateRequest request,@PathVariable Long activityId){
+    public ApiResponse<ActivityResponse> UpdateActivity(@ModelAttribute @Valid ActivityUpdateRequest request,@PathVariable Long activityId){
         return ApiResponse.<ActivityResponse>builder()
                 .data(activityService.updateActivity(request,activityId))
                 .message("update success")

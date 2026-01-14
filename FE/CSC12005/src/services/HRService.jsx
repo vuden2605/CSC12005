@@ -103,47 +103,195 @@ export const HRService = {
       throw new Error(errMsg);
     }
   },
-  UpdateActivity: async (activityId, requestData) => {
-    try {
-      const response = await api.patch(
-        `activities/${activityId}`,
-        requestData,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      return response.data.data;
-    } catch (error) {
-      const errMsg =
-        error.response?.data?.message ||
-        error.message ||
-        "Error disabling activity";
-      console.error("Error disabling activity:", errMsg);
-      throw new Error(errMsg);
+  UpdateActivity:  async (activityId, activityData) => {
+  try {
+    // Tạo FormData object
+    const formData = new FormData();
+
+    // ========== Append Required Fields ==========
+    formData. append("activityName", activityData.activityName);
+    formData.append("activityType", activityData. activityType);
+    formData.append("startDate", activityData.startDate);
+    formData.append("endDate", activityData.endDate);
+    formData.append("startTime", activityData.startTime);
+    formData.append("endTime", activityData.endTime);
+    formData.append("registrationDeadline", activityData.registrationDeadline);
+    formData.append("location", activityData.location);
+    formData.append("address", activityData.address);
+    formData.append("organizer", activityData.organizer);
+    formData.append("contactPhone", activityData.contactPhone);
+    formData.append("contactEmail", activityData.contactEmail);
+    formData.append("maxParticipants", activityData.maxParticipants);
+    formData.append("basePoints", activityData.basePoints);
+
+    // ========== Append Optional Fields ==========
+    if (activityData.description) {
+      formData.append("description", activityData.description);
     }
-  },
-  createActivity: async (requestData) => {
+
+    if (activityData.duration) {
+      formData.append("duration", activityData.duration);
+    }
+
+    if (
+      activityData.minParticipants !== null &&
+      activityData.minParticipants !== undefined &&
+      activityData.minParticipants !== ""
+    ) {
+      formData.append("minParticipants", activityData.minParticipants);
+    }
+
+    if (
+      activityData.isMandatory !== null &&
+      activityData.isMandatory !== undefined
+    ) {
+      formData.append("isMandatory", activityData.isMandatory);
+    }
+
+    if (activityData.firstPlaceBonus) {
+      formData.append("firstPlaceBonus", activityData.firstPlaceBonus);
+    }
+
+    if (activityData.secondPlaceBonus) {
+      formData.append("secondPlaceBonus", activityData.secondPlaceBonus);
+    }
+
+    if (activityData.thirdPlaceBonus) {
+      formData.append("thirdPlaceBonus", activityData.thirdPlaceBonus);
+    }
+
+    if (activityData.notes) {
+      formData.append("notes", activityData.notes);
+    }
+
+    // ========== Append Files (ONLY IF NEW FILE UPLOADED) ==========
+    // Image - chỉ append nếu user upload file mới
+    if (activityData.image && activityData.image instanceof File) {
+      formData.append("image", activityData. image);
+    }
+
+    // Attachment - chỉ append nếu user upload file mới
+    if (activityData. attachment && activityData.attachment instanceof File) {
+      formData.append("attachment", activityData. attachment);
+    }
+
+    // ========== API Call ==========
+    const response = await api.patch(`/activities/${activityId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("✅ Activity updated:", response.data);
+    return response.data. data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?. message ||
+      error.message ||
+      "Error updating activity";
+    console.error("❌ Error updating activity:", errMsg);
+
+    // Handle validation errors
+    if (error.response?.data?.errors) {
+      const validationErrors = error.response. data.errors;
+      throw new Error(Object.values(validationErrors).join(", "));
+    }
+
+    throw new Error(errMsg);
+  }
+},
+  createActivity:  async (activityData) => {
     try {
-      const response = await api.post(
-        `activities`,
-        requestData,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      // Tạo FormData object
+      const formData = new FormData();
+
+      // ========== Append Required Fields ==========
+      formData. append("activityName", activityData.activityName);
+      formData.append("activityType", activityData. activityType);
+      formData.append("startDate", activityData.startDate);
+      formData.append("endDate", activityData.endDate);
+      formData.append("startTime", activityData.startTime);
+      formData.append("endTime", activityData.endTime);
+      formData.append(
+        "registrationDeadline",
+        activityData.registrationDeadline
       );
+      formData.append("location", activityData.location);
+      formData.append("address", activityData.address);
+      formData.append("organizer", activityData.organizer);
+      formData.append("contactPhone", activityData.contactPhone);
+      formData.append("contactEmail", activityData.contactEmail);
+      formData.append("maxParticipants", activityData.maxParticipants);
+      formData.append("basePoints", activityData.basePoints);
+
+      // ========== Append Optional Fields ==========
+      if (activityData.description) {
+        formData.append("description", activityData.description);
+      }
+
+      if (activityData.duration) {
+        formData.append("duration", activityData.duration);
+      }
+
+      if (
+        activityData.minParticipants !== null &&
+        activityData.minParticipants !== undefined
+      ) {
+        formData.append("minParticipants", activityData.minParticipants);
+      }
+
+      if (
+        activityData.isMandatory !== null &&
+        activityData.isMandatory !== undefined
+      ) {
+        formData.append("isMandatory", activityData.isMandatory);
+      }
+
+      if (activityData.firstPlaceBonus) {
+        formData.append("firstPlaceBonus", activityData.firstPlaceBonus);
+      }
+
+      if (activityData.secondPlaceBonus) {
+        formData.append("secondPlaceBonus", activityData.secondPlaceBonus);
+      }
+
+      if (activityData.thirdPlaceBonus) {
+        formData.append("thirdPlaceBonus", activityData.thirdPlaceBonus);
+      }
+
+      if (activityData. notes) {
+        formData.append("notes", activityData.notes);
+      }
+
+      // ========== Append Files ==========
+      if (activityData.image) {
+        formData.append("image", activityData.image);
+      }
+
+      if (activityData.attachment) {
+        formData.append("attachment", activityData.attachment);
+      }
+
+      // ========== API Call ==========
+      const response = await api.post(`/activities`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       return response.data.data;
     } catch (error) {
       const errMsg =
         error.response?.data?.message ||
         error.message ||
-        "Error disabling activity";
-      console.error("Error disabling activity:", errMsg);
+        "Error creating activity";
+
+      // Handle validation errors
+      if (error. response?.data?.errors) {
+        const validationErrors = error. response.data.errors;
+        throw new Error(Object.values(validationErrors).join(", "));
+      }
+
       throw new Error(errMsg);
     }
   },
