@@ -17,6 +17,11 @@ export const Dashboard = () => {
     { id: "request", label: "Yêu cầu", path: "/employee/dashboard/request" },
     { id: "event", label: "Sự kiện", path: "/employee/dashboard/event" },
     { id: "bonus-points", label: "Điểm Thưởng", path: "/employee/dashboard/bonus-points" },
+
+    // Thao tác nhanh bổ sung cho CEO
+    { id: "ceo-employees", label: "Xem nhân viên mỗi phòng ban", path: "/employee/dashboard/ceo/employees" },
+    { id: "ceo-activities", label: "Xem hoạt động của cty", path: "/employee/dashboard/ceo/activities" },
+    { id: "ceo-activity-detail", label: "Xem chi tiết hoạt động", path: "/employee/dashboard/ceo/activity-detail" },
     // { id: "score", label: "Điểm", path: "/employee/dashboard/score" },
   ];
 

@@ -19,7 +19,6 @@ export const BonusPoints = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [reloadExKey, setReloadExKey] = useState(0);
   const [totals, setTotals] = useState({ current: 0, thisMonth: 0, thisYear: 0 });
-  const [loadingTotals, setLoadingTotals] = useState(false);
 
   const REASON_LABELS = {
     MONTHLY_GRANT: "Cấp điểm hàng tháng",
@@ -90,7 +89,6 @@ export const BonusPoints = () => {
   useEffect(() => {
     const fetchTotals = async () => {
       try {
-        setLoadingTotals(true);
         const [cur, mon, yr] = await Promise.all([
           EmployeeService.getMyTotalPoints(),
           EmployeeService.getMyTotalReceivedMonth(),
@@ -106,10 +104,10 @@ export const BonusPoints = () => {
           thisMonth: toNum(mon),
           thisYear: toNum(yr),
         });
-      } catch (e) {
+      } catch {
         // giữ nguyên totals mặc định nếu lỗi
       } finally {
-        setLoadingTotals(false);
+        // giữ nguyên totals mặc định nếu lỗi
       }
     };
     fetchTotals();
@@ -170,7 +168,7 @@ export const BonusPoints = () => {
     return sort.direction === "ASC" ? "↑" : "↓";
   };
 
-  const stats = useMemo(() => {
+  useMemo(() => {
     if (!histories.length) {
       return {
         current: 0,

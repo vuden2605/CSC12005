@@ -42,6 +42,9 @@ import { RequestManager } from "../pages/RequestManager";
 import { EventPageHR } from "../pages/EventHR";
 import { HRPayRoll } from "../pages/HRPayRoll";
 import { BonusPoints } from "../pages/Employee/Darshboard/BonusPoints";
+import CEOEmployeesTab from "../pages/CEOdashboard/EmployeesTab";
+import CEOActivitiesTab from "../pages/CEOdashboard/ActivitiesTab";
+import CEOActivityDetailTab from "../pages/CEOdashboard/ActivityDetailTab";
 
 import { BonusPointsAdmin } from "../pages/BonusPointsAdmin";
 import { ManagerProjects } from "../pages/Manager/ManagerProjects";
@@ -93,6 +96,10 @@ export const routes = [
               { path: "event", element: <Activities /> },
               { path: "salary", element: <Salary /> },
               { path: "bonus-points", element: <BonusPoints /> },
+              // CEO quick actions
+              { path: "ceo/employees", element: <CEOEmployeesTab /> },
+              { path: "ceo/activities", element: <CEOActivitiesTab /> },
+              { path: "ceo/activity-detail", element: <CEOActivityDetailTab /> },
               // { path: "score", element: <Score /> },
             ],
           },
