@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import "../Request/style.scss";
 import { formatCurrencyVND } from "../../../Utils/formatCurrency";
 import { HRService } from "../../../services/HRService";
@@ -13,6 +14,8 @@ export const SalaryDetailModal = ({
   hideEmployeeInfo = false,
 }) => {
   if (!salary) return null;
+
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   const [qrUrl, setQrUrl] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
@@ -79,10 +82,20 @@ export const SalaryDetailModal = ({
     return s || "-";
   };
 
+  const isCEO = () => {
+    const pos = currentUser?.position;
+    if (!pos) return false;
+    return (
+      pos.positionCode === "CEO" ||
+      pos.role === "CEO" ||
+      (pos.positionName || "").toLowerCase().includes("ceo")
+    );
+  };
+
   const getAllowedNewStatuses = () => {
-    // Chờ duyệt (DRAFT) -> chỉ cho phép chuyển sang Đã duyệt
-    if (status === "DRAFT") return ["APPROVED"];
-    // Đã duyệt (APPROVED) -> chỉ cho phép chuyển sang Đã thanh toán
+    // Chỉ CEO được phép duyệt từ DRAFT -> APPROVED
+    if (status === "DRAFT") return isCEO() ? ["APPROVED"] : [];
+    // Đã duyệt (APPROVED) -> ai cũng có thể chuyển sang Đã thanh toán
     if (status === "APPROVED") return ["PAID"];
     // Đã thanh toán (PAID) hoặc trạng thái khác -> không cho cập nhật
     return [];

@@ -1,4 +1,6 @@
+
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import "./style.scss";
 import { HRService } from "../../services/HRService";
@@ -7,7 +9,15 @@ import { useAlert } from "../../context/AlertContext";
 import { Pagination } from "../../components/Pagination";
 import { SalaryDetailModal } from "../../components/modals/SalaryDetailModal/SalaryDetailModal";
 
+// xuất bảng lương
+const now = new Date();
+const currentMonth = now.getMonth() + 1;
+const currentYear = now.getFullYear();
+const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
 export const HRPayRoll = () => {
+  const currentUser = useSelector((state) => state.user.currentUser);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -20,18 +30,13 @@ export const HRPayRoll = () => {
   const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
 
   const [filters, setFilters] = useState({
-    month: "",
-    year: "",
+    month: String(previousMonth),
+    year: String(previousYear),
     employeeName: "",
     status: "",
   });
 
-  // xuất bảng lương
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+  // ...existing code...
 
   // Kiểm tra xem tháng trước đã có bảng lương chưa để disable nút
   useEffect(() => {
@@ -142,12 +147,28 @@ export const HRPayRoll = () => {
 
     let allowedSet = null;
 
+
     selectedItems.forEach((item) => {
       let itemAllowed = [];
-      // Chờ duyệt (DRAFT) chỉ được chuyển sang Đã duyệt (APPROVED)
-      if (item.status === "DRAFT") itemAllowed = ["APPROVED"];
-      // Đã duyệt (APPROVED) chỉ được chuyển sang Đã thanh toán (PAID)
-      else if (item.status === "APPROVED") itemAllowed = ["PAID"];
+      if (item.status === "DRAFT") {
+        // Chỉ CEO được phép duyệt từ DRAFT sang APPROVED
+        if (
+          currentUser &&
+          currentUser.position &&
+          (
+            currentUser.position.positionCode === "CEO" ||
+            currentUser.position.role === "CEO" ||
+            currentUser.position.positionName.toLowerCase().includes("ceo")
+          )
+        ) {
+          itemAllowed = ["APPROVED"];
+        } else {
+          itemAllowed = [];
+        }
+      } else if (item.status === "APPROVED") {
+        // Ai cũng có thể chuyển từ APPROVED sang PAID
+        itemAllowed = ["PAID"];
+      }
 
       if (allowedSet === null) {
         allowedSet = new Set(itemAllowed);
