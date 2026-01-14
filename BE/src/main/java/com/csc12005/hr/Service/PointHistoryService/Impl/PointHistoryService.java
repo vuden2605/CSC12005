@@ -1,6 +1,7 @@
 package com.csc12005.hr.Service.PointHistoryService.Impl;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
+import com.csc12005.hr.DTO.Request.PointHistoryFilterRequest;
 import com.csc12005.hr.DTO.Request.RewardPointRequest;
 import com.csc12005.hr.DTO.Response.EmployeeResponse;
 import com.csc12005.hr.DTO.Response.PointHistoryResponse;
@@ -78,9 +79,9 @@ public class PointHistoryService implements IPointHistoryService {
 		return pointHistoryRepository.sumPointChangeByEmployeeIdInMonth(userId);
 	}
 
-	public List<PointHistoryResponse> myPointsHistory(Long employeeId, PageRequestDTO pageRequestDTO) {
+	public List<PointHistoryResponse> getPointHistoriesByEmployee(Long employeeId, PointHistoryFilterRequest filterRequest , PageRequestDTO pageRequestDTO) {
 		Pageable pageable = pageRequestDTO.buildPageable();
-		List<PointHistory> pointHistories = pointHistoryRepository.findByEmployeeId(employeeId, pageable);
+		List<PointHistory> pointHistories = pointHistoryRepository.findByEmployeeId(employeeId,filterRequest.getType(), filterRequest.getYear(), filterRequest.getMonth(),pageable);
 		return pointHistories.stream()
 				.map(pointHistoryMapper::toPointHistoryResponse)
 				.toList();
@@ -95,7 +96,7 @@ public class PointHistoryService implements IPointHistoryService {
 		Long currentUserId = securityUtils.getCurrentUserId();
 		Employee rewardedBy = employeeRepository.findById(currentUserId)
 				.orElseThrow(() -> new AppException(ErrorCode.EMPLOYEE_NOT_FOUND));
-		if(rewardedBy.getAllocatePoints() > 0 && rewardedBy.getAllocatePoints() >= request.getPoints()) {
+		if(rewardedBy.getAllocatePoints() > 0 && rewardedBy.getAllocatePoints() >= (long) request.getPoints() *employees.size()) {
 			for(Employee employee : employees) {
 				employee.setTotalPoints(employee.getTotalPoints() + request.getPoints());
 				rewardedBy.setAllocatePoints(rewardedBy.getAllocatePoints() - request.getPoints());
