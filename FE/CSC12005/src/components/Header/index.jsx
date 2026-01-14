@@ -10,6 +10,7 @@ import { Notifications } from "../Notification/Notifications";
 import { NotificationService } from "../../services/NotificationService";
 import {
   addNotifications,
+  clearNotifications,
   setUnreadCount,
 } from "../../redux/slices/notificationSlice";
 
@@ -120,6 +121,7 @@ export const Header = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("persist:root");
       dispatch(clearUser());
+      dispatch(clearNotifications());
       stompService.disconnect();
       navigate("/login");
     } catch (error) {
