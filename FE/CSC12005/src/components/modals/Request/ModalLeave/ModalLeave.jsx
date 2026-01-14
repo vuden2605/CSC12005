@@ -6,6 +6,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
     startDate: "",
     endDate: "",
+    leaveType: "",
     reason: "",
   });
 
@@ -69,7 +70,8 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
     if (form.startDate && form.endDate && form.startDate > form.endDate) {
       newErr.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
     }
-    if (!form.reason) newErr.reason = "Vui lòng chọn lý do";
+    if (!form.leaveType) newErr.leaveType = "Vui lòng chọn loại nghỉ";
+    if (!form.reason) newErr.reason = "Vui lòng nhập lý do";
     if (!file) newErr.file = "Vui lòng chọn file minh chứng";
 
     setErrors(newErr);
@@ -87,6 +89,7 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         {
           startDate: `${form.startDate}T00:00:00`,
           endDate: `${form.endDate}T23:59:59`,
+          leaveType: form.leaveType,
           reason: form.reason,
           file
         },
@@ -142,19 +145,29 @@ export const ModalLeave = ({ onClose, onSuccess }) => {
         />
         {errors.endDate && <p className="error">{errors.endDate}</p>}
 
-        <label>Lý do nghỉ phép</label>
+        <label>Loại nghỉ</label>
         <select
-          value={form.reason}
-          onChange={(e) => setForm({ ...form, reason: e.target.value })}
+          value={form.leaveType}
+          onChange={(e) => setForm({ ...form, leaveType: e.target.value })}
           disabled={loading}
         >
-          <option value="">-- Chọn lý do --</option>
+          <option value="">-- Chọn loại nghỉ --</option>
           {LEAVE_TYPES.map((type) => (
             <option key={type.value} value={type.value}>
               {type.label}
             </option>
           ))}
         </select>
+        {errors.leaveType && <p className="error">{errors.leaveType}</p>}
+
+        <label>Lý do nghỉ phép</label>
+        <textarea
+          value={form.reason}
+          onChange={(e) => setForm({ ...form, reason: e.target.value })}
+          placeholder="Nhập lý do cụ thể"
+          rows={3}
+          disabled={loading}
+        />
         {errors.reason && <p className="error">{errors.reason}</p>}
 
         <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>

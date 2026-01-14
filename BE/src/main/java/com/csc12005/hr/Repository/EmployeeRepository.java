@@ -2,10 +2,12 @@ package com.csc12005.hr.Repository;
 
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.Entity.Employee;
+import com.csc12005.hr.Enums.EmployeeRole;
 import com.csc12005.hr.Enums.SalaryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,11 +20,9 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 	boolean existsByEmail(String email);
 	@Query("""
 			SELECT COUNT(e) FROM Employee e
-			WHERE YEAR(e.hireDate) = :year
-			AND e.department.id = :department
+			WHERE e.department.id = :department
 	""")
-	long countByYearAndDepartmentAndPosition(@Param("year")int year,
-	                                         @Param("department") Long department);
+	long countByDepartment(@Param("department") Long department);
 	boolean existsByEmployeeCode(String employeeCode);
 	Optional<Employee> findByEmployeeCode(String employeeCode);
 	Page<Employee> findByManagerId(Long managerId, Pageable pageable);
@@ -39,4 +39,16 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
                                    @Param("departmentId") Long departmentId,
                                    @Param("status") Boolean status,
                                    Pageable pageable);
+	@Modifying
+	@Query("""
+    UPDATE Employee e
+    SET e.allocatePoints = e.allocatePoints + 500
+    WHERE e.position.role = :role
+""")
+	void increasePointsForRole(@Param("role") EmployeeRole role);
+	@Query("""
+    SELECT e FROM Employee e
+    JOIN FETCH e.position
+""")
+	List<Employee> findAllWithPosition();
 }

@@ -1,5 +1,7 @@
 package com.csc12005.hr.Service.RequestService.Provider;
 
+import com.csc12005.hr.DTO.Request.ApproveRequestEvent;
+import com.csc12005.hr.DTO.Request.RejectRequestEvent;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Entity.Employee;
@@ -14,6 +16,7 @@ import com.csc12005.hr.Repository.RequestRepository;
 import com.csc12005.hr.Service.S3Service.IS3Service;
 import com.csc12005.hr.Service.S3Service.Impl.S3Service;
 import com.csc12005.hr.Utils.SecurityUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -52,10 +55,15 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		Request request = requestRepository.findById(requestId)
 				.orElseThrow(() -> new AppException(ErrorCode.REQUEST_NOT_FOUND));
 		request.setStatus(RequestStatus.REJECTED);
-		return requestMapper.toRequestResponse(requestRepository.save(request));
+
+		RequestResponse requestResponse = requestMapper.toRequestResponse(requestRepository.save(request));
+		eventPublisher.publishEvent(
+				new RejectRequestEvent(request.getId(), request.getEmployee().getId(), request.getRequestType())
+		);
+		return requestResponse;
 	}
 
-	protected abstract RequestResponse doCreateRequest(
+	public abstract RequestResponse doCreateRequest(
 			RequestCreationRequest request,
 			Employee employee,
 			String attachmentUrl
@@ -114,5 +122,10 @@ public abstract class AbstractRequestProvider implements IRequestProvider{
 		}
 		return days;
 	}
+	protected void publishEventAfterApproval(Request request) {
+		eventPublisher.publishEvent(
+			new ApproveRequestEvent(request.getId(), request.getEmployee().getId(), request.getRequestType())
+		);
 
+	}
 }

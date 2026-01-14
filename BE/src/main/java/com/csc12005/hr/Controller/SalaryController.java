@@ -25,9 +25,9 @@ public class SalaryController {
     private final ISalaryService salaryService;
     private final IMonthlyAttendanceSummaryService monthlyAttendanceSummaryService;
     @PostMapping
-    public ApiResponse<Void> createAll(@RequestBody SalaryCreationRequest request)
+    public ApiResponse<Void> createAll(int month, int year)
     {
-        salaryService.generatePayroll(request.getMonth(), request.getYear());
+        salaryService.generatePayroll(month,year);
         return ApiResponse.<Void>builder()
                 .message("create success")
                 .build();

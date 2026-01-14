@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import "./style.scss";
 import { HRService } from "../../services/HRService";
 import { formatCurrencyVND } from "../../Utils/formatCurrency";
@@ -15,7 +16,8 @@ export const HRPayRoll = () => {
   const [yearError, setYearError] = useState("");
   const [selectedSalary, setSelectedSalary] = useState(null);
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
-  const [bulkStatus, setBulkStatus] = useState("");
+  const [hasPrevMonthPayroll, setHasPrevMonthPayroll] = useState(false);
+  const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
 
   const [filters, setFilters] = useState({
     month: "",
@@ -23,6 +25,44 @@ export const HRPayRoll = () => {
     employeeName: "",
     status: "",
   });
+
+  // xuất bảng lương
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+  const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
+  // Kiểm tra xem tháng trước đã có bảng lương chưa để disable nút
+  useEffect(() => {
+    const checkPrevPayroll = async () => {
+      try {
+        setCheckingPrevMonthPayroll(true);
+        const res = await HRService.getAllSalaries({
+          month: previousMonth,
+          year: previousYear,
+          page: 0,
+          size: 1,
+          sortBy: "id",
+          direction: "ASC",
+        });
+
+        const total =
+          res?.totalElements ??
+          (Array.isArray(res?.content) ? res.content.length : 0);
+        setHasPrevMonthPayroll(total > 0);
+      } catch (err) {
+        console.error(
+          "Error checking previous month payroll:",
+          err.message
+        );
+      } finally {
+        setCheckingPrevMonthPayroll(false);
+      }
+    };
+
+    checkPrevPayroll();
+  }, [previousMonth, previousYear]);
 
   const fetchSalaries = async () => {
     try {
@@ -51,6 +91,7 @@ export const HRPayRoll = () => {
   useEffect(() => {
     fetchSalaries();
   }, [page, pageSize, filters]);
+
   const FilterReset = () => {
     setFilters({
       month: "",
@@ -87,15 +128,60 @@ export const HRPayRoll = () => {
         : [...prev, salaryId]
     );
   };
-  // xuất bảng lương
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
+
+  const getAllowedBulkStatuses = () => {
+    const selectedItems = data.filter((item) =>
+      selectedSalaryIds.includes(item.id)
+    );
+
+    if (!selectedItems.length) return [];
+
+    if (selectedItems.some((item) => item.status === "PAID")) {
+      return [];
+    }
+
+    let allowedSet = null;
+
+    selectedItems.forEach((item) => {
+      let itemAllowed = [];
+      // Chờ duyệt (DRAFT) chỉ được chuyển sang Đã duyệt (APPROVED)
+      if (item.status === "DRAFT") itemAllowed = ["APPROVED"];
+      // Đã duyệt (APPROVED) chỉ được chuyển sang Đã thanh toán (PAID)
+      else if (item.status === "APPROVED") itemAllowed = ["PAID"];
+
+      if (allowedSet === null) {
+        allowedSet = new Set(itemAllowed);
+      } else {
+        const nextSet = new Set();
+        itemAllowed.forEach((status) => {
+          if (allowedSet.has(status)) nextSet.add(status);
+        });
+        allowedSet = nextSet;
+      }
+    });
+
+    return allowedSet ? Array.from(allowedSet) : [];
+  };
+  
+  const getStatusLabel = (s) => {
+    if (s === "DRAFT") return "Chờ duyệt";
+    if (s === "APPROVED") return "Đã duyệt";
+    if (s === "PAID") return "Đã thanh toán";
+    return s || "-";
+  };
+
+  const getStatusClass = (s) => {
+    if (s === "PAID") return "done";
+    if (s === "APPROVED") return "approved";
+    return "pending"; // DRAFT hoặc khác
+  };
+
   const { showAlert } = useAlert();
   const handleCreatePayroll = async () => {
     try {
-      const month = Number(filters.month) || currentMonth;
-      const year = Number(filters.year) || currentYear;
+      // Chỉ cho phép xuất bảng lương tháng trước
+      const month = previousMonth;
+      const year = previousYear;
 
       if (!year || year < 2000 || year > 2100) {
         showAlert("error", "Năm không hợp lệ (2000 - 2100)");
@@ -109,6 +195,7 @@ export const HRPayRoll = () => {
 
       await HRService.createPayroll(month, year);
       showAlert("success", `Xuất bảng lương tháng ${month}/${year} thành công`);
+  setHasPrevMonthPayroll(true);
       fetchSalaries();
     } catch (err) {
       showAlert("error", err.message || "Xuất bảng lương thất bại");
@@ -117,8 +204,9 @@ export const HRPayRoll = () => {
   //thanh toán lương
   const handlePaySalary = async () => {
   try {
-    const month = Number(filters.month) || currentMonth;
-    const year = Number(filters.year) || currentYear;
+    // Thanh toán lương cũng cố định cho tháng trước
+    const month = previousMonth;
+    const year = previousYear;
 
     if (!year || year < 2000 || year > 2100) {
       showAlert("error", "Năm không hợp lệ (2000 - 2100)");
@@ -138,21 +226,101 @@ export const HRPayRoll = () => {
   }
 };
 
-  const handleBulkUpdateStatus = async () => {
-    if (!bulkStatus) {
-      showAlert("error", "Vui lòng chọn trạng thái cần cập nhật");
-      return;
+  const handleExportExcel = async () => {
+    try {
+      const queryParams = {
+        status: filters.status || undefined,
+        month: filters.month || undefined,
+        year: filters.year || undefined,
+        employeeName: filters.employeeName || undefined,
+        page: 0,
+        size: totalElements || 1000,
+        sortBy: "id",
+        direction: "ASC",
+      };
+
+      const res = await HRService.getAllSalaries(queryParams);
+      const rows = res?.content || res || [];
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+        showAlert("warning", "Không có dữ liệu để xuất Excel");
+        return;
+      }
+
+      const exportData = rows.map((item, index) => {
+        const displaySalary =
+          item.netSalary ||
+          item.grossSalary ||
+          item.actualSalary ||
+          item.baseSalary ||
+          0;
+
+        const workHours =
+          item.attendanceSummary?.totalWorkHours ?? item.workTime ?? 0;
+
+        return {
+          STT: index + 1,
+          MaNhanVien: item.employeeCode,
+          TenNhanVien: item.employeeName,
+          Thang: item.month,
+          Nam: item.year,
+          ViTri: item.positionName,
+          Luong: displaySalary,
+          SoGio: workHours,
+          TrangThai: getStatusLabel(item.status),
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "BangLuong");
+
+      const monthLabel = filters.month || "all";
+      const yearLabel = filters.year || "all";
+      const fileName = `bang-luong-${monthLabel}-${yearLabel}.xlsx`;
+
+      XLSX.writeFile(workbook, fileName);
+      showAlert("success", "Xuất Excel bảng lương thành công");
+    } catch (err) {
+      showAlert("error", err.message || "Xuất Excel bảng lương thất bại");
     }
+  };
+
+  const handleBulkUpdateStatus = async () => {
     if (!selectedSalaryIds.length) {
       showAlert("error", "Vui lòng chọn ít nhất một bảng lương");
       return;
     }
 
+    const selectedItems = data.filter((item) =>
+      selectedSalaryIds.includes(item.id)
+    );
+
+    if (selectedItems.some((item) => item.status === "PAID")) {
+      showAlert(
+        "error",
+        "Có bảng lương đã thanh toán, không thể cập nhật trạng thái"
+      );
+      return;
+    }
+
+    const allowedStatuses = getAllowedBulkStatuses();
+
+    if (!allowedStatuses.length) {
+      showAlert(
+        "error",
+        "Không có trạng thái hợp lệ để cập nhật cho các bảng lương đã chọn"
+      );
+      return;
+    }
+
+    const targetStatus = allowedStatuses[0];
+
     try {
-      await HRService.updateSalaryStatus(selectedSalaryIds, bulkStatus);
+      await HRService.updateSalaryStatus(selectedSalaryIds, targetStatus);
       showAlert(
         "success",
-        `Cập nhật trạng thái ${bulkStatus} cho ${selectedSalaryIds.length} dòng thành công`
+        `Cập nhật trạng thái cho ${selectedSalaryIds.length} dòng thành công`
       );
       fetchSalaries();
     } catch (err) {
@@ -220,7 +388,7 @@ export const HRPayRoll = () => {
           >
 
             <option value="">Tất cả trạng thái</option>
-            <option value="DRAFT">Nháp</option>
+            <option value="DRAFT">Chờ duyệt</option>
             <option value="APPROVED">Đã duyệt</option>
             <option value="PAID">Đã thanh toán</option>
           </select>
@@ -229,30 +397,35 @@ export const HRPayRoll = () => {
 
           {/* <button onClick={handlePaySalary}>Phát lương</button> */}
         </div>
-        <button className="payroll-button" onClick={handleCreatePayroll}>
-          Xuất bảng lương {filters.month || currentMonth}/{
-            filters.year || currentYear
-          }
-        </button>
+        <div style={{ display: "flex", gap: 12 }}>
+          <button
+            className="payroll-button"
+            style={{ background: "#10b981" , width: '100px', height: '50px'}}
+            onClick={handleExportExcel}
+          >
+            Xuất Excel
+          </button>
+        </div>
       </div>
       {/* TABLE */}
       <div className="payroll-table">
         <div className="payroll-table-header">
           <h3>NHÂN VIÊN</h3>
-          <div className="bulk-status-actions">
-            <select
-              value={bulkStatus}
-              onChange={(e) => setBulkStatus(e.target.value)}
-            >
-              <option value="">Chọn trạng thái mới</option>
-              <option value="DRAFT">Nháp</option>
-              <option value="APPROVED">Đã duyệt</option>
-              <option value="PAID">Đã thanh toán</option>
-            </select>
-            <button onClick={handleBulkUpdateStatus}>
-              Cập nhật trạng thái
-            </button>
-          </div>
+          {selectedSalaryIds.length > 0 && (
+            <div className="bulk-status-actions">
+              {getAllowedBulkStatuses().length === 0 ? (
+                <span className="no-bulk-update">
+                  Không thể cập nhật trạng thái cho các dòng đã chọn
+                </span>
+              ) : (
+                <button onClick={handleBulkUpdateStatus}>
+                  {getAllowedBulkStatuses()[0] === "APPROVED"
+                    ? "Cập nhật sang Đã duyệt"
+                    : "Cập nhật sang Đã thanh toán"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <table>
@@ -290,19 +463,6 @@ export const HRPayRoll = () => {
             ) : (
               data.map((item, index) => {
                 const status = item.status; // DRAFT, APPROVED, PAID
-
-                const getStatusLabel = (s) => {
-                  if (s === "DRAFT") return "Nháp";
-                  if (s === "APPROVED") return "Đã duyệt";
-                  if (s === "PAID") return "Đã thanh toán";
-                  return s || "-";
-                };
-
-                const getStatusClass = (s) => {
-                  if (s === "PAID") return "done";
-                  if (s === "APPROVED") return "approved";
-                  return "pending"; // DRAFT hoặc khác
-                };
 
                 const displaySalary =
                   item.netSalary || item.grossSalary || item.actualSalary || item.baseSalary || 0;

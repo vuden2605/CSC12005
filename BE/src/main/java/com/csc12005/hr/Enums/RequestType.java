@@ -1,5 +1,14 @@
 package com.csc12005.hr.Enums;
 
-public enum RequestType {
-	TimeSheet, Leave, WorkFromHome
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public enum RequestType{
+	TimeSheet("chỉnh sửa chấm công"),
+	Leave("nghỉ phép"),
+	WorkFromHome("làm việc tại nhà");
+
+	private final String displayName;
 }

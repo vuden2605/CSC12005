@@ -70,10 +70,10 @@ public class TimeSheetRequestProvider extends AbstractRequestProvider {
 		timeSheet.calculateAll();
 		timeSheet.setRequest(timeSheetRequest);
 		timeSheetRepository.save(timeSheet);
+		publishEventAfterApproval(timeSheetRequest);
 		return timeSheetRequestMapper.toTimeSheetRequestResponse(timeSheetRequestRepository.save(timeSheetRequest));
 	}
 
-	@Transactional
 	@Override
 	public RequestResponse doCreateRequest(
 			RequestCreationRequest request,

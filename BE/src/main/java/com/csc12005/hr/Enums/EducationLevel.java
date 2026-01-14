@@ -5,4 +5,5 @@ public enum EducationLevel {
 	UNIVERSITY,
 	MASTER,
 	DOCTORATE,
+	HIGH_SCHOOL
 }

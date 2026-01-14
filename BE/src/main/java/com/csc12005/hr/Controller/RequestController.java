@@ -1,5 +1,6 @@
 package com.csc12005.hr.Controller;
 
+import com.csc12005.hr.DTO.Request.ProcessManyRequest;
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.RequestFilter;
@@ -7,7 +8,6 @@ import com.csc12005.hr.DTO.Response.ApiResponse;
 import com.csc12005.hr.DTO.Response.RequestResponse;
 import com.csc12005.hr.Enums.RequestType;
 import com.csc12005.hr.Service.RequestService.IRequestService;
-import com.csc12005.hr.Service.RequestService.Impl.RequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -75,6 +75,22 @@ public class RequestController {
 		return ApiResponse.<RequestResponse>builder()
 				.message("Get request by id success")
 				.data(requestService.getRequestById(requestId, requestType))
+				.build();
+	}
+	@PutMapping("/approve-many")
+	public ApiResponse<Void> approveManyRequests (
+			@RequestBody ProcessManyRequest processManyRequest) {
+		requestService.approveManyRequests(processManyRequest);
+		return ApiResponse.<Void>builder()
+				.message("Approve many requests success")
+				.build();
+	}
+	@PutMapping("/reject-many")
+	public ApiResponse<Void> rejectManyRequests (
+			@RequestBody ProcessManyRequest processManyRequest) {
+		requestService.rejectManyRequests(processManyRequest);
+		return ApiResponse.<Void>builder()
+				.message("Reject many requests success")
 				.build();
 	}
 }

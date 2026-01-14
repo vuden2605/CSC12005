@@ -3,10 +3,13 @@ package com.csc12005.hr.Service.NotificationService.Impl;
 import com.csc12005.hr.DTO.Request.*;
 import com.csc12005.hr.Entity.Notification;
 import com.csc12005.hr.Enums.NotificationType;
+import com.csc12005.hr.Exception.AppException;
+import com.csc12005.hr.Exception.ErrorCode;
 import com.csc12005.hr.Repository.NotificationRepository;
 import com.csc12005.hr.Service.NotificationService.INotificationService;
 import com.csc12005.hr.Service.WebSocketService.Impl.WebSocketService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService implements INotificationService {
 	private final NotificationRepository notificationRepository;
 	private final WebSocketService webSocketService;
@@ -33,7 +37,7 @@ public class NotificationService implements INotificationService {
 				.build();
 		return notificationRepository.save(notification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleLeaveRequestCreated(LeaveRequestCreated leaveRequestCreated) {
@@ -41,25 +45,26 @@ public class NotificationService implements INotificationService {
 				leaveRequestCreated.getManagerId(),
 				"Đơn nghỉ phép",
 				String.format("Nhân viên %s đã gửi đơn xin nghỉ phép. Vui lòng kiểm tra và phê duyệt.", leaveRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				leaveRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(leaveRequestCreated.getManagerId(), savedNotification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleWFHRequestCreated(WFHRequestCreated wfhRequestCreated) {
+		log.info("Received WFHRequestCreated event for request id: {}", wfhRequestCreated.getRequestId());
 		Notification savedNotification = createNotification(
 				wfhRequestCreated.getManagerId(),
 				"Đơn làm việc tại nhà",
 				String.format("Nhân viên %s đã gửi đơn xin làm việc tại nhà. Vui lòng kiểm tra và phê duyệt.", wfhRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				wfhRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(wfhRequestCreated.getManagerId(), savedNotification);
 	}
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleTimeSheetRequestCreated(TimeSheetRequestCreated timeSheetRequestCreated) {
@@ -67,13 +72,40 @@ public class NotificationService implements INotificationService {
 				timeSheetRequestCreated.getManagerId(),
 				"Đơn chấm công",
 				String.format("Nhân viên %s đã gửi đơn xin chỉnh sửa chấm công. Vui lòng kiểm tra và phê duyệt.", timeSheetRequestCreated.getEmployeeName()),
-				NotificationType.REQUEST,
+				NotificationType.REQUEST_CREATED,
 				timeSheetRequestCreated.getRequestId()
 		);
 		webSocketService.sendToUser(timeSheetRequestCreated.getManagerId(), savedNotification);
 	}
 
 	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleRejectRequestEvent(RejectRequestEvent rejectRequestEvent) {
+		Notification notification = createNotification(
+				rejectRequestEvent.getEmployeeId(),
+				"Yêu cầu bị từ chối",
+				String.format("Yêu cầu %s của bạn đã bị từ chối. Vui lòng kiểm tra lại.", rejectRequestEvent.getRequestType().getDisplayName()),
+				NotificationType.REQUEST_REJECTED,
+				rejectRequestEvent.getRequestId()
+		);
+		webSocketService.sendToUser(rejectRequestEvent.getEmployeeId(), notification);
+	}
+
+	@Override
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	public void handleApproveRequestEvent(ApproveRequestEvent approveRequestEvent) {
+		Notification notification = createNotification(
+				approveRequestEvent.getEmployeeId(),
+				"Yêu cầu được duyệt",
+				String.format("Yêu cầu %s của bạn đã được duyệt.", approveRequestEvent.getRequestType().getDisplayName()),
+				NotificationType.REQUEST_APPROVED,
+				approveRequestEvent.getRequestId()
+		);
+		webSocketService.sendToUser(approveRequestEvent.getEmployeeId(), notification);
+	}
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleCreated(ScheduleCreated scheduleCreated) {
@@ -87,7 +119,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleCreated.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleUpdated(ScheduleUpdated scheduleUpdated) {
@@ -101,7 +133,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleUpdated.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleScheduleDeleted(ScheduleDeleted scheduleDeleted) {
@@ -115,7 +147,7 @@ public class NotificationService implements INotificationService {
 		webSocketService.sendToUser(scheduleDeleted.getManagerId(), notification);
 	}
 
-	@Override
+
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleActivityCreated(ActivityCreated activityCreated) {
@@ -139,7 +171,7 @@ public class NotificationService implements INotificationService {
 	@Override
 	public void markAsRead(Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new RuntimeException("Notification not found"));
+				.orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 		notification.setIsRead(true);
 		notificationRepository.save(notification);
 	}

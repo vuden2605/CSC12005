@@ -201,17 +201,23 @@
   }
 }
 .payroll-button {
-     padding: 8px 16px;
-    border-radius: 6px;
-    background: #f68f3b;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 155px;
-    height: 55px;
-    font-weight: 600;
-  
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #f68f3b;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 155px;
+  height: 70px;
+  font-weight: 600;
+  transition: opacity 0.2s ease, background 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5b47c; // màu nhạt hơn một chút
   }
+}
 
 // checkbox cột chọn
 .payroll-table input[type="checkbox"] {

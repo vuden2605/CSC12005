@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
-
+import { useLocation } from "react-router-dom";
 import { ModalLeave } from "../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
@@ -11,16 +11,19 @@ import { ManagerService } from "../../services/ManagerService";
 import { EmployeeService } from "../../services/EmployeeService";
 import { Pagination } from "../../components/Pagination";
 import { useSelector } from "react-redux";
+import { useAlert } from "../../context/AlertContext";
+import ConfirmModal from "../../components/modals/ConfirmModal/ConfirmModal";
 
 export const RequestManager = () => {
+  const location = useLocation();
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   const [statusFilter, setStatusFilter] = useState({
     pending: true,
-    approved: true,
-    rejected: true,
+    approved: false,
+    rejected: false,
   });
   const currentUser = useSelector((state) => state.user.currentUser);
   const isManager = currentUser?.position?.role === "MN";
@@ -43,6 +46,14 @@ export const RequestManager = () => {
     totalPages: 0,
     totalElements: 0,
   });
+  const [selectedRequestIds, setSelectedRequestIds] = useState(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const { showAlert } = useAlert();
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    action: null,
+    message: "",
+  });
 
   // Map requestType từ API sang tên hiển thị
   const mapRequestType = (requestType) => {
@@ -53,6 +64,21 @@ export const RequestManager = () => {
       TimeSheet: "Chấm công",
     };
     return typeMap[requestType] || requestType;
+  };
+
+  // Map lý do nghỉ phép (enum) sang tiếng Việt
+  const mapLeaveReason = (reason, requestType) => {
+    if (!reason) return "";
+    if (requestType !== "Leave") return reason;
+
+    const reasonMap = {
+      SICK_LEAVE: "Nghỉ ốm",
+      ANNUAL_LEAVE: "Nghỉ phép",
+      MATERNITY_LEAVE: "Nghỉ thai sản",
+      PERSONAL_LEAVE: "Nghỉ việc riêng",
+    };
+
+    return reasonMap[reason] || reason;
   };
 
   // Map tên hiển thị sang requestType API
@@ -145,7 +171,7 @@ export const RequestManager = () => {
           createdAt: formatDate(item.createdAt),
           status: statusMapped.status,
           statusText: statusMapped.statusText,
-          reason: item.reason || "",
+          reason: mapLeaveReason(item.reason, item.requestType),
           attachment: item.requestAttachment || "",
         };
       });
@@ -175,7 +201,7 @@ export const RequestManager = () => {
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+  }, [fetchRequests, location.key]);
 
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {
@@ -301,6 +327,104 @@ export const RequestManager = () => {
     }
   };
 
+  // Clear selected requests when filters/page change
+  useEffect(() => {
+    setSelectedRequestIds(new Set());
+  }, [pagination.page, pagination.size, startDate, endDate, leaveType, statusFilter]);
+
+  const toggleSelectRequest = (requestId) => {
+    setSelectedRequestIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(requestId)) {
+        next.delete(requestId);
+      } else {
+        next.add(requestId);
+      }
+      return next;
+    });
+  };
+
+  const pendingIds = filteredData
+    .filter((item) => item.status === "pending")
+    .map((item) => item.id);
+
+  const isAllSelected =
+    pendingIds.length > 0 &&
+    pendingIds.every((id) => selectedRequestIds.has(id));
+
+  const toggleSelectAll = () => {
+    setSelectedRequestIds((prev) => {
+      const next = new Set(prev);
+      if (isAllSelected) {
+        pendingIds.forEach((id) => next.delete(id));
+      } else {
+        pendingIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  };
+
+  const handleBulkApprove = async () => {
+    if (!isManager) return;
+    const ids = Array.from(selectedRequestIds);
+    if (ids.length === 0) {
+      alert("Vui lòng chọn ít nhất một yêu cầu");
+      return;
+    }
+    setConfirmState({
+      isOpen: true,
+      action: "approve",
+      message: "Bạn chắc chắn muốn duyệt tất cả các yêu cầu đã chọn?",
+    });
+  };
+
+  const handleBulkReject = async () => {
+    if (!isManager) return;
+    const ids = Array.from(selectedRequestIds);
+    if (ids.length === 0) {
+      alert("Vui lòng chọn ít nhất một yêu cầu");
+      return;
+    }
+    setConfirmState({
+      isOpen: true,
+      action: "reject",
+      message: "Bạn chắc chắn muốn từ chối tất cả các yêu cầu đã chọn?",
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    if (!isManager) return;
+    const ids = Array.from(selectedRequestIds);
+    if (ids.length === 0) {
+      setConfirmState({ isOpen: false, action: null, message: "" });
+      return;
+    }
+
+    try {
+      setBulkLoading(true);
+      if (confirmState.action === "approve") {
+        await ManagerService.approveRequest(ids);
+        showAlert("success", "Đã duyệt các yêu cầu đã chọn");
+      } else if (confirmState.action === "reject") {
+        await ManagerService.rejectRequest(ids);
+        showAlert("success", "Đã từ chối các yêu cầu đã chọn");
+      }
+      setSelectedRequestIds(new Set());
+      fetchRequests();
+    } catch (err) {
+      console.error("Error processing requests:", err);
+      alert(
+        err.message ||
+          (confirmState.action === "approve"
+            ? "Duyệt yêu cầu thất bại"
+            : "Từ chối yêu cầu thất bại")
+      );
+    } finally {
+      setBulkLoading(false);
+      setConfirmState({ isOpen: false, action: null, message: "" });
+    }
+  };
+
   return (
     <div className="leave-management">
       <div className="header-section">
@@ -387,6 +511,30 @@ export const RequestManager = () => {
       <div className="table-section">
         <h3 className="section-title">Danh sách các yêu cầu</h3>
 
+        {isManager && selectedRequestIds.size > 0 && (
+          <div className="bulk-request-actions">
+            <div className="bulk-info">
+              Đã chọn: <strong>{selectedRequestIds.size}</strong> yêu cầu
+            </div>
+            <div className="bulk-buttons">
+              <button
+                className="bulk-btn bulk-approve"
+                onClick={handleBulkApprove}
+                disabled={bulkLoading || selectedRequestIds.size === 0}
+              >
+                {bulkLoading ? "Đang xử lý..." : "Duyệt"}
+              </button>
+              <button
+                className="bulk-btn bulk-reject"
+                onClick={handleBulkReject}
+                disabled={bulkLoading || selectedRequestIds.size === 0}
+              >
+                {bulkLoading ? "Đang xử lý..." : "Từ chối"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {loading && (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <p>Đang tải dữ liệu...</p>
@@ -406,6 +554,16 @@ export const RequestManager = () => {
           <table className="leave-table">
             <thead>
               <tr>
+                <th>
+                  {isManager && (
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      title="Chọn tất cả yêu cầu chờ duyệt"
+                    />
+                  )}
+                </th>
                 <th>Mã nhân viên</th>
                 <th>Tên nhân viên</th>
                 <th>Loại yêu cầu</th>
@@ -421,7 +579,7 @@ export const RequestManager = () => {
               {filteredData.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="8"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Không có dữ liệu
@@ -430,6 +588,15 @@ export const RequestManager = () => {
               ) : (
                 filteredData.map((item) => (
                   <tr key={item.id}>
+                    <td>
+                      {isManager && item.status === "pending" ? (
+                        <input
+                          type="checkbox"
+                          checked={selectedRequestIds.has(item.id)}
+                          onChange={() => toggleSelectRequest(item.id)}
+                        />
+                      ) : null}
+                    </td>
                     <td>{item.employeeCode}</td>
                     <td>{item.employeeName}</td>
                     <td>{item.type}</td>
@@ -513,6 +680,22 @@ export const RequestManager = () => {
           />
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={
+          confirmState.action === "approve"
+            ? "Xác nhận duyệt yêu cầu"
+            : "Xác nhận từ chối yêu cầu"
+        }
+        message={confirmState.message}
+        type={confirmState.action === "reject" ? "danger" : "info"}
+        onConfirm={handleConfirmAction}
+        onCancel={() =>
+          setConfirmState({ isOpen: false, action: null, message: "" })
+        }
+        loading={bulkLoading}
+      />
 
       {/* Sidebar */}
       {/* <div className="sidebar">

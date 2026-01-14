@@ -40,6 +40,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  task:
+    scheduling:
+      pool:
+        size: 5
 
 cache:
   expires:
@@ -48,8 +52,8 @@ cache:
 
 jwt:
   secret: your_jwt_secret_key_12333333333333333333333
-  access-time: 3600000      # 1 hour
-  refresh-time: 86400000    # 24 hours
+  access-time: 600000
+  refresh-time: 3600000
 
 aws:
   access-key: AKIAQH3T6CWXA2TWPZ5O

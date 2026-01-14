@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./style.scss";
-
+import { useLocation } from "react-router-dom";
 import { ModalLeave } from "../../../../components/modals/Request/ModalLeave/ModalLeave";
 import { ModalWFH } from "../../../../components/modals/Request/ModalWFH/ModalWFH";
 import { AttendanceModal } from "../../../../components/modals/Request/ModalTimekeeping/ModalTimekeeping";
@@ -9,8 +9,13 @@ import { TimeSheetDetailModal } from "../../../../components/modals/Request/Time
 import { LeaveDetailModal } from "../../../../components/modals/Request/LeaveDetailModal/LeaveDetailModal";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { Pagination } from "../../../../components/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../../../redux";
 
 export const Requests = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.user.currentUser);
   const [leaveType, setLeaveType] = useState("Tất cả");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -20,6 +25,8 @@ export const Requests = () => {
     approved: true,
     rejected: true,
   });
+
+  const [remainingPaidLeave, setRemainingPaidLeave] = useState(null);
 
   // Modal control
   const [showChooseTypeModal, setShowChooseTypeModal] = useState(false);
@@ -102,8 +109,8 @@ export const Requests = () => {
       const params = {
         page: pagination.page,
         size: pagination.size,
-        direction: "ASC",
-        sortBy: "id",
+        direction: "DESC",
+        sortBy: "createdAt",
       };
 
       // Thêm date filters nếu có
@@ -170,10 +177,34 @@ export const Requests = () => {
     }
   }, [pagination.page, pagination.size, startDate, endDate, leaveType, statusFilter]);
 
+  // Refetch user profile when opening Requests tab
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await EmployeeService.getCurrentUser();
+      dispatch(setUser(data));
+    } catch (e) {
+      console.error("Error refreshing user:", e);
+    }
+  }, [dispatch]);
+
   // Fetch data khi component mount và khi dependencies thay đổi
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests]);
+    refreshUser();
+  }, [fetchRequests, refreshUser, location.key]);
+
+  // Tính số ngày nghỉ có lương còn lại từ currentUser trong Redux (persist vào localStorage)
+  useEffect(() => {
+    if (!currentUser) {
+      setRemainingPaidLeave(null);
+      return;
+    }
+
+    const annualLeave = currentUser.annualLeave ?? 0;
+    const usedLeave = currentUser.usedLeave ?? 0;
+    const remaining = Math.max(annualLeave - usedLeave, 0);
+    setRemainingPaidLeave(remaining);
+  }, [currentUser]);
 
   // Reset page về 0 khi filters thay đổi
   useEffect(() => {
@@ -486,7 +517,9 @@ export const Requests = () => {
         <div className="remaining-leave">
           <div className="leaf-icon">🌿</div>
           <p>Ngày nghỉ có lương còn lại</p>
-          <h2>0 Ngày</h2>
+          <h2>
+            {remainingPaidLeave !== null ? `${remainingPaidLeave} Ngày` : "..."}
+          </h2>
         </div>
 
         <button
@@ -534,7 +567,7 @@ export const Requests = () => {
 
       {/* Render modal tương ứng */}
       {selectedRequestType === "Nghỉ phép" && (
-        <ModalLeave onClose={closeModal} onSuccess={fetchRequests} />
+        <ModalLeave onClose={closeModal} onSuccess={() => { fetchRequests(); refreshUser(); }} />
       )}
       {selectedRequestType === "Làm việc tại nhà" && (
         <ModalWFH onClose={closeModal} onSuccess={fetchRequests} />

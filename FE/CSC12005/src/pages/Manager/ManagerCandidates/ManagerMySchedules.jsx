@@ -15,7 +15,7 @@ const ManagerMySchedules = () => {
     dateFrom: "",
     dateTo: "",
     timeSlot: "",
-    status: "",
+    status: "SCHEDULED",
     location: "",
   });
 
@@ -72,7 +72,7 @@ const ManagerMySchedules = () => {
       dateFrom: "",
       dateTo: "",
       timeSlot: "",
-      status: "",
+      status: "SCHEDULED",
       location: "",
     });
     setPagination({

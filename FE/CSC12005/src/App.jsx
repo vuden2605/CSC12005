@@ -6,12 +6,10 @@ function App() {
   const user = useSelector((state) => state.user.currentUser);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("App.jsx - Access token:", accessToken);
     console.log("App.jsx - Current user:", user);
 
-    if (user && accessToken) {
-      stompService.connect(accessToken);
+    if (user) {
+      stompService.connect();
     } else {
       stompService.disconnect();
     }

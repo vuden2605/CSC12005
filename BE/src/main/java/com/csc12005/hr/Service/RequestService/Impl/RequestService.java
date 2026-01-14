@@ -1,5 +1,6 @@
 package com.csc12005.hr.Service.RequestService.Impl;
 
+import com.csc12005.hr.DTO.Request.ProcessManyRequest;
 import com.csc12005.hr.DTO.Request.PageRequestDTO;
 import com.csc12005.hr.DTO.Request.RequestCreationRequest;
 import com.csc12005.hr.DTO.Request.RequestFilter;
@@ -12,11 +13,13 @@ import com.csc12005.hr.Service.RequestService.IRequestService;
 import com.csc12005.hr.Service.RequestService.Provider.IRequestProvider;
 import com.csc12005.hr.Service.RequestService.Provider.RequestProviderFactory;
 import com.csc12005.hr.Utils.SecurityUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,18 +30,20 @@ public class RequestService implements IRequestService {
 	private final SecurityUtils securityUtils;
 
 	@Override
+	@Transactional
 	public RequestResponse createRequest(RequestCreationRequest request, RequestType requestType) {
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.createRequest(request);
 	}
 
+	@Transactional
 	public RequestResponse approveRequest(Long requestId, RequestType requestType) {
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.approveRequest(requestId);
 	}
 
+	@Transactional
 	public RequestResponse rejectRequest(Long requestId, RequestType requestType) {
-
 		IRequestProvider provider = requestProviderFactory.getProvider(requestType);
 		return provider.rejectRequest(requestId);
 	}
@@ -78,4 +83,21 @@ public class RequestService implements IRequestService {
 		);
 		return requests.map(requestMapper::toRequestResponse);
 	}
+	@Transactional
+	public void approveManyRequests(ProcessManyRequest processManyRequest) {
+		List<Request> requests = requestRepository.findAllById(processManyRequest.getRequestIds());
+		for(Request request : requests) {
+			IRequestProvider provider = requestProviderFactory.getProvider(request.getRequestType());
+			provider.approveRequest(request.getId());
+		}
+	}
+	@Transactional
+	public void rejectManyRequests(ProcessManyRequest processManyRequest) {
+		List<Request> requests = requestRepository.findAllById(processManyRequest.getRequestIds());
+		for(Request request : requests) {
+			IRequestProvider provider = requestProviderFactory.getProvider(request.getRequestType());
+			provider.rejectRequest(request.getId());
+		}
+	}
+
 }

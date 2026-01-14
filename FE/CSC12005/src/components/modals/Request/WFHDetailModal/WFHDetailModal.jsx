@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
 import { ManagerService } from "../../../../services/ManagerService";
+import { useAlert } from "../../../../context/AlertContext";
+import ConfirmModal from "../../ConfirmModal/ConfirmModal";
 import "../style.scss";
 
 export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => {
   const [wfhDetail, setWfhDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showAlert } = useAlert();
+  const [confirmState, setConfirmState] = useState({ isOpen: false, action: null });
 
   useEffect(() => {
     const fetchWFHDetail = async () => {
@@ -29,10 +33,14 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
 
   // ===== ACTIONS =====
   const handleApprove = async () => {
+    setConfirmState({ isOpen: true, action: "approve" });
+  };
+
+  const handleConfirmApprove = async () => {
     try {
       setLoading(true);
-      await ManagerService.approveRequest(requestId, "WorkFromHome");
-      alert("Đã duyệt yêu cầu làm việc tại nhà");
+      await ManagerService.approveRequest(requestId);
+      showAlert("success", "Đã duyệt yêu cầu làm việc tại nhà");
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -40,17 +48,19 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
       alert("Duyệt yêu cầu thất bại");
     } finally {
       setLoading(false);
+      setConfirmState({ isOpen: false, action: null });
     }
   };
 
   const handleReject = async () => {
-    const ok = window.confirm("Bạn chắc chắn muốn từ chối yêu cầu này?");
-    if (!ok) return;
+    setConfirmState({ isOpen: true, action: "reject" });
+  };
 
+  const handleConfirmReject = async () => {
     try {
       setLoading(true);
       await ManagerService.rejectRequest(requestId, "WorkFromHome");
-      alert("Đã từ chối yêu cầu làm việc tại nhà");
+      showAlert("success", "Đã từ chối yêu cầu làm việc tại nhà");
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -58,6 +68,7 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
       alert("Từ chối yêu cầu thất bại");
     } finally {
       setLoading(false);
+      setConfirmState({ isOpen: false, action: null });
     }
   };
 
@@ -267,7 +278,28 @@ export const WFHDetailModal = ({ requestId, onClose, isManager, onSuccess }) => 
 
           </div>
         )}
-      </div>
-    </div>
+       </div>
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={
+          confirmState.action === "approve"
+            ? "Xác nhận duyệt yêu cầu"
+            : "Xác nhận từ chối yêu cầu"
+        }
+        message={
+          confirmState.action === "approve"
+            ? "Bạn chắc chắn muốn duyệt yêu cầu này?"
+            : "Bạn chắc chắn muốn từ chối yêu cầu này?"
+        }
+        type={confirmState.action === "reject" ? "danger" : "info"}
+        onConfirm={
+          confirmState.action === "approve"
+            ? handleConfirmApprove
+            : handleConfirmReject
+        }
+        onCancel={() => setConfirmState({ isOpen: false, action: null })}
+        loading={loading}
+      />
+     </div>
   );
 };

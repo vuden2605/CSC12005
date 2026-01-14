@@ -10,6 +10,7 @@ import { Notifications } from "../Notification/Notifications";
 import { NotificationService } from "../../services/NotificationService";
 import {
   addNotifications,
+  clearNotifications,
   setUnreadCount,
 } from "../../redux/slices/notificationSlice";
 
@@ -33,11 +34,12 @@ export const Header = () => {
     HRM: [
       { label: "Trang tổng quan", path: "/employee/dashboard" },
       { label: "Đánh giá ứng viên", path: "/manager/candidates" },
-      { label: "Quản lý yêu cầu", path: "/manager/requests" },
+      // { label: "Quản lý yêu cầu", path: "/manager/requests" },
 
       { label: "Quản lý phòng ban", path: "/manager/department" },
 
       { label: "Quản lý Sự kiện", path: "/hr/events" },
+      { label: "Quản lý yêu cầu", path: "/manager/requests" },
       { label: "Quản lý Lương", path: "/hr/payroll" },
       { label: "Nhân viên", path: "/hr/humans" },
       { label: "Ứng viên", path: "/hr/candidates" },
@@ -119,6 +121,7 @@ export const Header = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("persist:root");
       dispatch(clearUser());
+      dispatch(clearNotifications());
       stompService.disconnect();
       navigate("/login");
     } catch (error) {

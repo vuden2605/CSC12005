@@ -9,9 +9,12 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper{
 	Employee toEmployee(EmployeeCreationRequest employeeCreationRequest);
-    @Mapping(target = "position", source = "position")
-    @Mapping(target = "department", source = "department")
+
+    @Mapping(source = "manager.fullName", target = "managerName")
+    @Mapping(source = "manager.employeeCode", target = "managerCode")
+    @Mapping(source = "manager.id", target = "managerId")
     EmployeeResponse toEmployeeResponse(Employee employee);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEmployeeFromDto(EmployeeHRUpdateRequest dto, @MappingTarget Employee employee);
 }

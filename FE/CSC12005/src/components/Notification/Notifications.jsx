@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 const getNotificationRoute = (type, referenceId) => {
   switch (type) {
-    case "REQUEST":
-      return `/manager/requests`;     
+    case "REQUEST_CREATED":
+      return `/manager/requests`; 
+    case "REQUEST_APPROVED":
+      return `/employee/dashboard/request`;    
+    case "REQUEST_REJECTED":
+      return `/employee/dashboard/request`;
 
     case "TIMESHEET":
       return `/timesheets`;                 
@@ -60,15 +64,20 @@ export const Notifications = ({ unreadCount: propUnreadCount }) => {
   // Map notification type to icon and color
   const getNotificationIcon = (type) => {
     const iconMap = {
-      REQUEST: { icon: FileText, color: "#3b82f6", label: "Yêu cầu" },
+      REQUEST_CREATED: { icon: FileText, color: "#3b82f6", label: "Yêu cầu mới" },
+      REQUEST_APPROVED: { icon: FileText, color: "#22c55e", label: "Yêu cầu được duyệt" },
+      REQUEST_REJECTED: { icon: FileText, color: "#ef4444", label: "Yêu cầu bị từ chối" },
+  
       TIMESHEET: { icon: Clock, color: "#8b5cf6", label: "Chấm công" },
       SALARY: { icon: DollarSign, color: "#10b981", label: "Lương" },
       REVIEW: { icon: Star, color: "#f59e0b", label: "Đánh giá" },
       ACTIVITY: { icon: Activity, color: "#ef4444", label: "Hoạt động" },
+      SCHEDULE: { icon: Bell, color: "#0ea5e9", label: "Lịch làm việc" },
     };
-
+  
     return iconMap[type] || { icon: Bell, color: "#6b7280", label: "Thông báo" };
   };
+  
 
   // Click outside dropdown
   useEffect(() => {
