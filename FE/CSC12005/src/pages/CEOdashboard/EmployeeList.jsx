@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "reactstrap";
 import { HRService } from "../../services/HRService";
 
-// Hiển thị danh sách nhân viên
+// Hiển thị danh sách nhân viên, có thể lọc theo phòng ban sau này
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,9 +14,7 @@ const EmployeeList = () => {
         setLoading(true);
         setError("");
         const data = await HRService.getAllEmp();
-
-        // đảm bảo luôn là array
-        setEmployees(Array.isArray(data) ? data : []);
+        setEmployees(Array.isArray(data) ? data : data || []);
       } catch (err) {
         setError(err.message || "Không thể tải danh sách nhân viên");
       } finally {
@@ -37,7 +35,7 @@ const EmployeeList = () => {
 
   return (
     <div className="employee-list">
-      <Table hover responsive>
+      <Table responsive>
         <thead>
           <tr>
             <th>Họ tên</th>
@@ -46,25 +44,40 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.id}>
-              {/* ❗ FIX CHÍNH: không dùng employee.name */}
-              <td>{employee.fullName ?? "—"}</td>
+          {employees.map((employee) => {
+            const fullName =
+              employee.fullName ||
+              employee.full_name ||
+              employee.name ||
+              "N/A";
 
-              <td>
-                {typeof employee.department === "object"
-                  ? employee.department?.name ?? "—"
-                  : employee.department ?? "—"}
-              </td>
+            const departmentName =
+              employee.department?.departmentName ||
+              employee.department?.name ||
+              employee.department_name ||
+              employee.department ||
+              "N/A";
 
-              <td>
-                {typeof employee.position === "object"
-                  ? employee.position?.positionName ?? "—"
-                  : employee.position ?? "—"}
-              </td>
-            </tr>
-          ))}
+            const positionName =
+              employee.position?.positionName ||
+              employee.position?.name ||
+              employee.position_name ||
+              employee.position ||
+              "N/A";
 
+            return (
+              <tr
+                key={
+                  employee.id ||
+                  `${fullName}-${employee.department?.id || employee.position?.id || ""}`
+                }
+              >
+                <td>{fullName}</td>
+                <td>{departmentName}</td>
+                <td>{positionName}</td>
+              </tr>
+            );
+          })}
           {employees.length === 0 && (
             <tr>
               <td colSpan={3} className="text-center">

@@ -154,6 +154,48 @@
       }
     }
 
+    /* Bảng nhân viên */
+    .employee-list {
+      width: 100%;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      thead {
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+
+        th {
+          padding: 12px 14px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #1f2937;
+          text-align: left;
+        }
+      }
+
+      tbody {
+        tr {
+          transition: background-color 0.15s ease;
+          &:hover {
+            background-color: #f8fafc;
+          }
+        }
+
+        td {
+          padding: 12px 14px;
+          font-size: 14px;
+          color: #111827;
+          border-bottom: 1px solid #e5e7eb;
+        }
+      }
+    }
+
     .error-text {
       color: #dc2626;
       padding: 1rem;
@@ -178,55 +220,3 @@
     }
   }
 }
-
-  // ==============================
-  // Employee Table (Nhân viên)
-  // ==============================
-  .employee-list {
-    margin-top: 1rem;
-
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background-color: #ffffff;
-    }
-
-    thead {
-      background-color: #f9fafb;
-
-      th {
-        font-size: 14px;
-        font-weight: 600;
-        color: #374151;
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-        white-space: nowrap;
-      }
-    }
-
-    tbody {
-      tr {
-        transition: background-color 0.15s ease;
-
-        &:hover {
-          background-color: #f3f4f6;
-        }
-      }
-
-      td {
-        font-size: 14px;
-        color: #1f2937;
-        padding: 0.75rem 1rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      .text-center {
-        text-align: center;
-        color: #6b7280;
-        font-style: italic;
-      }
-    }
-  }
