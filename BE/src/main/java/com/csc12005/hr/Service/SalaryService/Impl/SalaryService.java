@@ -100,10 +100,13 @@ public class SalaryService implements ISalaryService {
 			salary.setTotalDeductions(totalDeductions);
 			salary.setNetSalary(netSalary);
 			salaries.add(salary);
-		}
+            log.warn("generate salary  {} ",attendanceSummary);
+
+        }
 		if(!salaries.isEmpty()) {
 			salaryRepository.saveAll(salaries);
-		}
+
+        }
     }
     public Page<SalaryResponse> getAll(SalaryFilterRequest request, PageRequestDTO pageRequestDTO){
         return salaryRepository.filterSalaries(request.getStatus(),

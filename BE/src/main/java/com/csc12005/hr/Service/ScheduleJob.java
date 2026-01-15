@@ -39,7 +39,7 @@ public class ScheduleJob {
 	}
 
 	@Scheduled(
-			cron = "0 22 10 14 * ?",
+			cron = "0 48 8 15 * ?",
 			zone = "Asia/Ho_Chi_Minh"
 	)
 	@Transactional

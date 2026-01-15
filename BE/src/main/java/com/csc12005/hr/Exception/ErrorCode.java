@@ -85,7 +85,7 @@ public enum ErrorCode {
 	BIRTHDAY_INVALID(5076,"Định dạng ngày sinh không hợp lệ", HttpStatus.BAD_REQUEST),
 	BIRTHDATE_REQUIRED(5077,"Ngày sinh là bắt buộc", HttpStatus.BAD_REQUEST),
 	//Activity
-	START_DATE_TOO_RECENT(4050,"Ngày bắt đầu phải sớm hơn 7 ngày so với hôm nay",HttpStatus.BAD_REQUEST),
+	START_DATE_TOO_RECENT(4050,"Ngày bắt đầu phải hơn 7 ngày so với hôm nay",HttpStatus.BAD_REQUEST),
 	REGISTRATION_TOO_LATE(4051,"Không thể đăng ký trong vòng 3 ngày trước ngày bắt đầu",HttpStatus.BAD_REQUEST),
 	ACTIVITY_FULL(4052,"Hoạt động này đã đầy",HttpStatus.BAD_REQUEST),
 	CANCELLATION_TOO_LATE(4053,"Không thể hủy trong vòng 3 ngày trước ngày bắt đầu",HttpStatus.BAD_REQUEST),

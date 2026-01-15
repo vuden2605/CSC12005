@@ -1076,14 +1076,14 @@ export const ActivityUpdateModal = ({
                 {loading ? "Đang cập nhật..." : "Chỉnh sửa"}
               </button>
 
-              <button
+              {/* <button
                 type="button"
                 className="btn success"
                 onClick={handleOpenRegistration}
                 disabled={loading}
               >
                 {loading ? "Đang xử lý..." : "Mở đăng ký"}
-              </button>
+              </button> */}
             </div>
           )}
 
@@ -1215,7 +1215,7 @@ export const ActivityUpdateModal = ({
                       <span>Thành công: {importResult.successRow || 0}</span>
                     </div>
                     <div className="error-count">
-                      <span>Thất bại: {importResult.errorRow || 0}</span>
+                      <span>Thất bại: {importResult.importErrors.length || 0}</span>
                     </div>
                   </div>
 
