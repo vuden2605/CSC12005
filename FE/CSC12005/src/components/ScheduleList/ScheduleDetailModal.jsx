@@ -399,14 +399,14 @@ const ScheduleDetailModal = ({ scheduleId, onClose, onUpdate }) => {
                     <div className="empty-candidates">
                       <div className="empty-icon"></div>
                       <p>Chưa có ứng viên nào được gán vào lịch này</p>
-                      {schedule.status === "SCHEDULED" && (
+                      {/* {schedule.status === "SCHEDULED" && (
                         <button
                           className="btn btn-primary"
                           onClick={handleAssignCandidates}
                         >
                           + Thêm ứng viên ngay
                         </button>
-                      )}
+                      )} */}
                     </div>
                   </section>
                 )}

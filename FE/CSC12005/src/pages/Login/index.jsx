@@ -11,7 +11,7 @@ import { useAlert } from "../../context/AlertContext";
 const roleRedirects = {
   ADMIN: "/admin",
   MN: "/employee/dashboard/info",
-  EMP: "/employee",
+  EMP: "/employee/dashboard/info",
   HRM: "/employee/dashboard/info",
   CEO: "/hr/humans",
 };

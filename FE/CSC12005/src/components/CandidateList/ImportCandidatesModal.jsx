@@ -149,7 +149,7 @@ const ImportCandidatesModal = ({ onClose, onSuccess }) => {
                   <div className="stat error-stat">
                     <span className="stat-label">Lỗi:</span>
                     <span className="stat-value">
-                      {importResult.errorRow} dòng
+                      {importResult.importErrors.length} dòng
                     </span>
                   </div>
                 </div>

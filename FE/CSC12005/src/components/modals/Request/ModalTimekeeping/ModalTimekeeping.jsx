@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EmployeeService } from "../../../../services/EmployeeService";
-import '../style.scss';
-
+import "../style.scss";
+import { useAlert } from "../../../../context/AlertContext";
 export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
   const [form, setForm] = useState({
     workDate: initialDate || "",
@@ -13,6 +13,7 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert();
 
   const handleFile = (e) => {
     const f = e.target.files[0];
@@ -28,20 +29,26 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
       "image/jpg",
       "image/png",
       "image/gif",
-      "image/webp"
+      "image/webp",
     ];
 
     if (!allowedTypes.includes(f.type)) {
-      setErrors({ ...errors, file: "Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG, GIF, WEBP)" });
+      setErrors({
+        ...errors,
+        file: "Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG, GIF, WEBP)",
+      });
       setFile(null);
       return;
     }
-    
+
     // Giới hạn 10MB
     const maxSize = 10 * 1024 * 1024;
     if (f.size > maxSize) {
       const fileSizeMB = (f.size / (1024 * 1024)).toFixed(2);
-      setErrors({ ...errors, file: `File quá lớn (${fileSizeMB}MB). Kích thước tối đa: 10MB` });
+      setErrors({
+        ...errors,
+        file: `File quá lớn (${fileSizeMB}MB). Kích thước tối đa: 10MB`,
+      });
       setFile(null);
       return;
     }
@@ -55,7 +62,11 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
     if (!form.workDate) newErr.workDate = "Hãy chọn ngày";
     if (!form.checkInNew) newErr.checkInNew = "Hãy nhập giờ vào";
     if (!form.checkOutNew) newErr.checkOutNew = "Hãy nhập giờ ra";
-    if (form.checkInNew && form.checkOutNew && form.checkInNew >= form.checkOutNew) {
+    if (
+      form.checkInNew &&
+      form.checkOutNew &&
+      form.checkInNew >= form.checkOutNew
+    ) {
       newErr.checkOutNew = "Giờ ra phải sau giờ vào";
     }
     if (!form.reason.trim()) newErr.reason = "Hãy nhập lý do";
@@ -67,10 +78,10 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
 
   const submit = async () => {
     if (!validate()) return;
-  
+
     try {
       setLoading(true);
-  
+
       await EmployeeService.createRequest(
         {
           workDate: form.workDate,
@@ -81,22 +92,21 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
         },
         "TimeSheet"
       );
-  
+
       if (onSuccess) onSuccess();
+      showAlert("success", "Tạo yêu cầu thành công");
       onClose();
     } catch (error) {
       console.log(error);
       console.error("Error creating timesheet request:", error);
-  
+
       let errorMessage = "Không thể tạo yêu cầu. Vui lòng thử lại.";
       if (error.message) errorMessage = error.message;
-  
-      setErrors({ ...errors, submit: errorMessage });
+      showAlert("error", errorMessage);
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="modal-overlay">
@@ -138,7 +148,9 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
         />
         {errors.reason && <p className="error">{errors.reason}</p>}
 
-        <label>File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)</label>
+        <label>
+          File minh chứng (PDF hoặc ảnh: JPG, PNG, GIF, WEBP, tối đa 10MB)
+        </label>
         <input
           type="file"
           accept="application/pdf,image/jpeg,image/jpg,image/png,image/gif,image/webp"
@@ -152,21 +164,17 @@ export const AttendanceModal = ({ onClose, onSuccess, initialDate }) => {
         )}
         {errors.file && <p className="error">{errors.file}</p>}
 
-        {errors.submit && <p className="error" style={{ marginTop: "10px" }}>{errors.submit}</p>}
+        {errors.submit && (
+          <p className="error" style={{ marginTop: "10px" }}>
+            {errors.submit}
+          </p>
+        )}
 
         <div className="btn-row">
-          <button 
-            className="btn cancel" 
-            onClick={onClose}
-            disabled={loading}
-          >
+          <button className="btn cancel" onClick={onClose} disabled={loading}>
             Hủy
           </button>
-          <button 
-            className="btn confirm" 
-            onClick={submit}
-            disabled={loading}
-          >
+          <button className="btn confirm" onClick={submit} disabled={loading}>
             {loading ? "Đang tải..." : "Gửi yêu cầu"}
           </button>
         </div>

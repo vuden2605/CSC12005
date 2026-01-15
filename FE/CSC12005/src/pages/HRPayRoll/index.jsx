@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
@@ -27,13 +26,14 @@ export const HRPayRoll = () => {
   const [selectedSalary, setSelectedSalary] = useState(null);
   const [selectedSalaryIds, setSelectedSalaryIds] = useState([]);
   const [hasPrevMonthPayroll, setHasPrevMonthPayroll] = useState(false);
-  const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] = useState(false);
+  const [checkingPrevMonthPayroll, setCheckingPrevMonthPayroll] =
+    useState(false);
   //  Import Timesheet States
   const [showImportModal, setShowImportModal] = useState(false);
   const [importFile, setImportFile] = useState(null);
   const [importLoading, setImportLoading] = useState(false);
   const [importResult, setImportResult] = useState(null);
-console.log("resultim:",importResult)
+  console.log("resultim:", importResult);
   const [filters, setFilters] = useState({
     month: String(previousMonth),
     year: String(previousYear),
@@ -62,10 +62,7 @@ console.log("resultim:",importResult)
           (Array.isArray(res?.content) ? res.content.length : 0);
         setHasPrevMonthPayroll(total > 0);
       } catch (err) {
-        console.error(
-          "Error checking previous month payroll:",
-          err.message
-        );
+        console.error("Error checking previous month payroll:", err.message);
       } finally {
         setCheckingPrevMonthPayroll(false);
       }
@@ -152,7 +149,6 @@ console.log("resultim:",importResult)
 
     let allowedSet = null;
 
-
     selectedItems.forEach((item) => {
       let itemAllowed = [];
       if (item.status === "DRAFT") {
@@ -160,11 +156,9 @@ console.log("resultim:",importResult)
         if (
           currentUser &&
           currentUser.position &&
-          (
-            currentUser.position.positionCode === "CEO" ||
+          (currentUser.position.positionCode === "CEO" ||
             currentUser.position.role === "CEO" ||
-            currentUser.position.positionName.toLowerCase().includes("ceo")
-          )
+            currentUser.position.positionName.toLowerCase().includes("ceo"))
         ) {
           itemAllowed = ["APPROVED"];
         } else {
@@ -188,7 +182,7 @@ console.log("resultim:",importResult)
 
     return allowedSet ? Array.from(allowedSet) : [];
   };
-  
+
   const getStatusLabel = (s) => {
     if (s === "DRAFT") return "Chờ duyệt";
     if (s === "APPROVED") return "Đã duyệt";
@@ -221,7 +215,7 @@ console.log("resultim:",importResult)
 
       await HRService.createPayroll(month, year);
       showAlert("success", `Xuất bảng lương tháng ${month}/${year} thành công`);
-  setHasPrevMonthPayroll(true);
+      setHasPrevMonthPayroll(true);
       fetchSalaries();
     } catch (err) {
       showAlert("error", err.message || "Xuất bảng lương thất bại");
@@ -229,28 +223,31 @@ console.log("resultim:",importResult)
   };
   //thanh toán lương
   const handlePaySalary = async () => {
-  try {
-    // Thanh toán lương cũng cố định cho tháng trước
-    const month = previousMonth;
-    const year = previousYear;
+    try {
+      // Thanh toán lương cũng cố định cho tháng trước
+      const month = previousMonth;
+      const year = previousYear;
 
-    if (!year || year < 2000 || year > 2100) {
-      showAlert("error", "Năm không hợp lệ (2000 - 2100)");
-      return;
+      if (!year || year < 2000 || year > 2100) {
+        showAlert("error", "Năm không hợp lệ (2000 - 2100)");
+        return;
+      }
+
+      if (!month || month < 1 || month > 12) {
+        showAlert("error", "Tháng không hợp lệ (1 - 12)");
+        return;
+      }
+
+      await HRService.paySalary(month, year);
+      showAlert(
+        "success",
+        `Thanh toán lương tháng ${month}/${year} thành công`
+      );
+      fetchSalaries(); // reload bảng lương
+    } catch (err) {
+      showAlert("error", err.message || "Thanh toán lương thất bại");
     }
-
-    if (!month || month < 1 || month > 12) {
-      showAlert("error", "Tháng không hợp lệ (1 - 12)");
-      return;
-    }
-
-    await HRService.paySalary(month, year);
-    showAlert("success", `Thanh toán lương tháng ${month}/${year} thành công`);
-    fetchSalaries(); // reload bảng lương
-  } catch (err) {
-    showAlert("error", err.message || "Thanh toán lương thất bại");
-  }
-};
+  };
 
   const handleExportExcel = async () => {
     try {
@@ -350,12 +347,15 @@ console.log("resultim:",importResult)
       );
       fetchSalaries();
     } catch (err) {
-      showAlert("error", err.message || "Cập nhật trạng thái bảng lương thất bại");
+      showAlert(
+        "error",
+        err.message || "Cập nhật trạng thái bảng lương thất bại"
+      );
     }
   };
 
-    const handleImportFileChange = (e) => {
-    const file = e.target. files[0];
+  const handleImportFileChange = (e) => {
+    const file = e.target.files[0];
     setImportFile(file);
     setImportResult(null);
   };
@@ -373,8 +373,11 @@ console.log("resultim:",importResult)
       setImportResult(result);
 
       if (result.errorCount === 0) {
-        showAlert("success", `Import thành công ${result.successCount} bản ghi! `);
-        
+        showAlert(
+          "success",
+          `Import thành công ${result.successCount} bản ghi! `
+        );
+
         // Auto close after 2s
         setTimeout(() => {
           setShowImportModal(false);
@@ -382,7 +385,6 @@ console.log("resultim:",importResult)
           setImportResult(null);
         }, 2000);
       } else {
-        
       }
     } catch (error) {
       console.error("Error importing timesheet:", error);
@@ -450,7 +452,6 @@ console.log("resultim:",importResult)
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           >
-
             <option value="">Tất cả trạng thái</option>
             <option value="DRAFT">Chờ duyệt</option>
             <option value="APPROVED">Đã duyệt</option>
@@ -467,11 +468,11 @@ console.log("resultim:",importResult)
             style={{ background: "#3b82f6", width: "170px", height: "50px" }}
             onClick={() => setShowImportModal(true)}
           >
-             Nhập file chấm công
+            Nhập file chấm công
           </button>
           <button
             className="payroll-button"
-            style={{ background: "#10b981" , width: '100px', height: '50px'}}
+            style={{ background: "#10b981", width: "100px", height: "50px" }}
             onClick={handleExportExcel}
           >
             Xuất Excel
@@ -536,54 +537,55 @@ console.log("resultim:",importResult)
                 const status = item.status; // DRAFT, APPROVED, PAID
 
                 const displaySalary =
-                  item.netSalary || item.grossSalary || item.actualSalary || item.baseSalary || 0;
+                  item.netSalary ||
+                  item.grossSalary ||
+                  item.actualSalary ||
+                  item.baseSalary ||
+                  0;
 
                 const workHours =
                   item.attendanceSummary?.totalWorkHours ?? item.workTime ?? 0;
 
                 return (
-                <tr key={item.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedSalaryIds.includes(item.id)}
-                      onChange={() => toggleSelectOne(item.id)}
-                    />
-                  </td>
-                  <td>{index + 1 + page * 10}</td>
-                  <td>
-                    <div className="emp-info">
-                      <span className="name">
-                        {item.employeeName} ({item.employeeCode})
+                  <tr key={item.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedSalaryIds.includes(item.id)}
+                        onChange={() => toggleSelectOne(item.id)}
+                      />
+                    </td>
+                    <td>{index + 1 + page * 10}</td>
+                    <td>
+                      <div className="emp-info">
+                        <span className="name">
+                          {item.employeeName} ({item.employeeCode})
+                        </span>
+                        <span className="email">{item.positionName}</span>
+                      </div>
+                    </td>
+                    <td>
+                      {item.month}/{item.year}
+                    </td>
+                    <td>{item.positionName}</td>
+                    <td>{formatCurrencyVND(displaySalary)}</td>
+                    <td>{workHours}</td>
+                    <td>
+                      <span className={`status ${getStatusClass(status)}`}>
+                        {getStatusLabel(status)}
                       </span>
-                      <span className="email">{item.positionName}</span>
-                    </div>
-                  </td>
-                  <td>
-                    {item.month}/{item.year}
-                  </td>
-                  <td>{item.positionName}</td>
-                  <td>{formatCurrencyVND(displaySalary)}</td>
-                  <td>{workHours}</td>
-                  <td>
-                    <span
-                      className={`status ${getStatusClass(status)}`}
-                    >
-
-                      {getStatusLabel(status)}
-
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className="btn-view-detail"
-                      onClick={() => setSelectedSalary(item)}
-                    >
-                      Xem
-                    </button>
-                  </td>
-                </tr>
-              )})
+                    </td>
+                    <td>
+                      <button
+                        className="btn-view-detail"
+                        onClick={() => setSelectedSalary(item)}
+                      >
+                        Xem
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -601,7 +603,6 @@ console.log("resultim:",importResult)
             setPage(0);
           }}
         />
-
       </div>
       {selectedSalary && (
         <SalaryDetailModal
@@ -610,8 +611,11 @@ console.log("resultim:",importResult)
           onStatusUpdated={fetchSalaries}
         />
       )}
-            {showImportModal && (
-        <div className="modal-overlay" onClick={() => setShowImportModal(false)}>
+      {showImportModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowImportModal(false)}
+        >
           <div
             className="modal-content-import"
             onClick={(e) => e.stopPropagation()}
@@ -659,7 +663,7 @@ console.log("resultim:",importResult)
                       <span>Thành công: {importResult.successRow}</span>
                     </div>
                     <div className="error-count">
-                      <span>Thất bại: {importResult.errorRow}</span>
+                      <span>Thất bại: {importResult.importErrors.length}</span>
                     </div>
                   </div>
 
@@ -693,15 +697,14 @@ console.log("resultim:",importResult)
                 type="button"
                 className="btn btn-primary"
                 onClick={handleImportTimesheet}
-                disabled={! importFile || importLoading}
+                disabled={!importFile || importLoading}
               >
-                {importLoading ? "Đang import..." :  "Import"}
+                {importLoading ? "Đang import..." : "Import"}
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

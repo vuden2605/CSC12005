@@ -256,6 +256,7 @@ export const Attendance = () => {
 
   const handleModalSuccess = () => {
     setShowTimekeepingModal(false);
+    
     fetchAttendance();
   };
 

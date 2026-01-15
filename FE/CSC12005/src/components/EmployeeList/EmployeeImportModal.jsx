@@ -45,14 +45,14 @@ function EmployeeImportModal({
         {error && <p className="error">{error}</p>}
         {importResult && (
           <div className="import-summary">
-            <p>✅ Thành công: {importResult.successRow}</p>
-            <p>❌ Thất bại: {importResult.errorRow}</p>
+            <p>Thành công: {importResult.successRow}</p>
+            <p>Thất bại: {importResult.importErrors.length}</p>
           </div>
         )}
 
         {importResult?.importErrors?.length > 0 && (
           <div className="import-errors">
-            <h4>❌ Danh sách lỗi</h4>
+            <h4> Danh sách lỗi</h4>
             <ul>
               {importResult.importErrors.map((err, idx) => (
                 <li key={idx}>{err.message}</li>

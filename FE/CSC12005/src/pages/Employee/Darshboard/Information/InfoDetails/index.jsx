@@ -3,12 +3,13 @@ import { EditButton } from "../../../../../components/EditButton/EditButton";
 import { EditInfoModal } from "../../../../../components/modals/EditInfoModal/EditInfoModal";
 import { EmployeeService } from "../../../../../services/EmployeeService";
 import "./style.scss";
-
+import { useAlert } from "../../../../../context/AlertContext";
 export const InfoDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
+  const {showAlert}=useAlert();
   const [info, setInfo] = useState({
     phone: "",
     email: "",
@@ -134,9 +135,12 @@ export const InfoDetails = () => {
       
       // Có thể thêm thông báo thành công ở đây nếu cần
       console.log("Profile updated successfully");
+      showAlert("success","Chỉnh sửa thông tin cá nhân thành công")
+
     } catch (err) {
       console.error("Error updating profile:", err);
       setError(err.message || "Không thể cập nhật thông tin");
+      showAlert("error",err.message)
       // Không đóng modal nếu có lỗi để người dùng có thể thử lại
     } finally {
       setUpdating(false);

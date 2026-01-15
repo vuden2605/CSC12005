@@ -130,7 +130,7 @@ export const Salary = () => {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={6} className="no-data">
+                <td colSpan={6} className="no-data-a">
                   Không có dữ liệu
                 </td>
               </tr>
