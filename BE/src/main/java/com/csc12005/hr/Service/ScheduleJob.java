@@ -39,7 +39,7 @@ public class ScheduleJob {
 	}
 
 	@Scheduled(
-			cron = "0 48 8 15 * ?",
+			cron = "00 22 10 15 * ?",
 			zone = "Asia/Ho_Chi_Minh"
 	)
 	@Transactional
@@ -53,7 +53,7 @@ public class ScheduleJob {
 
 	@Scheduled
 	(
-			cron = "0 13 11 14 * ?",
+			cron = "30 16 10 15 * ?",
 			zone = "Asia/Ho_Chi_Minh"
 	)
 	@Transactional
@@ -61,6 +61,7 @@ public class ScheduleJob {
 		List<Employee> employees = employeeRepository.findAllWithPosition();
 		pointHistoryService.givePointToMonthlyCandidates(employees);
 	}
+
 	@Scheduled(
 			cron = "0 0 0 * * ?",
 			zone = "Asia/Ho_Chi_Minh"
